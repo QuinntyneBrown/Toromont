@@ -10,6 +10,8 @@ Per the UI design in `docs/ui-design.pen`, screen "09 - Reports" (frame `6w3G8`)
 
 **Traces to:** L1-008, L1-009 | **L2:** L2-019, L2-020, L2-021, L2-022
 
+**ADRs:** [ADR-0003: Kendo UI for Angular](../../adr/frontend/0003-kendo-ui-data-components.md) (Charts — Bar, Pie, Line; DateRangePicker; DropDownList)
+
 ## 2. Architecture
 
 ### 2.1 System Context

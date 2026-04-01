@@ -10,6 +10,8 @@ This feature provides a searchable parts catalog with AI-powered natural languag
 
 **Actors:** Fleet Manager (browse, search, cart, order), Technician (browse, search, cart), Operator (browse only)
 
+**ADRs:** [ADR-0003: Kendo UI for Angular](../../adr/frontend/0003-kendo-ui-data-components.md) (Grid for catalog, DropDownList filters)
+
 ## 2. Architecture
 
 ### 2.1 C4 Context Diagram

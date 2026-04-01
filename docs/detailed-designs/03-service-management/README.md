@@ -10,6 +10,8 @@ This feature enables scheduling, tracking, and managing equipment maintenance th
 
 **Actors:** Fleet Manager (create, close), Technician (create, update status), Operator (read-only)
 
+**ADRs:** [ADR-0003: Kendo UI for Angular](../../adr/frontend/0003-kendo-ui-data-components.md) (Grid, TabStrip, **Scheduler** with day/week/month views)
+
 ## 2. Architecture
 
 ### 2.1 C4 Context Diagram

@@ -12,6 +12,8 @@ Per the UI design in `docs/ui-design.pen`, screen **"08 - AI Insights"** (frame 
 
 **Actors:** Fleet Manager, Admin, Technician
 
+**ADRs:** [ADR-0003: Kendo UI for Angular](../../adr/frontend/0003-kendo-ui-data-components.md) (Grid for predictions table)
+
 ## 2. Architecture
 
 ### 2.1 C4 Context Diagram

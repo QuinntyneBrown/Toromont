@@ -12,6 +12,8 @@ Per the UI design in `docs/ui-design.pen`, screen **"07 - Telemetry Dashboard"**
 
 **Actors:** Fleet Manager, Operator, Technician
 
+**ADRs:** [ADR-0003: Kendo UI for Angular](../../adr/frontend/0003-kendo-ui-data-components.md) (Charts — Line, Bar; DropDownList; ButtonGroup for time ranges)
+
 ## 2. Architecture
 
 ### 2.1 C4 Context Diagram
