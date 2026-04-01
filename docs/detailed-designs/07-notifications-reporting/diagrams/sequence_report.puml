@@ -1,0 +1,35 @@
+@startuml sequence_report
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Report Generation & Export
+
+actor "Fleet Manager" as User
+participant "Angular SPA\n(Kendo UI Charts)" as FE
+participant "ReportsController\n(.NET 8+)" as API
+participant "ReportGeneration\nService" as RptSvc
+participant "ExportService\n(QuestPDF/ClosedXML)" as Export
+database "SQL Server 2022" as DB
+
+User -> FE: Select report type,\ndate range, filters
+FE -> API: POST /api/v1/reports/fleet-utilization
+API -> RptSvc: GenerateFleetUtilization(request)
+RptSvc -> DB: Aggregate telemetry data\n(Dapper, <3s target)
+DB --> RptSvc: Aggregated results
+RptSvc --> API: ReportResponse with DataPoints
+API --> FE: JSON report data
+FE -> FE: Render Kendo UI\nBar/Pie/Line charts
+FE --> User: Interactive charts displayed
+
+== Export ==
+User -> FE: Click "Export to PDF"
+FE -> API: POST /api/v1/reports/fleet-utilization/export?format=pdf
+API -> RptSvc: Re-generate data
+RptSvc -> DB: Query
+DB --> RptSvc: Data
+API -> Export: GeneratePdf(data)
+Export --> API: PDF byte stream
+API --> FE: File download (Content-Disposition)
+FE --> User: PDF downloaded
+
+@enduml
