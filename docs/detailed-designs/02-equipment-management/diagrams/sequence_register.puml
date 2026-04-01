@@ -1,0 +1,31 @@
+@startuml sequence_register
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Register New Equipment
+
+actor "Fleet Manager" as FM
+participant "Angular SPA" as SPA
+participant "API Gateway" as GW
+participant "Equipment Controller" as Ctrl
+participant "Equipment Service" as Svc
+database "SQL Database" as DB
+
+FM -> SPA: Click "Add Equipment"
+SPA -> SPA: Show registration form
+FM -> SPA: Fill form + Submit
+SPA -> SPA: Client-side validation
+SPA -> GW: POST /api/v1/equipment\n{name, make, model, year,\nserialNumber, category, status}
+GW -> Ctrl: Forward (authenticated)
+Ctrl -> Ctrl: Validate request\n(FluentValidation)
+Ctrl -> Svc: CreateEquipmentCommand
+Svc -> DB: Check serial number\nuniqueness in org
+DB --> Svc: No duplicate found
+Svc -> DB: INSERT Equipment
+DB --> Svc: Equipment created
+Svc --> Ctrl: EquipmentDto
+Ctrl --> GW: 201 Created\n+ Location header
+GW --> SPA: Equipment response
+SPA --> FM: Redirect to\nequipment detail page
+
+@enduml

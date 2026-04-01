@@ -1,0 +1,64 @@
+@startuml class_diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+
+title Telemetry & Monitoring - Domain Model
+
+class TelemetryEvent {
+    +Id: Guid
+    +EquipmentId: Guid
+    +OrganizationId: Guid
+    +EventType: string
+    +Timestamp: DateTime
+    +Payload: string
+    +ProcessedAt: DateTime
+}
+
+class Alert {
+    +Id: Guid
+    +OrganizationId: Guid
+    +EquipmentId: Guid
+    +AlertType: AlertType
+    +Severity: AlertSeverity
+    +Message: string
+    +Status: AlertStatus
+    +CreatedAt: DateTime
+    +AcknowledgedAt: DateTime?
+    +AcknowledgedByUserId: Guid?
+}
+
+class AlertThreshold {
+    +Id: Guid
+    +EquipmentId: Guid?
+    +MetricName: string
+    +WarningValue: double
+    +CriticalValue: double
+}
+
+enum AlertType {
+    TemperatureAnomaly
+    FuelAnomaly
+    ThresholdBreach
+    GPSSignalLost
+    IdleTimeout
+}
+
+enum AlertSeverity {
+    Info
+    Warning
+    Critical
+}
+
+enum AlertStatus {
+    Active
+    Acknowledged
+    Resolved
+}
+
+TelemetryEvent --> Alert : may generate
+Alert ..> AlertType
+Alert ..> AlertSeverity
+Alert ..> AlertStatus
+
+@enduml

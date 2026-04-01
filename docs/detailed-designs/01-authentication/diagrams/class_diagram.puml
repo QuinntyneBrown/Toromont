@@ -1,0 +1,72 @@
+@startuml class_diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+
+title Authentication & Multi-Tenancy - Domain Model
+
+class Organization {
+    +Id: Guid
+    +Name: string
+    +Slug: string
+    +ContactEmail: string
+    +IsActive: bool
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class User {
+    +Id: Guid
+    +EntraObjectId: string
+    +Email: string
+    +DisplayName: string
+    +Role: UserRole
+    +OrganizationId: Guid
+    +IsActive: bool
+    +LastLoginAt: DateTime?
+    +CreatedAt: DateTime
+}
+
+class UserInvitation {
+    +Id: Guid
+    +Email: string
+    +Role: UserRole
+    +OrganizationId: Guid
+    +InvitedByUserId: Guid
+    +Token: string
+    +ExpiresAt: DateTime
+    +AcceptedAt: DateTime?
+    +Status: InvitationStatus
+}
+
+enum UserRole {
+    Admin
+    FleetManager
+    Operator
+    Technician
+}
+
+enum InvitationStatus {
+    Pending
+    Accepted
+    Expired
+    Revoked
+}
+
+class NotificationPreference {
+    +Id: Guid
+    +UserId: Guid
+    +NotificationType: string
+    +EmailEnabled: bool
+    +SmsEnabled: bool
+    +InAppEnabled: bool
+}
+
+Organization "1" -- "*" User : employs
+Organization "1" -- "*" UserInvitation : has
+User "1" -- "*" NotificationPreference : configures
+User ..> UserRole : has role
+UserInvitation ..> InvitationStatus : has status
+UserInvitation ..> UserRole : assigns
+
+@enduml

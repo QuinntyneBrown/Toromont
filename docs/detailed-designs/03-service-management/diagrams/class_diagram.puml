@@ -1,0 +1,62 @@
+@startuml class_diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+
+title Service Management - Domain Model
+
+class WorkOrder {
+    +Id: Guid
+    +OrganizationId: Guid
+    +WorkOrderNumber: string
+    +EquipmentId: Guid
+    +ServiceType: ServiceType
+    +Priority: Priority
+    +Status: WorkOrderStatus
+    +Description: string
+    +RequestedDate: DateTime
+    +ScheduledDate: DateTime?
+    +CompletedDate: DateTime?
+    +AssignedToUserId: Guid?
+    +CreatedByUserId: Guid
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+enum ServiceType {
+    Preventive
+    Corrective
+    Emergency
+}
+
+enum Priority {
+    Low
+    Medium
+    High
+    Critical
+}
+
+enum WorkOrderStatus {
+    Open
+    InProgress
+    OnHold
+    Completed
+    Closed
+}
+
+class WorkOrderHistory {
+    +Id: Guid
+    +WorkOrderId: Guid
+    +PreviousStatus: WorkOrderStatus
+    +NewStatus: WorkOrderStatus
+    +Notes: string?
+    +ChangedByUserId: Guid
+    +ChangedAt: DateTime
+}
+
+WorkOrder ..> ServiceType
+WorkOrder ..> Priority
+WorkOrder ..> WorkOrderStatus
+WorkOrder "1" -- "*" WorkOrderHistory : tracks
+
+@enduml

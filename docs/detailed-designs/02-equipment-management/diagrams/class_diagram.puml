@@ -1,0 +1,73 @@
+@startuml class_diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+
+title Equipment Management - Domain Model
+
+class Equipment {
+    +Id: Guid
+    +OrganizationId: Guid
+    +Name: string
+    +Make: string
+    +Model: string
+    +Year: int
+    +SerialNumber: string
+    +Category: EquipmentCategory
+    +Status: EquipmentStatus
+    +GpsDeviceId: string?
+    +Latitude: double?
+    +Longitude: double?
+    +PurchaseDate: DateTime?
+    +WarrantyExpiration: DateTime?
+    +Notes: string?
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+enum EquipmentCategory {
+    Excavator
+    Dozer
+    Loader
+    Truck
+    Generator
+    Compactor
+    Crane
+    Other
+}
+
+enum EquipmentStatus {
+    Operational
+    NeedsService
+    Critical
+    Offline
+    Decommissioned
+}
+
+class EquipmentDocument {
+    +Id: Guid
+    +EquipmentId: Guid
+    +FileName: string
+    +FileUrl: string
+    +DocumentType: string
+    +UploadedAt: DateTime
+}
+
+class EquipmentImportResult {
+    +Id: Guid
+    +FileName: string
+    +TotalRecords: int
+    +Created: int
+    +Updated: int
+    +Skipped: int
+    +Errors: int
+    +ErrorDetails: string
+    +ImportedAt: DateTime
+    +ImportedByUserId: Guid
+}
+
+Equipment ..> EquipmentCategory
+Equipment ..> EquipmentStatus
+Equipment "1" -- "*" EquipmentDocument : has
+
+@enduml

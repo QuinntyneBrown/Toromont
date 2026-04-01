@@ -1,0 +1,53 @@
+@startuml class_diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+
+title Notifications & Reporting - Domain Model
+
+class Notification {
+    +Id: Guid
+    +UserId: Guid
+    +OrganizationId: Guid
+    +Type: NotificationType
+    +Title: string
+    +Message: string
+    +EntityType: string?
+    +EntityId: Guid?
+    +IsRead: bool
+    +CreatedAt: DateTime
+    +ReadAt: DateTime?
+}
+
+enum NotificationType {
+    ServiceDue
+    CriticalAlert
+    WorkOrderAssigned
+    WorkOrderStatusChange
+    PartsOrderConfirmation
+    PartsOrderStatusUpdate
+    AIPredictionHighPriority
+    SystemAnnouncement
+}
+
+class ReportConfiguration {
+    +Id: Guid
+    +OrganizationId: Guid
+    +ReportType: ReportType
+    +DateRangeStart: DateTime
+    +DateRangeEnd: DateTime
+    +Filters: string
+    +GeneratedByUserId: Guid
+    +GeneratedAt: DateTime
+}
+
+enum ReportType {
+    FleetUtilization
+    MaintenanceCosts
+    EquipmentLifecycle
+}
+
+Notification ..> NotificationType
+ReportConfiguration ..> ReportType
+
+@enduml

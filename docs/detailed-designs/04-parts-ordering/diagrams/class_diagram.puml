@@ -1,0 +1,75 @@
+@startuml class_diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+
+title Parts & Ordering - Domain Model
+
+class Part {
+    +Id: Guid
+    +PartNumber: string
+    +Name: string
+    +Description: string
+    +Price: decimal
+    +Category: string
+    +Availability: Availability
+    +ImageUrl: string?
+}
+
+class PartCompatibility {
+    +PartId: Guid
+    +EquipmentModel: string
+}
+
+class CartItem {
+    +Id: Guid
+    +UserId: Guid
+    +PartId: Guid
+    +Quantity: int
+    +AddedAt: DateTime
+}
+
+class PartsOrder {
+    +Id: Guid
+    +OrganizationId: Guid
+    +OrderNumber: string
+    +UserId: Guid
+    +Status: OrderStatus
+    +Subtotal: decimal
+    +CreatedAt: DateTime
+}
+
+class OrderLineItem {
+    +Id: Guid
+    +OrderId: Guid
+    +PartId: Guid
+    +PartNumber: string
+    +Name: string
+    +UnitPrice: decimal
+    +Quantity: int
+    +LineTotal: decimal
+}
+
+enum Availability {
+    InStock
+    LowStock
+    OutOfStock
+    Discontinued
+}
+
+enum OrderStatus {
+    Submitted
+    Processing
+    Shipped
+    Delivered
+    Cancelled
+}
+
+Part "1" -- "*" PartCompatibility
+Part "1" -- "*" CartItem
+Part "1" -- "*" OrderLineItem
+PartsOrder "1" -- "*" OrderLineItem
+Part ..> Availability
+PartsOrder ..> OrderStatus
+
+@enduml

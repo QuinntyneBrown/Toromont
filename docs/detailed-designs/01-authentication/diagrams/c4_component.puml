@@ -1,0 +1,31 @@
+@startuml c4_component
+!theme plain
+!include <C4/C4_Component>
+
+title Authentication & Authorization - Component Diagram
+
+Container_Boundary(api, "Web API") {
+    Component(authMiddleware, "Auth Middleware", "ASP.NET Core", "Validates JWT tokens,\nextracts claims")
+    Component(tenantMiddleware, "Tenant Middleware", "Custom Middleware", "Resolves org from claims,\nsets tenant context")
+    Component(authController, "Auth Controller", "API Controller", "Login callback, token\nrefresh, sign-out")
+    Component(userController, "User Controller", "API Controller", "User CRUD, invite,\nrole assignment")
+    Component(authService, "Auth Service", "Application Service", "Token validation,\nclaims mapping")
+    Component(userService, "User Service", "Application Service", "User management,\nrole changes")
+    Component(tenantFilter, "Tenant Query Filter", "EF Core Filter", "Auto-filters all queries\nby OrganizationId")
+    Component(rolePolicy, "Role Policies", "Authorization Policy", "Admin, FleetManager,\nOperator, Technician")
+}
+
+Container_Ext(entraId, "Microsoft Entra ID", "OAuth2/OIDC")
+ContainerDb_Ext(db, "SQL Database", "Users, Organizations")
+
+Rel(authMiddleware, authService, "Validates token")
+Rel(authMiddleware, tenantMiddleware, "Passes claims")
+Rel(authController, authService, "Login/logout")
+Rel(userController, userService, "CRUD users")
+Rel(userService, db, "Reads/Writes")
+Rel(authService, entraId, "Validates via JWKS")
+Rel(tenantMiddleware, tenantFilter, "Sets OrgId context")
+Rel(tenantFilter, db, "Filters queries")
+Rel(userController, rolePolicy, "Requires Admin role")
+
+@enduml

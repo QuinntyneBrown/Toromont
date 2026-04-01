@@ -1,0 +1,39 @@
+@startuml c4_container
+!theme plain
+!include <C4/C4_Container>
+
+title Toromont Fleet Hub - Container Diagram
+
+Person(user, "User", "Fleet Manager, Technician,\nOperator, or Admin")
+
+System_Ext(entraId, "Microsoft Entra ID", "OAuth2/OIDC Provider")
+System_Ext(catLink, "CAT Product Link", "Telemetry Source")
+
+System_Boundary(sb, "Toromont Fleet Hub") {
+    Container(spa, "Angular SPA", "Angular 17, Kendo UI,\nBootstrap 5", "Single-page application\nfor all user interactions")
+    Container(apiGw, "API Management", "Azure APIM", "Gateway, rate limiting,\nAPI versioning")
+    Container(api, "Web API", "ASP.NET Core 8,\nC#, MediatR", "RESTful API with\nCQRS pattern")
+    Container(signalr, "SignalR Service", "Azure SignalR", "Real-time notification\ndelivery")
+    Container(func, "Azure Functions", "C#, .NET 8", "Telemetry ingestion,\nalert processing")
+    Container(logic, "Logic Apps", "Azure Logic Apps", "Workflow automation,\nemail/SMS dispatch")
+    ContainerDb(db, "SQL Database", "Azure SQL\nServer 2022", "Equipment, work orders,\ntelemetry, users")
+    Container(insights, "App Insights", "Azure Monitor", "Logging, tracing,\nperformance metrics")
+}
+
+Rel(user, spa, "Uses", "HTTPS")
+Rel(spa, apiGw, "API calls", "HTTPS/JSON")
+Rel(spa, signalr, "WebSocket", "SignalR")
+Rel(apiGw, api, "Routes to", "HTTPS")
+Rel(api, db, "Reads/Writes", "EF Core / Dapper")
+Rel(api, signalr, "Pushes notifications", "SignalR")
+Rel(func, db, "Writes telemetry", "Dapper")
+Rel(func, api, "Triggers alerts", "HTTP")
+Rel(logic, api, "Orchestrates workflows", "HTTP")
+Rel(logic, db, "Reads schedules", "SQL")
+Rel(catLink, func, "Sends events", "HTTPS/JSON")
+Rel(spa, entraId, "Auth redirect", "OAuth2/PKCE")
+Rel(api, entraId, "Validates tokens", "JWKS")
+Rel_L(api, insights, "Logs", "Serilog")
+Rel_L(func, insights, "Logs", "Serilog")
+
+@enduml

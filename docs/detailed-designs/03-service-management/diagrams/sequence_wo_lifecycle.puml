@@ -1,0 +1,42 @@
+@startuml sequence_wo_lifecycle
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Work Order Lifecycle
+
+actor "Fleet Manager" as FM
+actor "Technician" as Tech
+participant "Web API" as API
+participant "WO Service" as Svc
+participant "Notification Svc" as Notif
+database "SQL DB" as DB
+
+FM -> API: POST /work-orders\n{equipmentId, type, priority}
+API -> Svc: CreateWorkOrderCommand
+Svc -> Svc: Generate WO number\n(WO-YYYYMMDD-NNN)
+Svc -> DB: INSERT WorkOrder\n(status=Open)
+Svc -> DB: INSERT WorkOrderHistory
+Svc -> Notif: NotifyAssignedTechnician
+Notif -> Tech: In-app + Email notification
+Svc --> API: 201 Created
+
+Tech -> API: PUT /work-orders/{id}/status\n{status: "InProgress"}
+API -> Svc: UpdateStatusCommand
+Svc -> DB: UPDATE status
+Svc -> DB: INSERT WorkOrderHistory
+Svc --> API: 200 OK
+
+Tech -> API: PUT /work-orders/{id}/status\n{status: "Completed", notes: "..."}
+API -> Svc: UpdateStatusCommand
+Svc -> DB: UPDATE status + completedDate
+Svc -> DB: INSERT WorkOrderHistory
+Svc -> Notif: NotifyFleetManager
+Svc --> API: 200 OK
+
+FM -> API: PUT /work-orders/{id}/status\n{status: "Closed"}
+API -> Svc: UpdateStatusCommand
+Svc -> DB: UPDATE status (read-only)
+Svc -> DB: INSERT WorkOrderHistory
+Svc --> API: 200 OK
+
+@enduml

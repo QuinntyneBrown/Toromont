@@ -1,0 +1,32 @@
+@startuml c4_component
+!theme plain
+!include <C4/C4_Component>
+
+title Service Management - Component Diagram
+
+Container_Boundary(api, "Web API") {
+    Component(woCtrl, "WorkOrder Controller", "API Controller", "CRUD and status\ntransition endpoints")
+    Component(calCtrl, "Calendar Controller", "API Controller", "Calendar view data\nfor Kendo Scheduler")
+    Component(woService, "WorkOrder Service", "MediatR Handlers", "WO creation, status\nvalidation, history")
+    Component(woRepo, "WorkOrder Repository", "EF Core", "CRUD with tenant\nfiltering")
+}
+
+Container_Boundary(logic, "Logic Apps") {
+    Component(escalation, "Escalation Workflow", "Logic App", "Auto-escalate overdue\nWOs after 48hrs")
+    Component(reminders, "Reminder Workflow", "Logic App", "Service reminders\n7d, 3d, 1d before")
+}
+
+ContainerDb_Ext(db, "SQL Database", "WorkOrders,\nWorkOrderHistory")
+Container_Ext(notif, "Notification Service", "SignalR + Email")
+
+Rel(woCtrl, woService, "Commands/Queries")
+Rel(calCtrl, woRepo, "Calendar queries")
+Rel(woService, woRepo, "Reads/Writes")
+Rel(woService, notif, "Triggers notifications")
+Rel(woRepo, db, "SQL queries")
+Rel(escalation, db, "Reads overdue WOs")
+Rel(escalation, woService, "Escalate priority")
+Rel(reminders, db, "Reads scheduled service")
+Rel(reminders, notif, "Send reminders")
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml c4_component
+!theme plain
+!include <C4/C4_Component>
+
+title Equipment Management - Component Diagram
+
+Container_Boundary(api, "Web API") {
+    Component(eqCtrl, "Equipment Controller", "API Controller", "CRUD endpoints for\nequipment registry")
+    Component(importCtrl, "Import Controller", "API Controller", "XML import endpoint\nfor legacy data")
+    Component(eqService, "Equipment Service", "MediatR Handlers", "Business logic for\nequipment operations")
+    Component(importService, "Import Service", "Application Service", "XML parsing, validation,\nduplication handling")
+    Component(eqRepo, "Equipment Repository", "EF Core", "CRUD operations\nwith tenant filtering")
+    Component(xmlParser, "XML Parser", "System.Xml", "Schema validation\nand transformation")
+}
+
+ContainerDb_Ext(db, "SQL Database", "Equipment table")
+
+Rel(eqCtrl, eqService, "Commands/Queries")
+Rel(importCtrl, importService, "Import request")
+Rel(eqService, eqRepo, "Reads/Writes")
+Rel(importService, xmlParser, "Parse XML")
+Rel(importService, eqRepo, "Upsert records")
+Rel(eqRepo, db, "SQL queries")
+
+@enduml

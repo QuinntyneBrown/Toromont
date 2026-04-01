@@ -1,0 +1,31 @@
+@startuml sequence_telemetry
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Telemetry Event Ingestion
+
+participant "Equipment\n(CAT Product Link)" as Equip
+participant "Azure Function\n(Ingestion)" as Func
+database "SQL Database" as DB
+participant "Alert Evaluator" as Alert
+participant "Notification Svc" as Notif
+participant "SignalR Hub" as SR
+
+Equip -> Func: POST /api/telemetry\n{equipmentId, type,\ntimestamp, payload}
+Func -> Func: Validate payload\n(required fields, JSON)
+Func -> DB: SELECT Equipment\nby ID (verify exists)
+DB --> Func: Equipment record
+Func -> Func: Enrich event\n(org, make, model)
+Func -> DB: INSERT TelemetryEvent
+Func -> Alert: Evaluate thresholds
+Alert -> DB: SELECT AlertThreshold\nfor equipment/metric
+DB --> Alert: Threshold config
+Alert -> Alert: Compare reading\nvs threshold
+alt Reading exceeds critical threshold
+    Alert -> DB: INSERT Alert\n(severity=Critical)
+    Alert -> Notif: TriggerCriticalAlert
+    Notif -> SR: Push to Fleet Manager
+end
+Func --> Equip: 202 Accepted
+
+@enduml

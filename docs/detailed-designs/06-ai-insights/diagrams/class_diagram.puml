@@ -1,0 +1,49 @@
+@startuml class_diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+
+title AI Insights - Domain Model
+
+class AIPrediction {
+    +Id: Guid
+    +OrganizationId: Guid
+    +EquipmentId: Guid
+    +Component: string
+    +ConfidenceScore: double
+    +RecommendedAction: string
+    +Timeframe: string
+    +Priority: PredictionPriority
+    +Status: PredictionStatus
+    +GeneratedAt: DateTime
+    +ExpiresAt: DateTime
+}
+
+enum PredictionPriority {
+    Low
+    Medium
+    High
+}
+
+enum PredictionStatus {
+    Active
+    Acted
+    Expired
+    Dismissed
+}
+
+class AnomalyDetection {
+    +Id: Guid
+    +EquipmentId: Guid
+    +AnomalyType: string
+    +MetricName: string
+    +ExpectedValue: double
+    +ActualValue: double
+    +DeviationSigma: double
+    +DetectedAt: DateTime
+}
+
+AIPrediction ..> PredictionPriority
+AIPrediction ..> PredictionStatus
+
+@enduml

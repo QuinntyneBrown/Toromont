@@ -1,0 +1,34 @@
+@startuml sequence_auth_flow
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Authentication Flow - OAuth2 PKCE
+
+actor User
+participant "Angular SPA" as SPA
+participant "Entra ID" as Entra
+participant "API Gateway" as GW
+participant "Web API" as API
+database "SQL DB" as DB
+
+User -> SPA: Access protected page
+SPA -> SPA: Check for valid token
+SPA -> Entra: Redirect to /authorize\n(code_challenge, scope)
+Entra -> User: Show login form
+User -> Entra: Enter credentials + MFA
+Entra -> SPA: Redirect with auth code
+SPA -> Entra: POST /token\n(code + code_verifier)
+Entra --> SPA: ID token + Access token
+SPA -> SPA: Store tokens in memory
+SPA -> GW: GET /api/v1/me\n(Bearer token)
+GW -> GW: Rate limit check
+GW -> API: Forward request
+API -> API: Validate JWT signature\n(JWKS endpoint)
+API -> API: Extract claims:\nuserId, email, roles, orgId
+API -> DB: Upsert user record\n(first login provisioning)
+DB --> API: User record
+API --> GW: 200 OK + user profile
+GW --> SPA: User profile JSON
+SPA --> User: Render dashboard
+
+@enduml
