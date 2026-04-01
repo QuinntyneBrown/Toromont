@@ -94,6 +94,7 @@ Use a hybrid state management approach: NgRx Store for authentication and global
 - The 60-second telemetry auto-refresh is naturally expressed with `interval()` piped through `switchMap` to the HTTP call
 - SignalR hub connections integrate seamlessly as observable streams
 - MsalInterceptor transparently handles token acquisition and injection for all HttpClient calls
+- Authentication state is centrally managed via NgRx with time-travel debugging support, critical for security-sensitive state
 - Incremental path to NgRx exists if application complexity grows beyond service-based management
 
 ### Negative
@@ -111,6 +112,12 @@ Use a hybrid state management approach: NgRx Store for authentication and global
 
 ## Implementation Notes
 
+- **Authentication state** is managed via NgRx Store:
+  - `AuthStateService` is an NgRx-backed service exposing current user, role, and organization context
+  - Dependencies: `@azure/msal-browser`, `@azure/msal-angular`, NgRx Store
+  - Auth state changes (login, logout, token refresh) flow through NgRx actions and reducers
+  - Route guards and interceptors read from the NgRx auth state selector
+- **Feature-level state** uses RxJS BehaviorSubject services (no NgRx):
 - Standard service-based state pattern:
   ```typescript
   @Injectable({ providedIn: 'root' })

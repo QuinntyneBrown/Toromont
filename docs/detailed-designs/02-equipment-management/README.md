@@ -12,6 +12,8 @@ Per the UI design in `docs/ui-design.pen`, screen **"03 - Equipment List"** (fra
 
 **Actors:** Admin (full CRUD), Fleet Manager (full CRUD), Operator (read-only), Technician (read-only)
 
+**ADRs:** [ADR-0003: Kendo UI for Angular](../../adr/frontend/0003-kendo-ui-data-components.md) (Equipment Grid with server-side pagination, DropDownList filters)
+
 ## 2. Architecture
 
 ### 2.1 C4 Context Diagram

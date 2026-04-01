@@ -120,10 +120,10 @@ Use Azure OpenAI Service as the AI backbone for natural language parts search (v
 
 ## Implementation Notes
 
-- **Open Question:** Whether to start with rule-based heuristics for anomaly detection and predictive maintenance and layer in ML models once sufficient training data is accumulated, or to deploy ML from day one with the understanding that the cold start period will produce lower-quality results. The team leans toward a hybrid approach: rule-based heuristics for anomaly detection from day one (thresholds are well-understood) with ML-based predictive maintenance introduced once 30+ days of fleet-wide telemetry is available.
+- **Resolved:** Use rule-based heuristics for the initial release. No ML model training in v1. Azure OpenAI is used for natural language parts search (embeddings) only. Anomaly detection and predictive maintenance use deterministic rules (temperature >2σ deviation, fuel >30% increase, operating pattern analysis). ML models may be introduced in a future release once sufficient training data is accumulated, but the v1 decision is rule-based only.
 - Parts search should implement a graceful degradation chain: Azure OpenAI embeddings -> SQL full-text search with fuzzy matching -> exact keyword search.
 - Predictive maintenance batch job at 2 AM UTC should be implemented as an Azure Function with a timer trigger.
-- Anomaly detection thresholds (2 sigma for temperature, 30% for fuel) should be configurable per equipment type.
+- Anomaly detection thresholds (2 sigma for temperature, 30% for fuel) are configured globally, not per equipment model. One set of rules applies across all equipment to simplify initial implementation.
 
 ## References
 

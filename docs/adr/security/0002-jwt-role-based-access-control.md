@@ -96,7 +96,7 @@ Implement Role-Based Access Control (RBAC) using JWT claims issued by Microsoft 
 - Work order status transition rules enforced at the API layer:
   - Only Technician or FleetManager can move a work order to InProgress
   - Only Technician can move a work order to Completed
-  - Only FleetManager or Admin can cancel a work order
+  - Only FleetManager can close a work order (Completed → Closed)
 - Use ASP.NET Core authorization policies for transitions that involve more than a simple role check
 - Frontend Angular route guards check role claims and redirect unauthorized users to an appropriate landing page
 - Log all authorization failures for security monitoring and audit purposes

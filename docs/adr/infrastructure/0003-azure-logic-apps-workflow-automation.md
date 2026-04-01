@@ -101,7 +101,7 @@ Use Azure Logic Apps for service reminder and escalation workflows:
 ## Implementation Notes
 
 - **Service Reminder Workflow:**
-  - Recurrence trigger: runs every 6 hours
+  - Recurrence trigger: runs daily
   - Query the API for work orders with due dates falling within the 7-day, 3-day, and 1-day windows
   - For each matching work order, check the assigned user's notification preferences
   - Dispatch notifications via the appropriate channels (in-app via SignalR, email via Azure Communication Services, SMS via Azure Communication Services)
@@ -109,8 +109,8 @@ Use Azure Logic Apps for service reminder and escalation workflows:
 
 - **Escalation Workflow:**
   - Recurrence trigger: runs every hour
-  - Query the API for work orders where status is overdue and `DueDate + 48 hours < current time`
-  - Update work order priority to escalated status
+  - Query the API for work orders where status is Open and `CreatedAt + 48 hours < current time` (stuck in Open for more than 48 hours)
+  - Automatically escalate by updating the work order priority level (Low → Medium → High → Critical)
   - Notify the assigned user's supervisor via in-app and email channels
   - Log escalation action to the `Notifications` table
 

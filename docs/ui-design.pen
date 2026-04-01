@@ -2161,7 +2161,7 @@
                     {
                       "type": "frame",
                       "id": "GPn1P",
-                      "name": "filterStatus",
+                      "name": "Kendo DropDownList — Status",
                       "width": 160,
                       "height": 40,
                       "fill": "$surface-secondary",
@@ -2202,7 +2202,7 @@
                     {
                       "type": "frame",
                       "id": "cJXPw",
-                      "name": "filterCat",
+                      "name": "Kendo DropDownList — Category",
                       "width": 160,
                       "height": 40,
                       "fill": "$surface-secondary",
@@ -2286,7 +2286,7 @@
                 {
                   "type": "frame",
                   "id": "EM5vC",
-                  "name": "equipment-table",
+                  "name": "Kendo Grid — Equipment",
                   "clip": true,
                   "width": "fill_container",
                   "height": "fill_container",
@@ -4811,7 +4811,7 @@
                 {
                   "type": "frame",
                   "id": "mAOkW",
-                  "name": "tabs",
+                  "name": "Kendo TabStrip",
                   "width": "fill_container",
                   "stroke": {
                     "thickness": {
@@ -4951,7 +4951,7 @@
                 {
                   "type": "frame",
                   "id": "IsZ3M",
-                  "name": "wo-table",
+                  "name": "Kendo Grid — Work Orders",
                   "clip": true,
                   "width": "fill_container",
                   "height": "fill_container",
@@ -6000,7 +6000,7 @@
                 {
                   "type": "frame",
                   "id": "dSqD3",
-                  "name": "filterSidebar",
+                  "name": "Filter Sidebar",
                   "width": 260,
                   "height": "fill_container",
                   "fill": "$surface-secondary",
@@ -6214,7 +6214,7 @@
                         {
                           "type": "frame",
                           "id": "qJZzx",
-                          "name": "compatDrop",
+                          "name": "Kendo DropDownList — Compatibility",
                           "width": "fill_container",
                           "height": 36,
                           "cornerRadius": "$radius-sm",
@@ -6266,7 +6266,7 @@
                     {
                       "type": "frame",
                       "id": "SCRT8",
-                      "name": "aiSearch",
+                      "name": "AI Search — NL Parts Query",
                       "width": "fill_container",
                       "height": 48,
                       "fill": "$surface-secondary",
@@ -6305,7 +6305,7 @@
                     {
                       "type": "frame",
                       "id": "h03x6",
-                      "name": "partsGrid",
+                      "name": "Kendo Grid — Parts Catalog",
                       "clip": true,
                       "width": "fill_container",
                       "height": "fill_container",
@@ -7170,7 +7170,7 @@
                     {
                       "type": "frame",
                       "id": "Yk6cV",
-                      "name": "eqSelect",
+                      "name": "Kendo DropDownList — Equipment",
                       "width": 280,
                       "height": 40,
                       "fill": "$surface-secondary",
@@ -7209,7 +7209,7 @@
                     {
                       "type": "frame",
                       "id": "hCNyY",
-                      "name": "timeRange",
+                      "name": "Kendo ButtonGroup — Time Range",
                       "cornerRadius": "$radius-sm",
                       "stroke": {
                         "thickness": 1,
@@ -7333,7 +7333,7 @@
                         {
                           "type": "frame",
                           "id": "92bCd",
-                          "name": "engChart",
+                          "name": "Kendo Chart/Line — Engine Hours",
                           "clip": true,
                           "width": "fill_container",
                           "height": "fill_container",
@@ -7409,7 +7409,7 @@
                         {
                           "type": "frame",
                           "id": "LFCi1",
-                          "name": "fuelChart",
+                          "name": "Kendo Chart/Bar — Fuel",
                           "clip": true,
                           "width": "fill_container",
                           "height": "fill_container",
@@ -7573,7 +7573,7 @@
                         {
                           "type": "frame",
                           "id": "zjq0X",
-                          "name": "tempChart",
+                          "name": "Kendo Chart/Line — Temperature",
                           "clip": true,
                           "width": "fill_container",
                           "height": "fill_container",
@@ -7649,7 +7649,7 @@
                         {
                           "type": "frame",
                           "id": "VIEej",
-                          "name": "gpsChart",
+                          "name": "Kendo Chart/Map — GPS Trail",
                           "clip": true,
                           "width": "fill_container",
                           "height": "fill_container",
@@ -8180,7 +8180,7 @@
                     {
                       "type": "frame",
                       "id": "wtRx5",
-                      "name": "predTable",
+                      "name": "Kendo Grid — AI Predictions",
                       "clip": true,
                       "width": "fill_container",
                       "height": "fill_container",
@@ -9288,7 +9288,7 @@
                     {
                       "type": "frame",
                       "id": "D1Sv8",
-                      "name": "dateRange",
+                      "name": "Kendo DateRangePicker",
                       "width": 240,
                       "height": 40,
                       "fill": "$surface-secondary",
@@ -9327,7 +9327,7 @@
                     {
                       "type": "frame",
                       "id": "Tfl0j",
-                      "name": "eqFilter",
+                      "name": "Kendo DropDownList — Equipment Filter",
                       "width": 180,
                       "height": 40,
                       "fill": "$surface-secondary",
@@ -9452,7 +9452,7 @@
                     {
                       "type": "frame",
                       "id": "WXzfz",
-                      "name": "chart1",
+                      "name": "Kendo Chart/Bar — Utilization",
                       "clip": true,
                       "width": "fill_container",
                       "height": "fill_container",
@@ -9583,7 +9583,7 @@
                     {
                       "type": "frame",
                       "id": "HjwQR",
-                      "name": "chart2",
+                      "name": "Kendo Chart/Pie — Cost Breakdown",
                       "clip": true,
                       "width": "fill_container",
                       "height": "fill_container",
@@ -9890,7 +9890,7 @@
                 {
                   "type": "frame",
                   "id": "8w8v1",
-                  "name": "uTable",
+                  "name": "Kendo Grid — Users",
                   "clip": true,
                   "width": "fill_container",
                   "height": "fill_container",
@@ -18497,6 +18497,181 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "type": "frame",
+                  "id": "X5gTa",
+                  "name": "col2",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "stroke": {
+                    "thickness": {
+                      "right": 1
+                    },
+                    "fill": "$border-subtle"
+                  },
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Nv4uw",
+                      "name": "ev3",
+                      "width": "fill_container",
+                      "height": 44,
+                      "fill": "$status-success",
+                      "cornerRadius": "$radius-sm",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "2ebog",
+                          "name": "ev3t",
+                          "fill": "#FFFFFF",
+                          "content": "WO-0039 Corrective",
+                          "fontFamily": "Inter",
+                          "fontSize": 10,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ew0lY",
+                          "name": "ev3s",
+                          "fill": "#FFFFFFCC",
+                          "content": "Volvo A30G · 10:00",
+                          "fontFamily": "Inter",
+                          "fontSize": 9,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cAo3p",
+                  "name": "col3",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "stroke": {
+                    "thickness": {
+                      "right": 1
+                    },
+                    "fill": "$border-subtle"
+                  },
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "LS3Pb",
+                      "name": "ev4",
+                      "width": "fill_container",
+                      "height": 72,
+                      "fill": "$accent-primary",
+                      "cornerRadius": "$radius-sm",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "DbOT1",
+                          "name": "ev4t",
+                          "fill": "$surface-inverse",
+                          "content": "WO-0042 Preventive",
+                          "fontFamily": "Inter",
+                          "fontSize": 10,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Vyj38",
+                          "name": "ev4s",
+                          "fill": "#2D2D2DCC",
+                          "content": "CAT D6 Dozer · All day",
+                          "fontFamily": "Inter",
+                          "fontSize": 9,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Y6Lem",
+                  "name": "col4",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "stroke": {
+                    "thickness": {
+                      "right": 1
+                    },
+                    "fill": "$border-subtle"
+                  },
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "zS9BA",
+                      "name": "ev5",
+                      "width": "fill_container",
+                      "height": 44,
+                      "fill": "$status-info",
+                      "cornerRadius": "$radius-sm",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cpXPK",
+                          "name": "ev5t",
+                          "fill": "#FFFFFF",
+                          "content": "WO-0040 Preventive",
+                          "fontFamily": "Inter",
+                          "fontSize": 10,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "cQRAe",
+                          "name": "ev5s",
+                          "fill": "#FFFFFFCC",
+                          "content": "Deere 310L · 14:00",
+                          "fontFamily": "Inter",
+                          "fontSize": 9,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cks07",
+                  "name": "col5",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": 4
                 }
               ]
             }

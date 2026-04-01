@@ -111,7 +111,7 @@ Adopt an event-driven architecture for telemetry processing, service workflows, 
 - Azure Functions for telemetry ingestion should use consumption plan for cost efficiency, with Premium plan reserved for latency-sensitive functions.
 - Logic Apps service reminder schedule: notifications at T-7 days, T-3 days, and T-1 day before scheduled service date. Escalation triggers 48 hours after a service reminder is sent without acknowledgment.
 - SignalR hub should be implemented as an Azure SignalR Service (managed) to avoid self-hosting overhead.
-- Retry policy: exponential backoff starting at 1 second, maximum 5 retries, with jitter to prevent thundering herd. Messages exceeding max retries are routed to the dead letter queue.
+- Retry policy: exponential backoff starting at 1 second (1s, 4s, 16s), maximum 3 retries, with jitter to prevent thundering herd. Messages exceeding max retries are routed to the dead letter queue.
 - Dead letter queue messages should retain the original event payload, failure reason, retry count, and timestamps for diagnosis.
 
 ## References

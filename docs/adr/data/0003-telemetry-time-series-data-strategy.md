@@ -110,10 +110,11 @@ Use SQL Server table partitioning by month on the TelemetryEvents table, combine
   - Parameterized queries for time-range reads with `EquipmentId` and `Timestamp` filters
   - Aggregation queries (hourly/daily averages) for downsampled chart data
 - Dead letter queue: failed telemetry events are written to a `TelemetryDeadLetterQueue` table with error details for retry or manual investigation
-- Data retention policy (open question, proposed):
-  - Raw telemetry: retain for 1 year, then archive to cold storage or delete
-  - Aggregated telemetry (hourly/daily summaries): retain for 5 years for long-term trend analysis
-  - Retention enforcement via monthly partition switch-out to an archive table, followed by truncation or export to Azure Blob Storage
+- Data retention policy:
+  - Raw telemetry: retain for 90 days, enforced via nightly SQL Agent cleanup job
+  - Aggregated telemetry (hourly/daily summaries): retain for long-term trend analysis
+  - Retention enforcement via monthly partition switch-out and nightly cleanup jobs
+  - Same 90-day retention applies to AI predictions and notifications (cleaned by the same nightly job)
 - Query optimization: for the 90-day and custom range selectors, queries should include `OPTION (RECOMPILE)` or use parameterized plan guides to avoid parameter sniffing issues across vastly different date ranges
 
 ## References
