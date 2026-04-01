@@ -1,0 +1,25 @@
+@startuml c4_context
+!theme plain
+!include <C4/C4_Context>
+
+title Parts & Ordering - System Context
+
+Person(fleetMgr, "Fleet Manager", "Searches parts catalog,\nmanages cart, submits\npurchase orders")
+Person(technician, "Technician", "Searches parts by\nequipment compatibility,\nadds parts to cart")
+Person(operator, "Operator", "Browses parts catalog\n(read-only)")
+
+System(fleetHub, "Toromont Fleet Hub", "Equipment fleet management\nand parts ordering portal\n(.NET 8+ / Angular / SQL Server 2022)")
+
+System_Ext(entraId, "Microsoft Entra ID", "Identity provider\n(OAuth2/OIDC)")
+System_Ext(openAI, "Azure OpenAI Service", "Embedding model for\nnatural language\nparts search")
+System_Ext(emailSvc, "Email Service", "SendGrid / SMTP\norder confirmation\nemail delivery")
+
+Rel(fleetMgr, fleetHub, "Browses, searches,\norders parts", "HTTPS")
+Rel(technician, fleetHub, "Searches parts,\nadds to cart", "HTTPS")
+Rel(operator, fleetHub, "Browses catalog", "HTTPS")
+
+Rel(fleetHub, entraId, "Authenticates via", "OAuth2/OIDC")
+Rel(fleetHub, openAI, "Generates query\nembeddings", "HTTPS/JSON")
+Rel(fleetHub, emailSvc, "Sends order\nconfirmations", "SMTP/API")
+
+@enduml

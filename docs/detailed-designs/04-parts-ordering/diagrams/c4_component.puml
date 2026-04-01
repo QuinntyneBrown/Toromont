@@ -1,0 +1,39 @@
+@startuml c4_component
+!theme plain
+!include <C4/C4_Component>
+
+title Parts & Ordering - Component Diagram
+
+Container_Boundary(api, "Fleet Hub API") {
+    Component(partsCtrl, "PartsCatalog Controller", "API Controller", "Paginated catalog,\nfilters, part detail,\nAI search endpoint")
+    Component(cartCtrl, "Cart Controller", "API Controller", "Add/update/remove\ncart items, view cart")
+    Component(ordersCtrl, "PartsOrders Controller", "API Controller", "Submit order, order\nhistory, order detail")
+    Component(searchSvc, "NaturalLanguageSearch\nService", "C#, Azure OpenAI", "Embedding generation,\nfull-text search,\ncosine re-ranking")
+    Component(partsHandler, "Parts Query Handlers", "MediatR", "GetPartsCatalog,\nGetPartDetail,\nSearchParts")
+    Component(cartHandler, "Cart Command Handlers", "MediatR", "AddToCart,\nUpdateQuantity,\nRemoveItem")
+    Component(orderHandler, "Order Command Handlers", "MediatR", "SubmitOrder\n(cart-to-order conversion,\norder number generation)")
+    Component(partsRepo, "Parts Repository", "EF Core", "Part queries with\ncompatibility joins")
+    Component(cartRepo, "Cart Repository", "EF Core", "Per-user cart CRUD")
+    Component(orderRepo, "Order Repository", "EF Core", "Order + line item\npersistence")
+}
+
+ContainerDb_Ext(db, "SQL Database", "Parts, CartItems,\nPartsOrders,\nOrderLineItems")
+Container_Ext(openAI, "Azure OpenAI", "Embedding model")
+Container_Ext(notif, "Notification Service", "SignalR + Email")
+
+Rel(partsCtrl, partsHandler, "Commands/Queries")
+Rel(partsCtrl, searchSvc, "AI search requests")
+Rel(cartCtrl, cartHandler, "Commands/Queries")
+Rel(ordersCtrl, orderHandler, "Commands/Queries")
+Rel(searchSvc, openAI, "Generate embeddings")
+Rel(searchSvc, partsRepo, "Full-text search\n+ re-rank")
+Rel(partsHandler, partsRepo, "Reads")
+Rel(cartHandler, cartRepo, "Reads/Writes")
+Rel(orderHandler, orderRepo, "Creates order")
+Rel(orderHandler, cartRepo, "Clears cart")
+Rel(orderHandler, notif, "Dispatch order\nconfirmation")
+Rel(partsRepo, db, "SQL queries")
+Rel(cartRepo, db, "SQL queries")
+Rel(orderRepo, db, "SQL queries")
+
+@enduml

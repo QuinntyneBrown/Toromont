@@ -1,0 +1,32 @@
+@startuml c4_container
+!theme plain
+!include <C4/C4_Container>
+
+title Parts & Ordering - Container Diagram
+
+Person(user, "User", "Fleet Manager, Technician,\nor Operator")
+
+System_Ext(entraId, "Microsoft Entra ID", "OAuth2/OIDC Provider")
+System_Ext(openAI, "Azure OpenAI", "Embedding model for\nAI-powered search")
+
+System_Boundary(sb, "Toromont Fleet Hub") {
+    Container(spa, "Angular SPA", "Angular, Kendo UI,\nBootstrap 5", "Parts catalog (Kendo Grid),\nfilter sidebar, AI search bar,\ncart with quantity adjusters")
+    Container(apiGw, "API Management", "Azure APIM", "Gateway, rate limiting,\nAPI versioning")
+    Container(api, "Fleet Hub API", "ASP.NET Core 8,\nC#, MediatR", "Parts catalog, cart,\norder management,\nAI search endpoints")
+    Container(signalr, "SignalR Service", "Azure SignalR", "Real-time order\nstatus notifications")
+    ContainerDb(db, "Fleet Database", "Azure SQL\nServer 2022", "Parts, CartItems,\nPartsOrders, OrderLineItems\n(full-text indexed)")
+    Container(insights, "App Insights", "Azure Monitor", "Structured logging,\nperformance tracing")
+}
+
+Rel(user, spa, "Browses parts, manages\ncart, submits orders", "HTTPS")
+Rel(spa, apiGw, "API calls", "HTTPS/JSON")
+Rel(spa, signalr, "WebSocket", "SignalR")
+Rel(apiGw, api, "Routes to", "HTTPS")
+Rel(api, db, "Reads/Writes", "EF Core / Dapper")
+Rel(api, openAI, "Generates embeddings\nfor search queries", "HTTPS/JSON")
+Rel(api, signalr, "Pushes order\nstatus updates", "SignalR")
+Rel(spa, entraId, "Auth redirect", "OAuth2/PKCE")
+Rel(api, entraId, "Validates tokens", "JWKS")
+Rel_L(api, insights, "Logs", "Serilog")
+
+@enduml

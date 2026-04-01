@@ -1,0 +1,43 @@
+@startuml c4_component
+!theme plain
+!include <C4/C4_Component>
+
+title Telemetry & Monitoring - Component Diagram
+
+Container_Boundary(func_boundary, "Azure Functions") {
+    Component(ingestionFunc, "TelemetryIngestionFunction", "Azure Function, .NET 8+", "HTTP trigger, validates events,\nbulk inserts via Dapper,\n3-retry exponential backoff")
+}
+
+Container_Boundary(api, "Fleet Hub API") {
+    Component(telemetryCtrl, "TelemetryController", "API Controller, .NET 8+", "Time-series queries by\nequipment and date range\n(Dapper)")
+    Component(alertsCtrl, "AlertsController", "API Controller, .NET 8+", "Active alerts, acknowledge,\nresolve endpoints")
+    Component(alertEval, "AlertEvaluatorService", "Application Service, C#", "Compares readings against\nthresholds, generates alerts")
+    Component(telemetryRepo, "TelemetryRepository", "Data Access, Dapper", "Optimized time-series\nqueries with date partitioning")
+    Component(alertRepo, "AlertRepository", "Data Access, EF Core", "CRUD for alerts and\nthreshold configurations")
+    Component(notifPipeline, "NotificationPipeline", "Application Service, C#", "Routes alert notifications\nvia SignalR and email")
+}
+
+Container_Boundary(angular, "Angular SPA") {
+    Component(telemetryDash, "TelemetryDashboardComponent", "Angular, Kendo UI", "Equipment selector, time range,\n4 chart panels, 60s auto-refresh")
+    Component(chartPanels, "Chart Panels", "Kendo UI Charts", "Line (engine hours, temp),\nBar (fuel), Map (GPS trail)")
+    Component(alertPanel, "AlertPanelComponent", "Angular, Kendo UI Grid", "Real-time alert list\nwith severity indicators")
+}
+
+ContainerDb_Ext(db, "SQL Server 2022", "TelemetryEvents, Alerts")
+Container_Ext(signalr, "SignalR Hub", "Real-time push")
+
+Rel(ingestionFunc, alertEval, "Triggers evaluation\nafter insert")
+Rel(ingestionFunc, db, "Bulk inserts events", "Dapper")
+Rel(telemetryCtrl, telemetryRepo, "Queries time-series data")
+Rel(alertsCtrl, alertRepo, "CRUD alerts")
+Rel(alertEval, alertRepo, "Creates alert records")
+Rel(alertEval, notifPipeline, "Triggers notifications")
+Rel(notifPipeline, signalr, "Pushes real-time alerts")
+Rel(telemetryRepo, db, "Reads", "Dapper")
+Rel(alertRepo, db, "Reads/Writes", "EF Core")
+Rel(telemetryDash, telemetryCtrl, "Fetches telemetry data", "HTTPS/JSON")
+Rel(telemetryDash, chartPanels, "Renders data in charts")
+Rel(alertPanel, alertsCtrl, "Fetches active alerts", "HTTPS/JSON")
+Rel(alertPanel, signalr, "Receives live updates", "WebSocket")
+
+@enduml

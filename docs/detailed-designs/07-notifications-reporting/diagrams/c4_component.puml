@@ -1,0 +1,27 @@
+@startuml c4_component
+!theme plain
+!include <C4/C4_Component>
+
+title Notifications & Reporting - Component Diagram
+
+Container_Boundary(api, "Fleet Hub API (.NET 8+)") {
+    Component(notifCtrl, "NotificationsController", ".NET 8+", "Notification CRUD,\npreferences, unread count")
+    Component(reportCtrl, "ReportsController", ".NET 8+", "Report generation,\nexport endpoints")
+    Component(notifHub, "NotificationHub", "SignalR", "Real-time push\nto connected clients")
+    Component(dispatchSvc, "NotificationDispatchService", "C#", "Multi-channel routing\n(in-app, email, SMS)")
+    Component(reportSvc, "ReportGenerationService", "C#, Dapper", "Fleet utilization,\nmaintenance cost queries")
+    Component(exportSvc, "ExportService", "QuestPDF, ClosedXML, CsvHelper", "PDF, Excel, CSV generation")
+}
+
+ContainerDb(db, "SQL Server 2022", "SQL Server", "Notifications, Preferences")
+Container_Ext(logicApps, "Azure Logic Apps", "Email/SMS dispatch")
+
+Rel(notifCtrl, dispatchSvc, "Dispatches")
+Rel(dispatchSvc, notifHub, "Pushes real-time")
+Rel(dispatchSvc, logicApps, "Email/SMS")
+Rel(reportCtrl, reportSvc, "Generates")
+Rel(reportSvc, db, "Queries", "Dapper")
+Rel(reportCtrl, exportSvc, "Exports")
+Rel(notifCtrl, db, "CRUD", "EF Core")
+
+@enduml

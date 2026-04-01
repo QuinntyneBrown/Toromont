@@ -1,0 +1,43 @@
+@startuml sequence_notification
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Real-Time Notification Delivery
+
+actor "Fleet Manager" as User
+participant "Angular SPA\n(Kendo UI)" as FE
+participant "NotificationsController\n(.NET 8+)" as API
+participant "NotificationDispatch\nService" as Dispatch
+participant "NotificationHub\n(SignalR)" as Hub
+participant "Azure Logic Apps" as LA
+database "SQL Server 2022" as DB
+
+== Notification Trigger (e.g., Critical Alert) ==
+Dispatch -> DB: Store Notification record
+Dispatch -> Hub: Push to user group
+Hub -> FE: ReceiveNotification event
+FE -> FE: Update bell badge count
+FE --> User: Toast + badge update
+
+== Email/SMS (if preference enabled) ==
+Dispatch -> DB: Check NotificationPreference
+Dispatch -> LA: Trigger email/SMS workflow
+LA -> LA: Send email/SMS
+
+== User Views Notifications ==
+User -> FE: Click notification bell
+FE -> API: GET /api/v1/notifications
+API -> DB: Query by UserId, ordered
+DB --> API: Notification list
+API --> FE: Paginated notifications
+FE --> User: Dropdown with notifications
+
+== Mark as Read ==
+User -> FE: Click notification
+FE -> API: PUT /api/v1/notifications/{id}/read
+API -> DB: Update IsRead = true
+FE -> API: GET /api/v1/notifications/unread-count
+API --> FE: Updated count
+FE --> User: Navigate to entity
+
+@enduml

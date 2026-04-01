@@ -1,0 +1,24 @@
+@startuml c4_context
+!theme plain
+!include <C4/C4_Context>
+
+title AI Insights - System Context
+
+Person(fleetMgr, "Fleet Manager", "Reviews AI predictions,\nacts on maintenance\nrecommendations")
+Person(admin, "Admin", "Configures anomaly\ndetection thresholds")
+Person(technician, "Technician", "Views predictions for\nassigned equipment")
+
+System(fleetHub, "Toromont Fleet Hub", "Equipment Fleet Management\n& Service Portal\n(.NET 8+ / Angular / SQL Server 2022)")
+
+System_Ext(azureOpenAI, "Azure OpenAI Service", "LLM for failure pattern\nanalysis and natural\nlanguage search")
+System_Ext(entraId, "Microsoft Entra ID", "Identity provider\n(OAuth2/OIDC)")
+System_Ext(emailSvc, "Email Service", "SendGrid / SMTP\nprediction alert delivery")
+
+Rel(fleetMgr, fleetHub, "Reviews predictions,\nacts on recommendations", "HTTPS")
+Rel(admin, fleetHub, "Configures detection\nthresholds", "HTTPS")
+Rel(technician, fleetHub, "Views equipment\npredictions", "HTTPS")
+Rel(fleetHub, azureOpenAI, "Analyzes failure\npatterns, embeddings", "HTTPS/JSON")
+Rel(fleetHub, entraId, "Authenticates via", "OAuth2/OIDC")
+Rel(fleetHub, emailSvc, "Sends high-priority\nprediction alerts", "SMTP/API")
+
+@enduml

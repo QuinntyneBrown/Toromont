@@ -1,0 +1,22 @@
+@startuml c4_context
+!theme plain
+!include <C4/C4_Context>
+
+title Notifications & Reporting - System Context
+
+Person(fleetMgr, "Fleet Manager", "Receives alerts, generates reports")
+Person(tech, "Technician", "Receives work order notifications")
+
+System(fleetHub, "Toromont Fleet Hub", ".NET 8+ / Angular / SQL Server 2022")
+
+System_Ext(entraId, "Microsoft Entra ID", "Identity provider")
+System_Ext(email, "Email Service", "SMTP via Azure Logic Apps")
+System_Ext(sms, "SMS Provider", "SMS via Azure Logic Apps")
+
+Rel(fleetMgr, fleetHub, "Views reports,\nmanages notifications", "HTTPS")
+Rel(tech, fleetHub, "Receives notifications", "HTTPS/SignalR")
+Rel(fleetHub, entraId, "Authenticates", "OAuth2/OIDC")
+Rel(fleetHub, email, "Sends emails", "Logic Apps")
+Rel(fleetHub, sms, "Sends SMS", "Logic Apps")
+
+@enduml

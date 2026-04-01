@@ -1,0 +1,43 @@
+@startuml sequence_prediction
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Predictive Maintenance Pipeline
+
+participant "Timer Trigger\n(2 AM UTC)" as Timer
+participant "PredictiveMaintenance\nFunction" as PMF
+database "SQL Server 2022" as DB
+participant "Azure OpenAI\nService" as AI
+participant "NotificationPipeline" as Notif
+participant "SignalR Hub" as SR
+
+Timer -> PMF: Daily trigger (2 AM UTC)
+
+PMF -> DB: Query equipment with\n>=30 days telemetry data
+DB --> PMF: Equipment list
+
+loop For each equipment
+    PMF -> DB: SELECT telemetry events\n(last 30+ days)\naggregated by metric
+    DB --> PMF: Telemetry aggregates\n(engine hours, temp, fuel)
+
+    PMF -> DB: SELECT service history\n(work orders, parts replaced)
+    DB --> PMF: Historical service records
+
+    PMF -> AI: Analyze failure patterns\n{telemetry, service history,\nequipment model}
+    AI --> PMF: Predictions per component\n{component, probability,\ntimeframe, action}
+
+    PMF -> DB: UPSERT AIPrediction records\n(confidence, priority,\nrecommended action)
+end
+
+PMF -> DB: SELECT new high-priority\npredictions (confidence >= 0.8)
+DB --> PMF: High-priority predictions
+
+alt High-priority predictions exist
+    PMF -> Notif: TriggerHighPriorityAlert\n(predictions list)
+    Notif -> SR: Push to Fleet Managers\n(real-time notification)
+    Notif -> Notif: Queue email via\nLogic Apps
+end
+
+PMF -> PMF: Log run summary\nvia Serilog to\nApp Insights
+
+@enduml

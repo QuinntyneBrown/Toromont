@@ -1,0 +1,39 @@
+@startuml c4_container
+!theme plain
+!include <C4/C4_Container>
+
+title Telemetry & Monitoring - Container Diagram
+
+Person(user, "User", "Fleet Manager, Technician,\nor Operator")
+
+System_Ext(catLink, "CAT Product Link", "Equipment Telemetry Source")
+System_Ext(emailSvc, "Email Service", "Alert email delivery")
+
+System_Boundary(sb, "Toromont Fleet Hub") {
+    Container(spa, "Angular SPA", "Angular, Kendo UI,\nBootstrap 5", "Telemetry dashboard with\nLine, Bar charts, GPS map,\n60s auto-refresh")
+    Container(apiGw, "API Management", "Azure APIM", "Gateway, rate limiting,\nAPI key validation")
+    Container(api, "Fleet Hub API", "ASP.NET Core 8,\nC#, MediatR", "RESTful API for telemetry\nqueries and alert management")
+    Container(func, "Telemetry Ingestion\nFunction", "Azure Functions,\n.NET 8+, C#", "HTTP trigger, 100+ events/sec,\nDapper bulk inserts,\n3-retry exponential backoff")
+    Container(signalr, "SignalR Hub", "Azure SignalR", "Real-time alert push\nto connected clients")
+    Container(logic, "Logic Apps", "Azure Logic Apps", "Email dispatch for\ncritical alerts")
+    ContainerDb(db, "Fleet Database", "SQL Server 2022", "TelemetryEvents, Alerts,\nAlertThresholds,\nEquipment")
+    Container(insights, "App Insights", "Azure Application\nInsights", "Telemetry pipeline\nmonitoring, Serilog")
+    ContainerDb(dlq, "Dead Letter Queue", "SQL Server 2022\n(table)", "Failed events after\n3 retries")
+}
+
+Rel(user, spa, "Views telemetry\ndashboards", "HTTPS")
+Rel(spa, apiGw, "Queries telemetry\nand alerts", "HTTPS/JSON")
+Rel(spa, signalr, "Receives real-time\nalert updates", "WebSocket")
+Rel(apiGw, api, "Routes to", "HTTPS")
+Rel(api, db, "Reads telemetry\nand alerts", "Dapper / EF Core")
+Rel(api, signalr, "Pushes alert\nnotifications", "SignalR")
+Rel(catLink, func, "Sends telemetry\nevents", "HTTPS/JSON")
+Rel(func, db, "Bulk inserts\nevents", "Dapper")
+Rel(func, api, "Triggers alert\nevaluation", "HTTP")
+Rel(func, dlq, "Stores failed\nevents", "Dapper")
+Rel(api, logic, "Triggers email\nfor critical alerts", "HTTP")
+Rel(logic, emailSvc, "Sends alert\nemails", "SMTP/API")
+Rel_L(func, insights, "Logs", "Serilog")
+Rel_L(api, insights, "Logs", "Serilog")
+
+@enduml

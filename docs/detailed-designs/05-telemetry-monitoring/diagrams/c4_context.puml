@@ -1,0 +1,24 @@
+@startuml c4_context
+!theme plain
+!include <C4/C4_Context>
+
+title Telemetry & Monitoring - System Context
+
+Person(fleetMgr, "Fleet Manager", "Monitors equipment health,\nmanages alert thresholds,\nacknowledges/resolves alerts")
+Person(operator, "Operator", "Views real-time equipment\ntelemetry dashboards\n(read-only)")
+Person(technician, "Technician", "Views telemetry to\ndiagnose equipment issues")
+
+System(fleetHub, "Toromont Fleet Hub", "Equipment Fleet Management\n& Service Portal\n(.NET 8+ / Angular / SQL Server 2022)")
+
+System_Ext(catLink, "CAT Product Link", "Equipment telemetry\ndata source\n(engine hours, fuel, temp, GPS)")
+System_Ext(entraId, "Microsoft Entra ID", "Identity provider\n(OAuth2/OIDC)")
+System_Ext(emailSvc, "Email Service", "SendGrid / SMTP\nalert email delivery")
+
+Rel(fleetMgr, fleetHub, "Views dashboards,\nmanages alerts", "HTTPS")
+Rel(operator, fleetHub, "Views telemetry\ndashboards", "HTTPS")
+Rel(technician, fleetHub, "Views equipment\ntelemetry", "HTTPS")
+Rel(catLink, fleetHub, "Sends telemetry\nevents (100+/sec)", "HTTPS/JSON")
+Rel(fleetHub, entraId, "Authenticates via", "OAuth2/OIDC")
+Rel(fleetHub, emailSvc, "Sends alert\nnotifications", "SMTP/API")
+
+@enduml

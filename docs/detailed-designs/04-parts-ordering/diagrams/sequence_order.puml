@@ -1,0 +1,53 @@
+@startuml sequence_order
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Parts Order Submission
+
+actor "Fleet Manager" as User
+participant "Angular SPA\n(Kendo UI)" as FE
+participant "CartController\n(.NET 8+)" as Cart
+participant "PartsOrdersController\n(.NET 8+)" as Orders
+participant "OrderHandler\n(MediatR)" as Handler
+participant "NotificationService\n(SignalR + Email)" as Notif
+database "SQL Server 2022" as DB
+
+== Add Items to Cart ==
+
+User -> FE: Search & select part
+FE -> Cart: POST /api/v1/cart/items\n{partId, quantity}
+Cart -> DB: Validate part exists\n& availability != OutOfStock
+Cart -> DB: INSERT CartItem
+Cart --> FE: 201 Created (CartItem)
+FE --> User: Cart badge updated
+
+User -> FE: Adjust quantity
+FE -> Cart: PUT /api/v1/cart/items/{id}\n{quantity: 3}
+Cart -> DB: UPDATE CartItem quantity
+Cart --> FE: 200 OK
+
+== Review Cart ==
+
+User -> FE: Open cart
+FE -> Cart: GET /api/v1/cart
+Cart -> DB: SELECT CartItems\nJOIN Parts (for prices)
+Cart --> FE: Cart items + subtotal
+FE --> User: Display cart with\nquantity adjusters
+
+== Submit Order ==
+
+User -> FE: Click "Submit Order"
+FE -> Orders: POST /api/v1/parts/orders
+Orders -> Handler: SubmitOrderCommand
+Handler -> DB: BEGIN TRANSACTION
+Handler -> DB: SELECT CartItems\nfor current user
+Handler -> DB: INSERT PartsOrder\n(generate PO-YYYYMMDD-NNN)
+Handler -> DB: INSERT OrderLineItems\n(snapshot price, calc totals)
+Handler -> DB: DELETE CartItems\nfor current user
+Handler -> DB: COMMIT TRANSACTION
+Handler -> Notif: Dispatch order confirmation\n(email + in-app)
+Handler --> Orders: OrderResult
+Orders --> FE: 201 Created\n{orderNumber, lineItems, subtotal}
+FE --> User: Order confirmation\nwith order number
+
+@enduml

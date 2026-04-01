@@ -1,0 +1,47 @@
+@startuml c4_component
+!theme plain
+!include <C4/C4_Component>
+
+title AI Insights - Component Diagram
+
+Container_Boundary(func_boundary, "Azure Functions") {
+    Component(predFunc, "PredictiveMaintenanceFunction", "Azure Function, .NET 8+", "Timer trigger (2 AM UTC daily),\naggregates telemetry + service\nhistory, runs failure model,\ngenerates AIPrediction records")
+}
+
+Container_Boundary(api, "Fleet Hub API") {
+    Component(aiCtrl, "AIInsightsController", "API Controller, .NET 8+", "Predictions, anomalies,\ndashboard stats endpoints")
+    Component(anomalyService, "AnomalyDetectionService", "Application Service, C#", "Real-time per-event analysis:\ntemp >2sigma, fuel >30%,\nirregular patterns")
+    Component(nlSearchService, "NaturalLanguageSearchService", "Application Service, C#", "Azure OpenAI embeddings\nfor semantic search\nacross predictions")
+    Component(predRepo, "PredictionRepository", "Data Access, EF Core", "CRUD for AIPrediction\nrecords")
+    Component(anomalyRepo, "AnomalyRepository", "Data Access, EF Core", "CRUD for AnomalyDetection\nrecords")
+    Component(notifPipeline, "NotificationPipeline", "Application Service, C#", "Routes high-priority\nprediction alerts via\nSignalR and email")
+}
+
+Container_Boundary(angular, "Angular SPA") {
+    Component(aiDashboard, "AIInsightsDashboardComponent", "Angular, Kendo UI", "4 KPI cards, predictions\nKendo Grid, anomaly alerts,\nconfidence bars")
+    Component(predGrid, "PredictionsGridComponent", "Kendo UI Grid", "Sortable predictions with\nconfidence, priority,\nrecommended actions")
+    Component(anomalyAlerts, "AnomalyAlertsComponent", "Angular, Kendo UI", "Real-time anomaly alert\nlist with deviation details")
+}
+
+ContainerDb_Ext(db, "SQL Server 2022", "AIPredictions,\nAnomalyDetections")
+Container_Ext(azureOpenAI, "Azure OpenAI Service", "LLM & Embeddings")
+Container_Ext(signalr, "SignalR Hub", "Real-time push")
+
+Rel(predFunc, db, "Reads telemetry/history,\nwrites predictions", "Dapper / EF Core")
+Rel(predFunc, azureOpenAI, "Analyzes failure\npatterns", "HTTPS")
+Rel(predFunc, notifPipeline, "Triggers high-priority\nalerts")
+Rel(aiCtrl, predRepo, "Queries predictions")
+Rel(aiCtrl, anomalyRepo, "Queries anomalies")
+Rel(aiCtrl, nlSearchService, "Semantic search")
+Rel(anomalyService, anomalyRepo, "Creates anomaly records")
+Rel(anomalyService, notifPipeline, "Triggers anomaly alerts")
+Rel(nlSearchService, azureOpenAI, "Generates embeddings", "HTTPS")
+Rel(notifPipeline, signalr, "Pushes real-time alerts")
+Rel(predRepo, db, "Reads/Writes", "EF Core")
+Rel(anomalyRepo, db, "Reads/Writes", "EF Core")
+Rel(aiDashboard, aiCtrl, "Fetches predictions\nand stats", "HTTPS/JSON")
+Rel(aiDashboard, predGrid, "Renders prediction data")
+Rel(aiDashboard, anomalyAlerts, "Renders anomaly data")
+Rel(anomalyAlerts, signalr, "Receives live updates", "WebSocket")
+
+@enduml

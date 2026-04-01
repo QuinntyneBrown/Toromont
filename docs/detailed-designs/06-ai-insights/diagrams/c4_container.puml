@@ -1,0 +1,37 @@
+@startuml c4_container
+!theme plain
+!include <C4/C4_Container>
+
+title AI Insights - Container Diagram
+
+Person(user, "User", "Fleet Manager, Admin,\nor Technician")
+
+System_Ext(azureOpenAI, "Azure OpenAI Service", "LLM & Embeddings")
+System_Ext(emailSvc, "Email Service", "Alert email delivery")
+
+System_Boundary(sb, "Toromont Fleet Hub") {
+    Container(spa, "Angular SPA", "Angular, Kendo UI,\nBootstrap 5", "AI Insights dashboard with\nKPI cards, predictions grid,\nanomaly alerts, confidence bars")
+    Container(apiGw, "API Management", "Azure APIM", "Gateway, rate limiting,\nAPI versioning")
+    Container(api, "Fleet Hub API", "ASP.NET Core 8,\nC#, MediatR", "RESTful API for predictions,\nanomalies, dashboard stats,\nnatural language search")
+    Container(predFunc, "PredictiveMaintenance\nFunction", "Azure Functions,\n.NET 8+, C#", "Daily timer trigger (2 AM UTC),\naggregates telemetry + service\nhistory, generates predictions")
+    Container(signalr, "SignalR Hub", "Azure SignalR", "Real-time push for\nhigh-priority predictions")
+    Container(logic, "Logic Apps", "Azure Logic Apps", "Email dispatch for\nhigh-priority predictions")
+    ContainerDb(db, "Fleet Database", "SQL Server 2022", "AIPredictions,\nAnomalyDetections,\nTelemetryEvents,\nWorkOrders")
+    Container(insights, "App Insights", "Azure Application\nInsights", "AI pipeline monitoring,\nSerilog structured logging")
+}
+
+Rel(user, spa, "Views AI insights\ndashboard", "HTTPS")
+Rel(spa, apiGw, "Queries predictions\nand anomalies", "HTTPS/JSON")
+Rel(spa, signalr, "Receives real-time\nprediction alerts", "WebSocket")
+Rel(apiGw, api, "Routes to", "HTTPS")
+Rel(api, db, "Reads predictions\nand anomalies", "EF Core / Dapper")
+Rel(api, azureOpenAI, "Natural language\nsearch embeddings", "HTTPS/JSON")
+Rel(api, signalr, "Pushes high-priority\npredictions", "SignalR")
+Rel(predFunc, db, "Reads telemetry +\nservice history,\nwrites predictions", "Dapper / EF Core")
+Rel(predFunc, azureOpenAI, "Analyzes failure\npatterns", "HTTPS/JSON")
+Rel(api, logic, "Triggers email for\nhigh-priority predictions", "HTTP")
+Rel(logic, emailSvc, "Sends prediction\nalert emails", "SMTP/API")
+Rel_L(predFunc, insights, "Logs", "Serilog")
+Rel_L(api, insights, "Logs", "Serilog")
+
+@enduml

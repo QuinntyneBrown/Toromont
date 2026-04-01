@@ -1,0 +1,37 @@
+@startuml c4_container
+!theme plain
+!include <C4/C4_Container>
+
+title Equipment Management - Container Diagram
+
+Person(fleetMgr, "Fleet Manager", "Manages equipment fleet")
+Person(operator, "Operator", "Views equipment (read-only)")
+
+System_Ext(entraId, "Microsoft Entra ID", "OAuth2/OIDC identity provider")
+System_Ext(legacyFeed, "Legacy XML Feed", "Equipment data exports")
+
+System_Boundary(sb, "Toromont Fleet Hub") {
+    Container(spa, "Angular SPA", "Angular, Kendo UI,\nBootstrap 5, TypeScript", "Responsive fleet management UI\nwith equipment grid, detail\ntabs, and import forms")
+    Container(apim, "API Management", "Azure API Management", "Gateway, rate limiting,\nAPI versioning")
+    Container(api, "Fleet Hub API", ".NET 8+, C#, MediatR", "RESTful API with CQRS\nfor equipment CRUD\nand XML import")
+    Container(func, "Azure Functions", ".NET 8+, C#", "Telemetry ingestion\nand alert processing")
+    Container(signalr, "SignalR Service", "Azure SignalR", "Real-time equipment\nstatus updates")
+    ContainerDb(db, "Fleet Database", "SQL Server 2022", "Equipment, organizations,\ntelemetry, work orders")
+    Container(insights, "App Insights", "Azure Application Insights", "Structured logging\nvia Serilog")
+}
+
+Rel(fleetMgr, spa, "Manages equipment", "HTTPS")
+Rel(operator, spa, "Views equipment", "HTTPS")
+Rel(spa, apim, "API calls", "JSON/HTTPS")
+Rel(spa, signalr, "Receives updates", "WebSocket/SignalR")
+Rel(spa, entraId, "Auth redirect", "OAuth2/PKCE")
+Rel(apim, api, "Routes requests", "HTTPS")
+Rel(api, db, "Reads/Writes", "EF Core / Dapper")
+Rel(api, entraId, "Validates JWT tokens", "JWKS")
+Rel(api, signalr, "Pushes status changes", "SignalR")
+Rel(func, db, "Writes telemetry", "Dapper")
+Rel(legacyFeed, api, "Sends XML data", "HTTPS/XML")
+Rel_L(api, insights, "Logs events", "Serilog")
+Rel_L(func, insights, "Logs events", "Serilog")
+
+@enduml

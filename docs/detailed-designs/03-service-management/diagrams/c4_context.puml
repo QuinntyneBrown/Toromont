@@ -1,0 +1,25 @@
+@startuml c4_context
+!theme plain
+!include <C4/C4_Context>
+
+title Service Management - System Context
+
+Person(fleetMgr, "Fleet Manager", "Creates work orders,\ncloses completed work,\nviews service calendar")
+Person(technician, "Technician", "Receives assignments,\nupdates work order status,\nlogs completion notes")
+Person(operator, "Operator", "Views work orders and\nservice calendar (read-only)")
+
+System(fleetHub, "Toromont Fleet Hub", "Equipment fleet management\nand service portal\n(.NET 8+ / Angular / SQL Server 2022)")
+
+System_Ext(entraId, "Microsoft Entra ID", "Identity provider\n(OAuth2/OIDC)")
+System_Ext(emailSvc, "Email Service", "SendGrid / SMTP\nemail delivery")
+System_Ext(smsSvc, "SMS Gateway", "Twilio / Azure\nSMS delivery")
+
+Rel(fleetMgr, fleetHub, "Creates/manages\nwork orders", "HTTPS")
+Rel(technician, fleetHub, "Updates WO status,\nlogs notes", "HTTPS")
+Rel(operator, fleetHub, "Views WOs and\ncalendar", "HTTPS")
+
+Rel(fleetHub, entraId, "Authenticates via", "OAuth2/OIDC")
+Rel(fleetHub, emailSvc, "Sends WO notifications\nand reminders", "SMTP/API")
+Rel(fleetHub, smsSvc, "Sends escalation\nalerts", "API")
+
+@enduml

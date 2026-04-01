@@ -1,0 +1,36 @@
+@startuml c4_container
+!theme plain
+!include <C4/C4_Container>
+
+title Service Management - Container Diagram
+
+Person(fleetMgr, "Fleet Manager", "Creates WOs, manages calendar,\ncloses completed work")
+Person(technician, "Technician", "Updates WO status,\nlogs completion notes")
+
+System_Ext(entraId, "Microsoft Entra ID", "OAuth2/OIDC Provider")
+
+System_Boundary(sb, "Toromont Fleet Hub") {
+    Container(spa, "Angular SPA", "Angular, Kendo UI,\nBootstrap 5", "Work order list (Kendo Grid),\nservice calendar (Kendo Scheduler),\nstatus tabs, drag-drop scheduling")
+    Container(apiGw, "API Management", "Azure APIM", "Gateway, rate limiting,\nAPI versioning")
+    Container(api, "Fleet Hub API", "ASP.NET Core 8,\nC#, MediatR", "Work order CRUD,\nstatus transitions,\ncalendar data endpoints")
+    Container(signalr, "SignalR Service", "Azure SignalR", "Real-time WO status\nupdate notifications")
+    Container(logic, "Logic Apps", "Azure Logic Apps", "Hourly escalation workflow,\ndaily service reminders")
+    ContainerDb(db, "Fleet Database", "Azure SQL\nServer 2022", "WorkOrders,\nWorkOrderHistory")
+    Container(insights, "App Insights", "Azure Monitor", "Structured logging,\nperformance tracing")
+}
+
+Rel(fleetMgr, spa, "Manages work orders\nand calendar", "HTTPS")
+Rel(technician, spa, "Updates WO status", "HTTPS")
+Rel(spa, apiGw, "API calls", "HTTPS/JSON")
+Rel(spa, signalr, "WebSocket", "SignalR")
+Rel(apiGw, api, "Routes to", "HTTPS")
+Rel(api, db, "Reads/Writes", "EF Core / Dapper")
+Rel(api, signalr, "Pushes WO status\nchange events", "SignalR")
+Rel(logic, db, "Reads overdue WOs\nand service schedules", "SQL")
+Rel(logic, api, "Escalates priority,\nsends reminders", "HTTP")
+Rel(spa, entraId, "Auth redirect", "OAuth2/PKCE")
+Rel(api, entraId, "Validates tokens", "JWKS")
+Rel_L(api, insights, "Logs", "Serilog")
+Rel_L(logic, insights, "Logs", "Serilog")
+
+@enduml

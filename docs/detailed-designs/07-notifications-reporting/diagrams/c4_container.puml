@@ -1,0 +1,26 @@
+@startuml c4_container
+!theme plain
+!include <C4/C4_Container>
+
+title Notifications & Reporting - Container Diagram
+
+Person(user, "Fleet Manager", "Views reports, receives notifications")
+
+System_Boundary(sb, "Toromont Fleet Hub") {
+    Container(spa, "Angular SPA", "Angular, Kendo UI, Bootstrap 5", "Notification bell, report charts,\nexport controls")
+    Container(api, "Fleet Hub API", ".NET 8+, C#, MediatR", "RESTful API + SignalR Hub")
+    Container(logicApps, "Azure Logic Apps", "Azure", "Email/SMS dispatch,\nservice reminders")
+    ContainerDb(db, "Fleet Database", "SQL Server 2022", "Notifications, preferences,\nreport data")
+}
+
+System_Ext(email, "Email Service", "SMTP")
+System_Ext(sms, "SMS Provider", "Twilio / Azure Comm Services")
+
+Rel(user, spa, "Uses", "HTTPS")
+Rel(spa, api, "REST + SignalR", "JSON/HTTPS/WSS")
+Rel(api, db, "Reads/Writes", "EF Core / Dapper")
+Rel(api, logicApps, "Triggers", "HTTP")
+Rel(logicApps, email, "Sends", "SMTP")
+Rel(logicApps, sms, "Sends", "API")
+
+@enduml
