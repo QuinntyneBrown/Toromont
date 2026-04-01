@@ -154,7 +154,8 @@ Per the UI design in `docs/ui-design.pen`, screen "05 - Work Orders" (frame 17hI
 - All API inputs validated with FluentValidation
 - Audit trail via `WorkOrderHistory` is append-only and immutable
 
-## 8. Open Questions
-1. Should WO numbers reset annually (WO-2026-001) or be globally sequential?
-2. Can a work order be reopened after being Closed, or is a new WO required?
-3. Should drag-drop rescheduling on the Kendo Scheduler trigger a notification to the assigned technician?
+## 8. Design Decisions (Resolved)
+
+1. **WO number format** — Globally sequential, never reset. Format: `WO-YYYYMMDD-NNN` where NNN increments per day. No annual reset logic to maintain — simpler code, zero ambiguity.
+2. **No reopen after Close** — Closed is terminal. If rework is needed, create a new work order referencing the original. This keeps the audit trail clean and avoids complex state machine edge cases.
+3. **Drag-drop rescheduling notifications** — Yes, trigger an in-app notification to the assigned technician (via existing SignalR NotificationHub). No email/SMS for rescheduling — only in-app to minimize notification fatigue and Logic Apps costs.

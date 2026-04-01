@@ -11,14 +11,15 @@ Toromont Fleet Hub requires robust asynchronous data handling for several real-t
 
 ## Decision
 
-Use RxJS observables and Angular services with BehaviorSubjects for reactive state management. No dedicated state management library (NgRx, Akita, or NGXS) will be introduced. RxJS, which is already a core Angular dependency, provides sufficient reactive primitives for the current application complexity. HttpClient with MsalInterceptor handles authenticated API communication with automatic token injection.
+Use a hybrid state management approach: NgRx Store for authentication and global user state (AuthStateService), and RxJS observables with BehaviorSubject-based Angular services for feature-level state management (equipment, work orders, telemetry, parts, etc.). HttpClient with MsalInterceptor handles authenticated API communication with automatic token injection. NgRx provides the enforced unidirectional data flow needed for security-critical auth state, while RxJS services keep feature-level state simple and lightweight.
 
 ## Options Considered
 
-### Option 1: RxJS with Service-based State (chosen)
+### Option 1: Hybrid NgRx + RxJS Services (chosen)
 
 - **Pros:**
   - RxJS is already included as a core Angular dependency; no additional library needed
+  - NgRx Store provides enforced unidirectional data flow for security-critical authentication state (current user, role, organization context)
   - BehaviorSubjects in services provide component-scoped or feature-scoped state with current-value semantics
   - Operators like `switchMap`, `debounceTime`, `combineLatest`, and `retry` handle complex async patterns elegantly
   - Sufficient for the current application complexity without introducing unnecessary abstraction layers
@@ -33,7 +34,7 @@ Use RxJS observables and Angular services with BehaviorSubjects for reactive sta
   - Lack of standardized patterns may lead to inconsistent state management across feature areas
   - Complex multi-source state derivations can become hard to trace without a centralized store
 
-### Option 2: NgRx Store
+### Option 2: NgRx Store for Everything
 
 - **Pros:**
   - Enforced unidirectional data flow with actions, reducers, and selectors

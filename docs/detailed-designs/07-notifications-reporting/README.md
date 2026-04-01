@@ -219,7 +219,8 @@ This sequence shows a Fleet Manager selecting report parameters in the Angular S
 - Export files generated server-side and served via time-limited signed URLs
 - RBAC roles: Fleet Managers can generate all reports; Technicians receive notifications but cannot generate reports
 
-## 8. Open Questions
-1. Should reports be cached for repeat access, or always generated fresh?
-2. What SMS provider to use — Twilio, Azure Communication Services, or both?
-3. Should there be a notification retention/cleanup policy (e.g., auto-delete after 90 days)?
+## 8. Design Decisions (Resolved)
+
+1. **No report caching** — Reports are always generated fresh. The Dapper queries target <3 second response time for 90 days / 100+ equipment, which is fast enough without caching. Avoids Redis/memory cache infrastructure costs and stale-data complexity.
+2. **Azure Communication Services for SMS** — Use ACS over Twilio. ACS integrates natively with Azure Logic Apps (no third-party connector), has pay-per-message pricing (~$0.0075/SMS), and is already within the Azure ecosystem — no additional vendor relationship or billing setup.
+3. **90-day notification retention** — Auto-delete notifications older than 90 days via the same nightly SQL Agent cleanup job used for telemetry and AI predictions. Consistent 90-day retention policy across the entire system minimizes storage growth.

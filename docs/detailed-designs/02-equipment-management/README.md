@@ -174,8 +174,8 @@ Per the UI design in `docs/ui-design.pen`, screen **"03 - Equipment List"** (fra
 - Rate limiting enforced by **Azure API Management**
 - Input validation via FluentValidation on all API endpoints
 
-## 8. Open Questions
+## 8. Design Decisions (Resolved)
 
-1. Should equipment decommission be a soft delete (status change) or hard delete with archival?
-2. What GPS coordinate precision is required — should we store raw device coordinates or geocoded addresses?
-3. Should the legacy XML import support scheduled/automated imports via **Azure Functions** or manual upload only?
+1. **Hard delete for decommissioned equipment** — Use hard delete with a confirmation dialog. No soft-delete/archival infrastructure. Related work orders and telemetry are cascade-deleted. If audit trail is later required, the existing Serilog structured logs capture the deletion event. This is the simplest and cheapest approach.
+2. **GPS precision** — Store raw device coordinates as `double` (standard SQL Server `float`). No geocoding service — display coordinates on the map directly using Leaflet/OpenStreetMap (free). Location name is a free-text field entered manually during registration.
+3. **Legacy XML import** — Manual upload only via the `POST /api/v1/equipment/import` endpoint. No scheduled Azure Functions import. This avoids additional Azure Functions compute costs and complexity. If automated import is needed later, a simple timer-triggered Function can be added.

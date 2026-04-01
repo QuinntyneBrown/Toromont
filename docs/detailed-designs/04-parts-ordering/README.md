@@ -199,8 +199,9 @@ Per the UI design in `docs/ui-design.pen`, screen "06 - Parts Catalog" (frame 9V
 - All API inputs validated with FluentValidation
 - AI search queries sanitized before passing to Azure OpenAI and SQL full-text search
 
-## 8. Open Questions
-1. Should parts catalog be global or per-organization (different pricing tiers)?
-2. What AI model to use -- Azure OpenAI ada-002 embeddings or a fine-tuned model?
-3. Should there be an order approval workflow for orders above a certain dollar threshold?
-4. Should cart items expire after a configurable period of inactivity?
+## 8. Design Decisions (Resolved)
+
+1. **Per-organization catalog pricing** — Parts catalog is global (shared inventory) but pricing is per-organization via an `OrganizationPricing` table (`OrganizationId`, `PartId`, `Price`). Falls back to the default `Part.Price` if no org-specific price exists. This supports tiered pricing without duplicating the catalog.
+2. **Azure OpenAI ada-002 embeddings** — Use `text-embedding-ada-002` for natural language parts search. It is the cheapest embedding model ($0.0001/1K tokens), sufficient for parts search queries. No fine-tuning — use the model out of the box with SQL full-text search as fallback.
+3. **No order approval workflow** — All authorized users (Fleet Manager+) can submit orders without approval gates. This reduces complexity and avoids building a multi-step approval engine. If needed later, a simple threshold check can be added.
+4. **No cart expiry** — Cart items persist indefinitely until the user removes them or submits an order. No background cleanup job needed — simplest approach. Stale carts have negligible storage cost.

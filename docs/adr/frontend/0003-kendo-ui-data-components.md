@@ -113,10 +113,38 @@ Use Telerik Kendo UI for Angular as the primary component library for data grids
   - KPI dashboard: gauge charts for uptime percentage, sparklines for trends
 - Apply Kendo theme customization via `@progress/kendo-theme-default` SCSS overrides to match Toromont branding
 
+## UI Design Mapping
+
+The Kendo UI components are designed in `docs/ui-design.pen` under the **"Kendo UI Components"** frame, which contains reusable component definitions for:
+
+| Kendo Component | .pen Reusable Node | Used In Screens |
+|---|---|---|
+| `kendo-grid` | Kendo/Grid | 03 - Equipment List, 05 - Work Orders, 06 - Parts Catalog, 08 - AI Insights, 10 - User Management |
+| `kendo-dropdownlist` | Kendo/DropDownList | 03 - Equipment List (Status, Category), 06 - Parts Catalog (Compatibility), 07 - Telemetry (Equipment selector), 09 - Reports (Equipment filter) |
+| `kendo-tabstrip` | Kendo/TabStrip | 05 - Work Orders (status tabs) |
+| `kendo-daterange` | Kendo/DateRangePicker | 09 - Reports (date range) |
+| `kendo-chart` (Line) | Kendo/Chart/Line | 07 - Telemetry (Engine Hours, Temperature) |
+| `kendo-chart` (Bar) | Kendo/Chart/Bar | 07 - Telemetry (Fuel), 09 - Reports (Utilization) |
+| `kendo-chart` (Pie) | Kendo/Chart/Pie | 09 - Reports (Cost Breakdown) |
+| `kendo-scheduler` | Kendo/Scheduler | 05 - Work Orders (calendar view) |
+
+## Detailed Design Cross-References
+
+This ADR is implemented across the following detailed designs:
+
+- [01 - Authentication](../../../docs/detailed-designs/01-authentication/README.md) — Kendo Grid for user management table
+- [02 - Equipment Management](../../../docs/detailed-designs/02-equipment-management/README.md) — Kendo Grid with server-side pagination, DropDownList filters
+- [03 - Service Management](../../../docs/detailed-designs/03-service-management/README.md) — Kendo Grid, TabStrip, **Kendo Scheduler** (day/week/month)
+- [04 - Parts & Ordering](../../../docs/detailed-designs/04-parts-ordering/README.md) — Kendo Grid for catalog, DropDownList filters
+- [05 - Telemetry & Monitoring](../../../docs/detailed-designs/05-telemetry-monitoring/README.md) — Kendo Charts (Line, Bar), DropDownList, ButtonGroup
+- [06 - AI Insights](../../../docs/detailed-designs/06-ai-insights/README.md) — Kendo Grid for predictions
+- [07 - Notifications & Reporting](../../../docs/detailed-designs/07-notifications-reporting/README.md) — Kendo Charts (Bar, Pie, Line), DateRangePicker, export controls
+
 ## References
 
 - L1-001: Fleet Dashboard requirement
 - L1-003: Work Order Management requirement
 - L1-005: Telemetry and Monitoring requirement
 - L1-009: Reports and Analytics requirement
+- UI Design: `docs/ui-design.pen` — Kendo UI Components frame
 - Kendo UI for Angular documentation: https://www.telerik.com/kendo-angular-ui

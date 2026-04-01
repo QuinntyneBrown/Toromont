@@ -165,8 +165,8 @@ Per the UI design in `docs/ui-design.pen`, screen **"01 - Login Page"** (frame `
 - **Information Leakage**: Cross-tenant access returns 404 not 403 (L2-018)
 - **Observability**: All authentication events logged via **Serilog** to **Azure Application Insights** for audit trail and anomaly detection
 
-## 8. Open Questions
+## 8. Design Decisions (Resolved)
 
-1. Should we support multiple organizations per user (e.g., consultants working across clients)?
-2. What is the invitation token expiry period — 7 days or 30 days?
-3. Should deactivated users have their tokens immediately revoked, or wait for natural expiry?
+1. **Multiple organizations per user** — Yes. Users (e.g., consultants) can belong to multiple organizations. Implement a `UserOrganization` join table. The JWT will include the active organization claim; users switch context via a tenant selector in the header. This avoids duplicate accounts.
+2. **Invitation expiry** — No expiry. Invitation links remain valid until used or manually revoked by an Admin. This eliminates re-invitation overhead and support tickets.
+3. **Token revocation for deactivated users** — Immediate revocation. When an Admin deactivates a user, add their `userId` to a short-lived in-memory blacklist (checked by `JwtBearerMiddleware`). Tokens are short-lived (30 min), so the blacklist auto-cleans. No external revocation service needed — cheapest approach.

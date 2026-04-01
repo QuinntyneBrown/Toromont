@@ -169,8 +169,8 @@ Per the UI design in `docs/ui-design.pen`, screen **"07 - Telemetry Dashboard"**
 - **Input Validation**: All telemetry payloads validated server-side with FluentValidation in the **.NET 8+** API
 - **Observability**: All telemetry pipeline events logged via **Serilog** to **Azure Application Insights** for monitoring and diagnostics
 
-## 8. Open Questions
+## 8. Design Decisions (Resolved)
 
-1. Should telemetry data have a retention policy (e.g., raw data for 1 year, aggregated data for 5 years)?
-2. Should the ingestion function use Azure Service Bus for buffering during traffic spikes?
-3. What GPS mapping provider should be used for the GPS trail panel (Azure Maps, Google Maps, or Leaflet/OpenStreetMap)?
+1. **90-day retention for raw telemetry** — Raw `TelemetryEvent` records are retained for 90 days. A nightly SQL Agent job deletes records older than 90 days (`DELETE FROM TelemetryEvents WHERE Timestamp < DATEADD(day, -90, GETUTCDATE())`). No aggregation tier — 90 days of raw data is sufficient for anomaly detection and charts. This keeps storage costs minimal.
+2. **No Service Bus buffering** — Direct HTTP ingestion to the Azure Function without Service Bus. The Function handles 100+ events/sec via Dapper bulk inserts with 3-retry exponential backoff. Dead-letter failed events to a simple database table. Service Bus adds ~$10/month and operational complexity for a throughput level the Function already handles.
+3. **Leaflet + OpenStreetMap** — Use Leaflet.js with OpenStreetMap tiles for the GPS trail map. Completely free, no API key required, no per-request billing. Sufficient for equipment location tracking.

@@ -201,10 +201,10 @@ Per the UI design in `docs/ui-design.pen`, screen **"08 - AI Insights"** (frame 
 - **Input Validation**: All inputs validated server-side with FluentValidation in the **.NET 8+** API
 - **Observability**: All AI pipeline events (predictions generated, anomalies detected, model calls) logged via **Serilog** to **Azure Application Insights**
 
-## 8. Open Questions
+## 8. Design Decisions (Resolved)
 
-1. Should the initial release use rule-based heuristics or invest in **Azure OpenAI Service** model training from day one?
-2. How to handle the cold-start problem — new equipment with <30 days telemetry data?
-3. What cost savings methodology to use for the "Estimated Cost Savings" KPI?
-4. Should anomaly detection thresholds be configurable per equipment model, or only globally?
-5. What is the retention policy for expired/dismissed predictions?
+1. **Rule-based heuristics for v1** — Use rule-based anomaly detection and predictive maintenance (threshold comparisons, rolling averages, standard deviation). No Azure OpenAI model training or inference costs for predictions. The `AnomalyDetectionService` uses simple statistical rules (>2 sigma temperature, >30% fuel spike). This avoids Azure OpenAI per-token costs entirely for the prediction pipeline. NL parts search (Feature 04) still uses ada-002.
+2. **Cold-start: use model-level defaults** — For equipment with <30 days of telemetry, fall back to global thresholds based on equipment model/category (e.g., "all CAT 320 excavators"). Store default thresholds in an `EquipmentModelThresholds` table seeded with manufacturer specs. No per-equipment predictions until 30 days of data.
+3. **Cost savings: simple historical average** — Estimated savings = (average unplanned repair cost for that component) × (number of predictions acted on). Use a static lookup table of average repair costs per component type. No ML-based estimation — just multiplication against known averages.
+4. **Global thresholds only** — Anomaly detection thresholds are configured globally, not per equipment model. One set of rules for temperature, fuel, and operating hours. Simplest to implement and maintain. Per-model tuning can be added later if needed.
+5. **90-day retention for predictions** — Dismissed and expired predictions are hard-deleted after 90 days via the same nightly SQL Agent cleanup job used for telemetry. Consistent retention policy across the system.

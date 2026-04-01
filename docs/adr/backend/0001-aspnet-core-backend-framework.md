@@ -11,11 +11,11 @@ Toromont Fleet Hub requires a high-performance, enterprise-grade web framework t
 
 ## Decision
 
-Use ASP.NET Core on .NET 11.0 as the backend framework for Toromont Fleet Hub.
+Use ASP.NET Core on .NET 8+ as the backend framework for Toromont Fleet Hub.
 
 ## Options Considered
 
-### Option 1: ASP.NET Core on .NET 11.0 (Chosen)
+### Option 1: ASP.NET Core on .NET 8+ (Chosen)
 - **Pros:** C# type safety reduces runtime errors across complex domain models; mature enterprise ecosystem with extensive NuGet package library; excellent Azure integration for deployment, monitoring, and managed services; built-in dependency injection container; first-class OpenAPI/Swagger support for API documentation; strong performance benchmarks for API workloads; long-term support and active development by Microsoft.
 - **Cons:** Smaller talent pool compared to Node.js; heavier runtime footprint than Go; steeper learning curve for developers unfamiliar with .NET.
 
@@ -46,11 +46,11 @@ Use ASP.NET Core on .NET 11.0 as the backend framework for Toromont Fleet Hub.
 - Tighter coupling to the Microsoft ecosystem may limit future cloud portability.
 
 ### Risks
-- .NET 11.0 is a Standard Term Support release; must plan for migration to the next LTS version.
+- .NET 8+ is a Long Term Support release; must plan upgrades as new LTS versions are released.
 - Over-reliance on Microsoft-specific patterns could make future platform migration costly.
 
 ## Implementation Notes
-- Target .NET 11.0 with the `net11.0` target framework moniker.
+- Target .NET 8+ with the `net8.0 or later` target framework moniker.
 - Use the `WebApplication.CreateBuilder` pattern for application bootstrapping.
 - Configure middleware pipeline for authentication, CORS, error handling, and request logging.
 - Leverage built-in `IServiceCollection` for dependency injection across all service layers.
@@ -59,4 +59,4 @@ Use ASP.NET Core on .NET 11.0 as the backend framework for Toromont Fleet Hub.
 ## References
 - [L1-011: API Gateway & Integration Design](../design/L1-011-api-gateway-integration.md)
 - [ASP.NET Core Documentation](https://learn.microsoft.com/en-us/aspnet/core/)
-- [.NET 11.0 Release Notes](https://learn.microsoft.com/en-us/dotnet/)
+- [.NET 8+ Release Notes](https://learn.microsoft.com/en-us/dotnet/)
