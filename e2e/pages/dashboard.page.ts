@@ -4,6 +4,7 @@ import { BasePage } from './base.page';
 export class DashboardPage extends BasePage {
   readonly pageTitle: Locator;
   readonly kpiCards: Locator;
+  readonly kpiRow: Locator;
   readonly kpiTotalEquipment: Locator;
   readonly kpiActiveEquipment: Locator;
   readonly kpiServiceRequired: Locator;
@@ -20,6 +21,7 @@ export class DashboardPage extends BasePage {
     super(page);
     this.pageTitle = page.locator('[data-testid="dashboard-title"]');
     this.kpiCards = page.locator('[data-testid="kpi-card"]');
+    this.kpiRow = page.locator('[data-testid="kpi-row"]');
     this.kpiTotalEquipment = page.locator('[data-testid="kpi-total-equipment"]');
     this.kpiActiveEquipment = page.locator('[data-testid="kpi-active-equipment"]');
     this.kpiServiceRequired = page.locator('[data-testid="kpi-service-required"]');

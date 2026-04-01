@@ -14,6 +14,7 @@ export class EquipmentListPage extends BasePage {
   readonly paginationInfo: Locator;
   readonly paginationButtons: Locator;
   readonly mobileCards: Locator;
+  readonly mobileStatusChips: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -29,6 +30,7 @@ export class EquipmentListPage extends BasePage {
     this.paginationInfo = page.locator('[data-testid="pagination-info"]');
     this.paginationButtons = page.locator('[data-testid="pagination-btn"]');
     this.mobileCards = page.locator('[data-testid="equipment-card"]');
+    this.mobileStatusChips = page.locator('[data-testid="status-chip"]');
   }
 
   async goto() {
@@ -76,5 +78,29 @@ export class EquipmentListPage extends BasePage {
 
   async goToPage(pageNum: number) {
     await this.page.locator(`[data-testid="pagination-page-${pageNum}"]`).click();
+  }
+
+  async selectMobileStatusChip(status: string) {
+    await this.page.locator(`[data-testid="status-chip-${status.toLowerCase()}"]`).click();
+  }
+
+  async getCardName(index: number): Promise<string> {
+    return (await this.mobileCards.nth(index).locator('[data-testid="card-name"]').textContent()) ?? '';
+  }
+
+  async getCardStatus(index: number): Promise<string> {
+    return (await this.mobileCards.nth(index).locator('[data-testid="card-status"]').textContent()) ?? '';
+  }
+
+  async getCardSerial(index: number): Promise<string> {
+    return (await this.mobileCards.nth(index).locator('[data-testid="card-serial"]').textContent()) ?? '';
+  }
+
+  async getCardHours(index: number): Promise<string> {
+    return (await this.mobileCards.nth(index).locator('[data-testid="card-hours"]').textContent()) ?? '';
+  }
+
+  async getCardLocation(index: number): Promise<string> {
+    return (await this.mobileCards.nth(index).locator('[data-testid="card-location"]').textContent()) ?? '';
   }
 }

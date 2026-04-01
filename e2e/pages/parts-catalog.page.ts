@@ -42,12 +42,24 @@ export class PartsCatalogPage extends BasePage {
     await this.addToCartButtons.nth(index).click();
   }
 
+  async getPartNumber(index: number): Promise<string> {
+    return (await this.partRows.nth(index).locator('[data-testid="part-number"]').textContent()) ?? '';
+  }
+
+  async getPartName(index: number): Promise<string> {
+    return (await this.partRows.nth(index).locator('[data-testid="part-name"]').textContent()) ?? '';
+  }
+
   async getPartAvailability(index: number): Promise<string> {
     return (await this.partRows.nth(index).locator('[data-testid="part-availability"]').textContent()) ?? '';
   }
 
   async getPartPrice(index: number): Promise<string> {
     return (await this.partRows.nth(index).locator('[data-testid="part-price"]').textContent()) ?? '';
+  }
+
+  async getPartCompatible(index: number): Promise<string> {
+    return (await this.partRows.nth(index).locator('[data-testid="part-compatible"]').textContent()) ?? '';
   }
 
   async isAddToCartEnabled(index: number): Promise<boolean> {

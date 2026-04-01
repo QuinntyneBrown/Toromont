@@ -7,6 +7,9 @@ export class BasePage {
   readonly notificationBell: Locator;
   readonly notificationBadge: Locator;
   readonly userAvatar: Locator;
+  readonly mobileNavOverlay: Locator;
+  readonly bottomNav: Locator;
+  readonly bottomNavItems: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -15,6 +18,9 @@ export class BasePage {
     this.notificationBell = page.locator('[data-testid="notification-bell"]');
     this.notificationBadge = page.locator('[data-testid="notification-badge"]');
     this.userAvatar = page.locator('[data-testid="user-avatar"]');
+    this.mobileNavOverlay = page.locator('[data-testid="mobile-nav-overlay"]');
+    this.bottomNav = page.locator('[data-testid="bottom-nav"]');
+    this.bottomNavItems = page.locator('[data-testid="bottom-nav-item"]');
   }
 
   async navigateTo(path: string) {
@@ -39,5 +45,9 @@ export class BasePage {
 
   async getHamburgerMenu(): Promise<Locator> {
     return this.page.locator('[data-testid="hamburger-menu"]');
+  }
+
+  async clickBottomNavItem(name: string) {
+    await this.page.locator(`[data-testid="bottom-nav-${name.toLowerCase()}"]`).click();
   }
 }

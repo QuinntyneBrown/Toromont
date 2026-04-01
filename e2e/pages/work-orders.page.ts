@@ -13,6 +13,7 @@ export class WorkOrdersPage extends BasePage {
   readonly tabClosed: Locator;
   readonly dataGrid: Locator;
   readonly gridRows: Locator;
+  readonly mobileCards: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -27,6 +28,7 @@ export class WorkOrdersPage extends BasePage {
     this.tabClosed = page.locator('[data-testid="tab-closed"]');
     this.dataGrid = page.locator('[data-testid="work-orders-grid"]');
     this.gridRows = page.locator('[data-testid="work-order-row"]');
+    this.mobileCards = page.locator('[data-testid="work-order-card"]');
   }
 
   async goto() {
@@ -45,12 +47,32 @@ export class WorkOrdersPage extends BasePage {
     return this.gridRows.count();
   }
 
+  async getRowNumber(index: number): Promise<string> {
+    return (await this.gridRows.nth(index).locator('[data-testid="wo-number"]').textContent()) ?? '';
+  }
+
+  async getRowEquipment(index: number): Promise<string> {
+    return (await this.gridRows.nth(index).locator('[data-testid="wo-equipment"]').textContent()) ?? '';
+  }
+
+  async getRowServiceType(index: number): Promise<string> {
+    return (await this.gridRows.nth(index).locator('[data-testid="wo-service-type"]').textContent()) ?? '';
+  }
+
   async getRowPriority(index: number): Promise<string> {
     return (await this.gridRows.nth(index).locator('[data-testid="wo-priority"]').textContent()) ?? '';
   }
 
   async getRowStatus(index: number): Promise<string> {
     return (await this.gridRows.nth(index).locator('[data-testid="wo-status"]').textContent()) ?? '';
+  }
+
+  async getRowAssignedTo(index: number): Promise<string> {
+    return (await this.gridRows.nth(index).locator('[data-testid="wo-assigned-to"]').textContent()) ?? '';
+  }
+
+  async getRowDueDate(index: number): Promise<string> {
+    return (await this.gridRows.nth(index).locator('[data-testid="wo-due-date"]').textContent()) ?? '';
   }
 
   async clickRow(index: number) {

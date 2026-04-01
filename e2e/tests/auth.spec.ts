@@ -20,9 +20,13 @@ test.describe('Authentication', () => {
 
     await expect(login.brandingPanel).toBeVisible();
     await expect(login.logoText).toContainText('FLEET HUB');
+    await expect(login.tagline).toContainText('Equipment Fleet Management & Service Portal');
     await expect(login.welcomeTitle).toContainText('Welcome Back');
+    await expect(login.subtitle).toContainText('Sign in to access your fleet dashboard');
     await expect(login.signInButton).toBeVisible();
     await expect(login.signInButton).toContainText('Sign in with Microsoft');
+    await expect(login.entraIdBadge).toContainText('Secured by Microsoft Entra ID');
+    await expect(login.copyrightText).toContainText('2026 Toromont Industries');
   });
 
   // L2-023 AC5: Sign out clears session
@@ -102,7 +106,33 @@ test.describe('Responsive Navigation', () => {
     await page.locator('[data-testid="mobile-nav-equipment"]').click();
     await expect(page).toHaveURL(/\/equipment/);
 
-    const overlay = page.locator('[data-testid="mobile-nav-overlay"]');
-    await expect(overlay).not.toBeVisible();
+    await expect(dashboard.mobileNavOverlay).not.toBeVisible();
+  });
+
+  // Mobile bottom navigation bar with primary tabs
+  test('mobile shows bottom navigation bar with primary tabs', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    const dashboard = new DashboardPage(page);
+    await dashboard.goto();
+
+    await expect(dashboard.bottomNav).toBeVisible();
+    const items = await dashboard.bottomNavItems.count();
+    expect(items).toBe(5);
+
+    await expect(page.locator('[data-testid="bottom-nav-home"]')).toBeVisible();
+    await expect(page.locator('[data-testid="bottom-nav-equip"]')).toBeVisible();
+    await expect(page.locator('[data-testid="bottom-nav-orders"]')).toBeVisible();
+    await expect(page.locator('[data-testid="bottom-nav-telem"]')).toBeVisible();
+    await expect(page.locator('[data-testid="bottom-nav-more"]')).toBeVisible();
+  });
+
+  // Bottom nav item navigates to correct page
+  test('tapping bottom nav item navigates to equipment', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    const dashboard = new DashboardPage(page);
+    await dashboard.goto();
+
+    await dashboard.clickBottomNavItem('equip');
+    await expect(page).toHaveURL(/\/equipment/);
   });
 });
