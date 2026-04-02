@@ -36,7 +36,7 @@ type UserRole = 'Admin' | 'FleetManager' | 'Technician' | 'Operator';
                 <div class="d-flex align-items-center gap-2">
                   <div class="user-avatar">{{ getInitials(dataItem) }}</div>
                   <div>
-                    <div class="fw-semibold">{{ dataItem.firstName }} {{ dataItem.lastName }}</div>
+                    <div class="fw-semibold">{{ dataItem.displayName }}</div>
                   </div>
                 </div>
               </ng-template>
@@ -156,8 +156,10 @@ export default class UserManagementComponent implements OnInit, OnDestroy {
       });
   }
 
-  getInitials(user: User): string {
-    return ((user.firstName?.[0] || '') + (user.lastName?.[0] || '')).toUpperCase() || '?';
+  getInitials(user: any): string {
+    const name = user.displayName || '';
+    const parts = name.split(' ');
+    return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
   }
 
   onRoleChange(user: User, newRole: UserRole): void {
