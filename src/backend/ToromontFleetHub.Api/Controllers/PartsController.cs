@@ -31,10 +31,17 @@ public class PartsController : ControllerBase
         [FromQuery] string? category = null,
         [FromQuery] string? compatibility = null,
         [FromQuery] string? availability = null,
+        [FromQuery] string? search = null,
         [FromQuery] string? sort = null,
         CancellationToken ct = default)
     {
         var query = _db.Parts.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(search))
+            query = query.Where(p =>
+                p.Name.ToLower().Contains(search.ToLower()) ||
+                p.PartNumber.ToLower().Contains(search.ToLower()) ||
+                p.Description.ToLower().Contains(search.ToLower()));
 
         if (!string.IsNullOrWhiteSpace(category))
             query = query.Where(p => p.Category == category);
