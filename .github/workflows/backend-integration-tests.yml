@@ -1,0 +1,43 @@
+name: Backend Integration Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  backend-integration-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore backend integration test project
+        run: dotnet restore tests/backend/ToromontFleetHub.Api.IntegrationTests/ToromontFleetHub.Api.IntegrationTests.csproj
+
+      - name: Run backend integration tests
+        run: >
+          dotnet test
+          tests/backend/ToromontFleetHub.Api.IntegrationTests/ToromontFleetHub.Api.IntegrationTests.csproj
+          --configuration Release
+          --no-restore
+          /p:UseAppHost=false
+          --logger "trx;LogFileName=backend-integration-tests.trx"
+          --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-integration-test-results
+          path: TestResults
