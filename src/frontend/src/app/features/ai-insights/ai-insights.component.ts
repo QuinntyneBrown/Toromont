@@ -62,30 +62,30 @@ interface PredictionRow extends AIPrediction {
             </div>
             <div class="card-body p-0">
               <kendo-grid [data]="predictions" [pageable]="true" [pageSize]="10" [sortable]="true" [style.font-size.px]="13">
-                <kendo-grid-column field="equipmentName" title="Equipment" [width]="160">
+                <kendo-grid-column field="equipmentId" title="Equipment" [width]="160">
                   <ng-template kendoGridCellTemplate let-dataItem>
-                    {{ dataItem.equipmentName || 'Equipment #' + dataItem.equipmentId }}
+                    {{ dataItem.equipment?.name || 'Equipment #' + dataItem.equipmentId }}
                   </ng-template>
                 </kendo-grid-column>
                 <kendo-grid-column field="component" title="Component" [width]="140">
                   <ng-template kendoGridCellTemplate let-dataItem>
-                    {{ dataItem.predictionType }}
+                    {{ dataItem.component }}
                   </ng-template>
                 </kendo-grid-column>
-                <kendo-grid-column field="confidence" title="Confidence" [width]="160">
+                <kendo-grid-column field="confidenceScore" title="Confidence" [width]="160">
                   <ng-template kendoGridCellTemplate let-dataItem>
                     <div class="d-flex align-items-center gap-2">
                       <div class="progress flex-grow-1" style="height: 6px;">
                         <div class="progress-bar"
-                             [style.width.%]="dataItem.confidence"
+                             [style.width.%]="dataItem.confidenceScore * 100"
                              [ngClass]="{
-                               'bg-danger': dataItem.confidence >= 80,
-                               'bg-warning': dataItem.confidence >= 50 && dataItem.confidence < 80,
-                               'bg-secondary': dataItem.confidence < 50
+                               'bg-danger': dataItem.confidenceScore >= 0.8,
+                               'bg-warning': dataItem.confidenceScore >= 0.5 && dataItem.confidenceScore < 0.8,
+                               'bg-secondary': dataItem.confidenceScore < 0.5
                              }">
                         </div>
                       </div>
-                      <span style="min-width: 38px; font-size: 12px;">{{ dataItem.confidence }}%</span>
+                      <span style="min-width: 38px; font-size: 12px;">{{ (dataItem.confidenceScore * 100 | number:'1.0-0') }}%</span>
                     </div>
                   </ng-template>
                 </kendo-grid-column>
@@ -94,16 +94,16 @@ interface PredictionRow extends AIPrediction {
                     {{ dataItem.recommendedAction || 'N/A' }}
                   </ng-template>
                 </kendo-grid-column>
-                <kendo-grid-column field="predictedDate" title="Timeframe" [width]="120">
+                <kendo-grid-column field="timeframe" title="Timeframe" [width]="120">
                   <ng-template kendoGridCellTemplate let-dataItem>
-                    {{ dataItem.predictedDate ? (dataItem.predictedDate | date:'mediumDate') : 'TBD' }}
+                    {{ dataItem.timeframe || 'TBD' }}
                   </ng-template>
                 </kendo-grid-column>
-                <kendo-grid-column title="Priority" [width]="120">
+                <kendo-grid-column field="priority" title="Priority" [width]="120">
                   <ng-template kendoGridCellTemplate let-dataItem>
                     <app-badge
-                      [text]="getPriorityLabel(dataItem.confidence)"
-                      [variant]="getPriorityVariant(dataItem.confidence)">
+                      [text]="dataItem.priority"
+                      [variant]="getPriorityVariant(dataItem.confidenceScore * 100)">
                     </app-badge>
                   </ng-template>
                 </kendo-grid-column>
@@ -260,7 +260,7 @@ export default class AiInsightsComponent implements OnInit, OnDestroy {
         next: () => {
           this.predictions = this.predictions.filter(p => p.id !== prediction.id);
           if (this.stats.totalPredictions > 0) this.stats.totalPredictions--;
-          if (prediction.confidence >= 80 && this.stats.highPriority > 0) this.stats.highPriority--;
+          if ((prediction as any).confidenceScore >= 0.8 && this.stats.highPriority > 0) this.stats.highPriority--;
         },
         error: (err) => console.error('Failed to dismiss prediction', err)
       });
