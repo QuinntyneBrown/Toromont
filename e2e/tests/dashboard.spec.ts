@@ -36,8 +36,7 @@ test.describe('Dashboard', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await dashboard.goto();
 
-    const kpiContainer = page.locator('[data-testid="kpi-row"]');
-    await expect(kpiContainer).toBeVisible();
+    await expect(dashboard.kpiRow).toBeVisible();
     const cards = await dashboard.kpiCards.count();
     expect(cards).toBe(5);
   });
@@ -75,18 +74,42 @@ test.describe('Dashboard', () => {
   });
 });
 
-// L2-001 AC3: Mobile responsive - KPI cards stack in single column
+// L2-001 AC3: Mobile responsive - KPI cards adapt to 2-column grid
 test.describe('Dashboard - Mobile', () => {
-  test('KPI cards stack in single column on mobile', async ({ page }) => {
+  test('KPI cards display in 2-column grid on mobile with 4 cards', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     const dashboard = new DashboardPage(page);
     await dashboard.goto();
 
-    const kpiRow = page.locator('[data-testid="kpi-row"]');
-    await expect(kpiRow).toBeVisible();
+    await expect(dashboard.kpiRow).toBeVisible();
 
-    // On mobile, cards should be stacked (flex-direction: column)
-    const kpiCard = dashboard.kpiCards.first();
-    await expect(kpiCard).toBeVisible();
+    // Mobile shows 4 KPI cards in 2x2 grid (Overdue Work Orders hidden on mobile)
+    await expect(dashboard.kpiTotalEquipment).toBeVisible();
+    await expect(dashboard.kpiActiveEquipment).toBeVisible();
+    await expect(dashboard.kpiServiceRequired).toBeVisible();
+    await expect(dashboard.kpiFleetUtilization).toBeVisible();
+    await expect(dashboard.kpiOverdueWorkOrders).not.toBeVisible();
+
+    const visibleCards = await dashboard.kpiCards.count();
+    expect(visibleCards).toBe(4);
+  });
+
+  // Mobile dashboard hides equipment map
+  test('equipment map is hidden on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    const dashboard = new DashboardPage(page);
+    await dashboard.goto();
+
+    await expect(dashboard.equipmentMap).not.toBeVisible();
+  });
+
+  // Mobile dashboard shows alerts panel
+  test('alerts panel is visible on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    const dashboard = new DashboardPage(page);
+    await dashboard.goto();
+
+    await expect(dashboard.alertsPanel).toBeVisible();
+    await expect(dashboard.viewAllAlertsLink).toBeVisible();
   });
 });

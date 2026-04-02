@@ -37,13 +37,14 @@ test.describe('Parts Catalog', () => {
     }
   });
 
-  // L2-010 AC5: Add to Cart disabled for out-of-stock parts
-  test('Add to Cart disabled for out-of-stock parts', async ({ page }) => {
+  // L2-010 AC5: Out-of-stock parts show disabled Unavailable button
+  test('out-of-stock parts show Unavailable button', async ({ page }) => {
     // Find an out-of-stock part
     const outOfStockRow = page.locator('[data-testid="part-row"]:has([data-testid="part-availability"]:has-text("Out of Stock"))');
     if (await outOfStockRow.count() > 0) {
-      const addBtn = outOfStockRow.first().locator('[data-testid="add-to-cart-btn"]');
-      await expect(addBtn).toBeDisabled();
+      const actionBtn = outOfStockRow.first().locator('[data-testid="add-to-cart-btn"]');
+      await expect(actionBtn).toBeDisabled();
+      await expect(actionBtn).toContainText('Unavailable');
     }
   });
 

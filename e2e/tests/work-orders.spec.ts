@@ -97,6 +97,44 @@ test.describe('Work Orders List', () => {
   });
 });
 
+// Mobile Work Orders
+test.describe('Work Orders - Mobile', () => {
+  test('switches to card layout on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    const workOrders = new WorkOrdersPage(page);
+    await workOrders.goto();
+
+    // Grid should not be visible, cards should be
+    await expect(workOrders.dataGrid).not.toBeVisible();
+    await expect(workOrders.mobileCards.first()).toBeVisible();
+
+    // Each card shows WO number, status badge, description, priority, and due date
+    const firstCard = workOrders.mobileCards.first();
+    await expect(firstCard.locator('[data-testid="wo-number"]')).toBeVisible();
+    await expect(firstCard.locator('[data-testid="wo-status"]')).toBeVisible();
+    await expect(firstCard.locator('[data-testid="wo-description"]')).toBeVisible();
+    await expect(firstCard.locator('[data-testid="wo-priority"]')).toBeVisible();
+  });
+
+  test('mobile shows create button with condensed label', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    const workOrders = new WorkOrdersPage(page);
+    await workOrders.goto();
+
+    await expect(workOrders.createWorkOrderButton).toBeVisible();
+  });
+
+  test('mobile status tabs are scrollable', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    const workOrders = new WorkOrdersPage(page);
+    await workOrders.goto();
+
+    await expect(workOrders.statusTabs).toBeVisible();
+    await expect(workOrders.tabAll).toBeVisible();
+    await expect(workOrders.tabOpen).toBeVisible();
+  });
+});
+
 // L2-009: Service Calendar
 test.describe('Service Calendar', () => {
   test('displays calendar with work orders', async ({ page }) => {

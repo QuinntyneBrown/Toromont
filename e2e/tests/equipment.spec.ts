@@ -71,7 +71,32 @@ test.describe('Equipment List', () => {
     await equipmentList.goto();
 
     // Grid should not be visible, cards should be
+    await expect(equipmentList.dataGrid).not.toBeVisible();
     await expect(equipmentList.mobileCards.first()).toBeVisible();
+
+    // Each card shows key fields: name, status, serial, hours, location
+    const cardName = await equipmentList.getCardName(0);
+    expect(cardName).toBeTruthy();
+    const cardStatus = await equipmentList.getCardStatus(0);
+    expect(cardStatus).toBeTruthy();
+    const cardSerial = await equipmentList.getCardSerial(0);
+    expect(cardSerial).toBeTruthy();
+    const cardHours = await equipmentList.getCardHours(0);
+    expect(cardHours).toBeTruthy();
+    const cardLocation = await equipmentList.getCardLocation(0);
+    expect(cardLocation).toBeTruthy();
+  });
+
+  // Mobile uses filter chips instead of dropdowns
+  test('mobile shows status filter chips', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await equipmentList.goto();
+
+    await expect(equipmentList.mobileStatusChips.first()).toBeVisible();
+    await expect(page.locator('[data-testid="status-chip-all"]')).toBeVisible();
+    await expect(page.locator('[data-testid="status-chip-active"]')).toBeVisible();
+    await expect(page.locator('[data-testid="status-chip-maintenance"]')).toBeVisible();
+    await expect(page.locator('[data-testid="status-chip-idle"]')).toBeVisible();
   });
 });
 

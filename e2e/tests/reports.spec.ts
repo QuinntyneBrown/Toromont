@@ -20,15 +20,18 @@ test.describe('Reports', () => {
     await page.locator('[data-testid="report-card-fleet-utilization"]').click();
 
     await expect(page.locator('[data-testid="date-range-picker"]')).toBeVisible();
-    await expect(page.locator('[data-testid="category-filter"]')).toBeVisible();
+    await expect(page.locator('[data-testid="equipment-filter"]')).toBeVisible();
     await expect(page.locator('[data-testid="generate-report-btn"]')).toBeVisible();
   });
 
   // L2-021 AC2: Generating report displays charts
   test('generates fleet utilization report with charts', async ({ page }) => {
     await page.locator('[data-testid="report-card-fleet-utilization"]').click();
+    const dateRangePicker = page.locator('[data-testid="date-range-picker"]');
+    await dateRangePicker.click();
     await page.locator('[data-testid="date-range-start"]').fill('2026-01-01');
     await page.locator('[data-testid="date-range-end"]').fill('2026-03-31');
+    await page.locator('[data-testid="date-range-apply"]').click();
     await page.locator('[data-testid="generate-report-btn"]').click();
 
     await expect(page.locator('[data-testid="report-charts"]')).toBeVisible();
@@ -37,8 +40,11 @@ test.describe('Reports', () => {
   // L2-021 AC3-4: Export buttons present
   test('export buttons are available after report generation', async ({ page }) => {
     await page.locator('[data-testid="report-card-fleet-utilization"]').click();
+    const dateRangePicker = page.locator('[data-testid="date-range-picker"]');
+    await dateRangePicker.click();
     await page.locator('[data-testid="date-range-start"]').fill('2026-01-01');
     await page.locator('[data-testid="date-range-end"]').fill('2026-03-31');
+    await page.locator('[data-testid="date-range-apply"]').click();
     await page.locator('[data-testid="generate-report-btn"]').click();
 
     await expect(page.locator('[data-testid="export-pdf-btn"]')).toBeVisible();
@@ -49,8 +55,11 @@ test.describe('Reports', () => {
   // L2-021 AC3: PDF export triggers download
   test('PDF export triggers file download', async ({ page }) => {
     await page.locator('[data-testid="report-card-fleet-utilization"]').click();
+    const dateRangePicker = page.locator('[data-testid="date-range-picker"]');
+    await dateRangePicker.click();
     await page.locator('[data-testid="date-range-start"]').fill('2026-01-01');
     await page.locator('[data-testid="date-range-end"]').fill('2026-03-31');
+    await page.locator('[data-testid="date-range-apply"]').click();
     await page.locator('[data-testid="generate-report-btn"]').click();
 
     const downloadPromise = page.waitForEvent('download');
@@ -64,8 +73,12 @@ test.describe('Reports', () => {
     await page.locator('[data-testid="report-card-maintenance-costs"]').click();
 
     await expect(page.locator('[data-testid="date-range-picker"]')).toBeVisible();
+    await expect(page.locator('[data-testid="equipment-filter"]')).toBeVisible();
+    const dateRangePicker = page.locator('[data-testid="date-range-picker"]');
+    await dateRangePicker.click();
     await page.locator('[data-testid="date-range-start"]').fill('2026-01-01');
     await page.locator('[data-testid="date-range-end"]').fill('2026-03-31');
+    await page.locator('[data-testid="date-range-apply"]').click();
     await page.locator('[data-testid="generate-report-btn"]').click();
 
     await expect(page.locator('[data-testid="report-charts"]')).toBeVisible();
