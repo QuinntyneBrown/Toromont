@@ -29,9 +29,9 @@ public class AlertsController : ControllerBase
         var alerts = await _db.Alerts
             .Include(a => a.Equipment)
             .Where(a => a.OrganizationId == _tenant.OrganizationId && a.Status == "Active")
-            .OrderByDescending(a => a.Severity == "Critical" ? 0 :
-                                     a.Severity == "High" ? 1 :
-                                     a.Severity == "Medium" ? 2 : 3)
+            .OrderBy(a => a.Severity == "Critical" ? 0 :
+                          a.Severity == "High" ? 1 :
+                          a.Severity == "Medium" ? 2 : 3)
             .ThenByDescending(a => a.CreatedAt)
             .AsNoTracking()
             .ToListAsync(ct);
