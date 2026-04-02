@@ -15,8 +15,8 @@ interface TelemetryMetric {
 }
 
 interface GpsPoint {
-  lat: number;
-  lng: number;
+  latitude: number;
+  longitude: number;
   timestamp: string;
 }
 
