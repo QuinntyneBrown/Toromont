@@ -30,20 +30,20 @@ interface DashboardKpis {
 
       <!-- KPI Cards Row -->
       <div class="row g-3 mb-4" data-testid="kpi-row">
-        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-total-equipment kpi-card">
-          <app-kpi-card label="Total Equipment" [value]="kpis.totalEquipment" [trendValue]="kpis.totalEquipmentTrend" [trendDirection]="'stable'"></app-kpi-card>
+        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-total-equipment">
+          <app-kpi-card data-testid="kpi-card" label="Total Equipment" [value]="kpis.totalEquipment" [trendValue]="kpis.totalEquipmentTrend" [trendDirection]="'stable'"></app-kpi-card>
         </div>
-        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-active-equipment kpi-card">
-          <app-kpi-card label="Active" [value]="kpis.activeEquipment" [trendValue]="kpis.activeEquipmentTrend" [trendDirection]="'up'"></app-kpi-card>
+        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-active-equipment">
+          <app-kpi-card data-testid="kpi-card" label="Active" [value]="kpis.activeEquipment" [trendValue]="kpis.activeEquipmentTrend" [trendDirection]="'up'"></app-kpi-card>
         </div>
-        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-service-required kpi-card">
-          <app-kpi-card label="Service Required" [value]="kpis.serviceRequired" [trendValue]="kpis.serviceRequiredTrend" [trendDirection]="kpis.serviceRequired > 0 ? 'down' : 'stable'"></app-kpi-card>
+        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-service-required">
+          <app-kpi-card data-testid="kpi-card" label="Service Required" [value]="kpis.serviceRequired" [trendValue]="kpis.serviceRequiredTrend" [trendDirection]="kpis.serviceRequired > 0 ? 'down' : 'stable'"></app-kpi-card>
         </div>
-        <div class="col-12 col-sm-6 col-lg d-none d-sm-block" data-testid="kpi-overdue-work-orders kpi-card">
-          <app-kpi-card label="Overdue Work Orders" [value]="kpis.overdueWorkOrders" [trendValue]="kpis.overdueWorkOrdersTrend" [trendDirection]="kpis.overdueWorkOrders > 0 ? 'down' : 'stable'"></app-kpi-card>
+        <div class="col-12 col-sm-6 col-lg d-none d-sm-block" data-testid="kpi-overdue-work-orders">
+          <app-kpi-card data-testid="kpi-card" label="Overdue Work Orders" [value]="kpis.overdueWorkOrders" [trendValue]="kpis.overdueWorkOrdersTrend" [trendDirection]="kpis.overdueWorkOrders > 0 ? 'down' : 'stable'"></app-kpi-card>
         </div>
-        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-fleet-utilization kpi-card">
-          <app-kpi-card label="Fleet Utilization" [value]="kpis.fleetUtilization + '%'" [trendValue]="kpis.fleetUtilizationTrend" [trendDirection]="'up'"></app-kpi-card>
+        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-fleet-utilization">
+          <app-kpi-card data-testid="kpi-card" label="Fleet Utilization" [value]="kpis.fleetUtilization + '%'" [trendValue]="kpis.fleetUtilizationTrend" [trendDirection]="'up'"></app-kpi-card>
         </div>
       </div>
 
