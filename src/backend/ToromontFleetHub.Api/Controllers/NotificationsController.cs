@@ -69,10 +69,14 @@ public class NotificationsController : ControllerBase
     [HttpPut("read-all")]
     public async Task<IActionResult> MarkAllAsRead(CancellationToken ct)
     {
-        await _db.Notifications
+        var unread = await _db.Notifications
             .Where(n => n.UserId == _tenant.UserId && !n.IsRead)
-            .ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true), ct);
+            .ToListAsync(ct);
 
+        foreach (var n in unread)
+            n.IsRead = true;
+
+        await _db.SaveChangesAsync(ct);
         return NoContent();
     }
 
