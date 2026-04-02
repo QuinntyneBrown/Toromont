@@ -66,7 +66,7 @@ export default class WorkOrdersComponent implements OnInit {
   priorities = ['Low', 'Medium', 'High', 'Critical'];
   serviceTypes = ['Preventive', 'Corrective', 'Emergency'];
   equipmentList: { label: string; value: string }[] = [];
-  technicians: string[] = ['John Smith', 'Jane Doe', 'Mike Johnson', 'Sarah Williams'];
+  technicians: { id: string; displayName: string }[] = [];
 
   newWorkOrder: any = {
     equipmentItem: null,
@@ -74,7 +74,7 @@ export default class WorkOrdersComponent implements OnInit {
     description: '',
     priority: 'Medium',
     scheduledDateStr: '',
-    assignedTo: ''
+    assignedTo: null as { id: string; displayName: string } | null
   };
 
   constructor(private api: ApiService, private router: Router) {}
@@ -86,6 +86,7 @@ export default class WorkOrdersComponent implements OnInit {
     } else {
       this.loadData();
       this.loadEquipmentList();
+      this.loadTechnicians();
     }
   }
 
@@ -123,6 +124,18 @@ export default class WorkOrdersComponent implements OnInit {
         }));
       },
       error: () => { this.equipmentList = []; }
+    });
+  }
+
+  loadTechnicians(): void {
+    this.api.get<any[]>('/users/assignable').subscribe({
+      next: (users) => {
+        this.technicians = (users || []).map((u: any) => ({
+          id: u.id,
+          displayName: u.displayName
+        }));
+      },
+      error: () => { this.technicians = []; }
     });
   }
 
@@ -274,7 +287,7 @@ export default class WorkOrdersComponent implements OnInit {
     this.equipmentDropdownOpen = false;
   }
 
-  selectAssignee(tech: string): void {
+  selectAssignee(tech: { id: string; displayName: string }): void {
     this.newWorkOrder.assignedTo = tech;
     this.assigneeDropdownOpen = false;
   }
@@ -286,7 +299,7 @@ export default class WorkOrdersComponent implements OnInit {
       description: this.newWorkOrder.description,
       priority: this.newWorkOrder.priority,
       requestedDate: this.newWorkOrder.scheduledDateStr ? new Date(this.newWorkOrder.scheduledDateStr).toISOString() : new Date().toISOString(),
-      assignedToUserId: this.newWorkOrder.assignedTo || null
+      assignedToUserId: this.newWorkOrder.assignedTo?.id || null
     };
 
     this.api.post<any>('/work-orders', body).subscribe({
@@ -308,7 +321,7 @@ export default class WorkOrdersComponent implements OnInit {
       description: '',
       priority: 'Medium',
       scheduledDateStr: '',
-      assignedTo: ''
+      assignedTo: null
     };
   }
 
