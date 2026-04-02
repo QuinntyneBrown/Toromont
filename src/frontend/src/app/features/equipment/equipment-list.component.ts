@@ -259,10 +259,10 @@ export default class EquipmentListComponent implements OnInit {
 
   getStatusVariant(status: string): 'success' | 'warning' | 'error' | 'info' {
     switch (status) {
-      case 'Active': return 'success';
-      case 'InService': return 'warning';
-      case 'Down': return 'error';
-      case 'Retired': return 'info';
+      case 'Operational': return 'success';
+      case 'NeedsService': return 'warning';
+      case 'OutOfService': return 'error';
+      case 'Idle': return 'info';
       default: return 'info';
     }
   }
