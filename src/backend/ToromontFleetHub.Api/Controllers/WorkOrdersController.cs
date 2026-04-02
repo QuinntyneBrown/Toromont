@@ -164,8 +164,6 @@ public class WorkOrdersController : ControllerBase
         if (request.Status == "Completed")
             wo.CompletedDate = DateTime.UtcNow;
 
-        await _db.SaveChangesAsync(ct);
-
         _db.WorkOrderHistories.Add(new WorkOrderHistory
         {
             Id = Guid.NewGuid(),
