@@ -20,7 +20,7 @@ interface Part {
   price: number;
   availability: 'InStock' | 'LowStock' | 'OutOfStock';
   category: string;
-  compatibleModels: string[];
+  compatibleModels: string;
 }
 
 @Component({
@@ -152,7 +152,7 @@ interface Part {
             </kendo-grid-column>
             <kendo-grid-column field="compatibleModels" title="Compatible Models" [width]="160">
               <ng-template kendoGridCellTemplate let-dataItem>
-                {{ dataItem.compatibleModels?.join(', ') || 'Universal' }}
+                {{ dataItem.compatibleModels || 'Universal' }}
               </ng-template>
             </kendo-grid-column>
             <kendo-grid-column title="" [width]="130">
