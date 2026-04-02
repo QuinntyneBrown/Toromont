@@ -1,4 +1,4 @@
-import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
@@ -73,7 +73,11 @@ export const appConfig: ApplicationConfig = {
     MsalBroadcastService,
     {
       provide: APP_INITIALIZER,
-      useFactory: (msalService: MsalService) => () => msalService.initialize(),
+      useFactory: (msalService: MsalService) => () => {
+        // Skip MSAL initialization in dev mode to avoid zone issues with placeholder credentials
+        if (isDevMode()) return Promise.resolve();
+        return msalService.initialize();
+      },
       deps: [MsalService],
       multi: true
     }
