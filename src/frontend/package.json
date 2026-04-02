@@ -1,0 +1,70 @@
+{
+  "name": "fleet-hub",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "packageManager": "npm@10.9.4",
+  "dependencies": {
+    "@angular/common": "^21.1.0",
+    "@angular/compiler": "^21.1.0",
+    "@angular/core": "^21.1.0",
+    "@angular/forms": "^21.1.0",
+    "@angular/platform-browser": "^21.1.0",
+    "@angular/router": "^21.1.0",
+    "@azure/msal-angular": "^5.1.4",
+    "@azure/msal-browser": "^5.6.3",
+    "@microsoft/signalr": "^10.0.0",
+    "@progress/kendo-angular-buttons": "^23.2.2",
+    "@progress/kendo-angular-charts": "^23.2.2",
+    "@progress/kendo-angular-common": "^23.2.2",
+    "@progress/kendo-angular-dateinputs": "^23.2.2",
+    "@progress/kendo-angular-dialog": "^23.2.2",
+    "@progress/kendo-angular-dropdowns": "^23.2.2",
+    "@progress/kendo-angular-grid": "^23.2.2",
+    "@progress/kendo-angular-icons": "^23.2.2",
+    "@progress/kendo-angular-indicators": "^23.2.2",
+    "@progress/kendo-angular-inputs": "^23.2.2",
+    "@progress/kendo-angular-intl": "^23.2.2",
+    "@progress/kendo-angular-l10n": "^23.2.2",
+    "@progress/kendo-angular-label": "^23.2.2",
+    "@progress/kendo-angular-layout": "^23.2.2",
+    "@progress/kendo-angular-navigation": "^23.2.2",
+    "@progress/kendo-angular-notification": "^23.2.2",
+    "@progress/kendo-angular-popup": "^23.2.2",
+    "@progress/kendo-angular-scheduler": "^23.2.2",
+    "@progress/kendo-angular-tooltip": "^23.2.2",
+    "@progress/kendo-data-query": "^1.7.4",
+    "@progress/kendo-drawing": "^1.24.1",
+    "@progress/kendo-licensing": "^1.10.1",
+    "@progress/kendo-theme-default": "^13.1.1",
+    "@types/leaflet": "^1.9.21",
+    "bootstrap": "^5.3.8",
+    "leaflet": "^1.9.4",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.1.0",
+    "@angular/cli": "^21.1.0",
+    "@angular/compiler-cli": "^21.1.0",
+    "typescript": "~5.9.2"
+  }
+}

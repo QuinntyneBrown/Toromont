@@ -1,0 +1,52 @@
+// Kendo UI theme
+@use "@progress/kendo-theme-default/dist/all.css";
+
+// Bootstrap 5
+@use "bootstrap/scss/bootstrap";
+
+// Toromont Fleet Hub custom variables (from .pen design system)
+:root {
+  --accent-primary: #FFCD11;
+  --accent-primary-hover: #E6B800;
+  --accent-secondary: #1A1A1A;
+  --surface-primary: #F5F5F5;
+  --surface-secondary: #FFFFFF;
+  --surface-inverse: #2D2D2D;
+  --surface-hover: #EBEBEB;
+  --foreground-primary: #2D2D2D;
+  --foreground-secondary: #6B7280;
+  --foreground-inverse: #FFFFFF;
+  --foreground-disabled: #9CA3AF;
+  --border-subtle: #E5E7EB;
+  --border-strong: #D1D5DB;
+  --sidebar-bg: #1A1A1A;
+  --sidebar-text: #9CA3AF;
+  --sidebar-active: #FFCD11;
+  --status-success: #10B981;
+  --status-warning: #F59E0B;
+  --status-error: #EF4444;
+  --status-info: #3B82F6;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Inter', sans-serif;
+  --font-data: 'Geist Mono', monospace;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--surface-primary);
+  color: var(--foreground-primary);
+  margin: 0;
+}
+
+// Override Kendo theme to match Toromont branding
+.k-grid .k-grid-header {
+  background-color: var(--surface-primary);
+}
+.k-button-primary {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--surface-inverse);
+}
