@@ -34,7 +34,7 @@ interface CartItem {
       <!-- Empty State -->
       <div *ngIf="!loading && cartItems.length === 0" class="card">
         <div class="card-body text-center py-5">
-          <div style="font-size:3rem;color:#d1d5db;">&#128722;</div>
+          <div style="font-size:3rem;color:var(--border-strong);">&#128722;</div>
           <h5 class="text-muted mt-3">Your cart is empty</h5>
           <p class="text-muted">Browse the parts catalog to add items to your cart.</p>
           <a routerLink="/parts" class="btn btn-warning fw-semibold mt-2">Browse Parts</a>
@@ -113,7 +113,7 @@ interface CartItem {
       <!-- Order Confirmation Dialog -->
       <kendo-dialog *ngIf="showConfirmation" title="Order Submitted" (close)="showConfirmation = false" [width]="400">
         <div class="text-center py-3">
-          <div style="font-size:3rem;color:#10b981;">&#10003;</div>
+          <div style="font-size:3rem;color:var(--status-success);">&#10003;</div>
           <h5 class="mt-2">Order Submitted Successfully</h5>
           <p class="text-muted">Your order has been placed and is being processed.</p>
         </div>

@@ -47,24 +47,41 @@ interface DashboardKpis {
         </div>
       </div>
 
-      <!-- Active Alerts Panel -->
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center bg-white">
-          <h5 class="mb-0 fw-semibold">Active Alerts</h5>
-          <a routerLink="/alerts" class="text-decoration-none" style="font-size: 14px; color: #3b82f6;">View All</a>
-        </div>
-        <div class="card-body p-0">
-          <div *ngIf="alerts.length === 0" class="text-center text-muted py-4">
-            No active alerts
-          </div>
-          <div *ngFor="let alert of alerts" class="alert-row d-flex align-items-center px-4 py-3 border-bottom">
-            <span class="severity-dot me-3" [ngClass]="'dot-' + alert.severity.toLowerCase()"></span>
-            <div class="flex-grow-1">
-              <div class="fw-semibold" style="font-size: 14px;">{{ alert.equipmentName || 'Equipment #' + alert.equipmentId }}</div>
-              <div class="text-muted" style="font-size: 13px;">{{ alert.message }}</div>
+      <!-- Two-column: Map + Alerts -->
+      <div class="row g-4">
+        <!-- Equipment Locations Map -->
+        <div class="col-12 col-lg-7">
+          <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center bg-white">
+              <h5 class="mb-0 fw-semibold" style="font-size: 15px;">Equipment Locations</h5>
+              <span class="text-muted" style="font-size: 12px;">{{ kpis.totalEquipment }} units tracked</span>
             </div>
-            <div class="text-muted me-3" style="font-size: 12px; white-space: nowrap;">{{ getTimeAgo(alert.createdAt) }}</div>
-            <app-badge [text]="alert.severity" [variant]="getSeverityVariant(alert.severity)"></app-badge>
+            <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 300px; background: var(--surface-primary);">
+              <span class="text-muted">Map view — Leaflet integration</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Alerts Panel -->
+        <div class="col-12 col-lg-5">
+          <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center bg-white">
+              <h5 class="mb-0 fw-semibold" style="font-size: 15px;">Active Alerts</h5>
+              <a routerLink="/alerts" class="text-decoration-none" style="font-size: 13px; color: var(--status-info);">View All</a>
+            </div>
+            <div class="card-body p-0">
+              <div *ngIf="alerts.length === 0" class="text-center text-muted py-4">
+                No active alerts
+              </div>
+              <div *ngFor="let alert of alerts" class="alert-row d-flex align-items-center px-3 py-3" style="border-bottom: 1px solid var(--border-subtle);">
+                <span class="severity-dot me-3" [ngClass]="'dot-' + alert.severity.toLowerCase()"></span>
+                <div class="flex-grow-1">
+                  <div class="fw-medium" style="font-size: 13px;">{{ alert.equipmentName || 'Equipment' }} - {{ alert.message }}</div>
+                  <div style="font-size: 12px; color: var(--foreground-secondary);">{{ getTimeAgo(alert.createdAt) }}</div>
+                </div>
+                <app-badge [text]="alert.severity" [variant]="getSeverityVariant(alert.severity)"></app-badge>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -77,26 +94,27 @@ interface DashboardKpis {
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .dot-critical { background-color: #ef4444; }
-    .dot-high { background-color: #f97316; }
-    .dot-medium { background-color: #eab308; }
-    .dot-low { background-color: #6b7280; }
+    .dot-critical { background-color: var(--status-error); }
+    .dot-high { background-color: var(--status-warning); }
+    .dot-medium { background-color: var(--status-warning); }
+    .dot-low { background-color: var(--status-info); }
 
     .alert-row:last-child {
       border-bottom: none !important;
     }
     .alert-row:hover {
-      background-color: #f9fafb;
+      background-color: var(--surface-primary);
     }
 
     .card {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
       overflow: hidden;
+      background: var(--surface-secondary);
     }
     .card-header {
-      border-bottom: 1px solid #e5e7eb;
-      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 16px;
     }
   `]
 })

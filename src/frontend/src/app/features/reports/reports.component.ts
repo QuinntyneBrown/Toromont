@@ -102,7 +102,7 @@ interface ChartDataItem {
                     [data]="barChartData"
                     field="value"
                     categoryField="label"
-                    [color]="'#3b82f6'">
+                    [color]="'#FFCD11'">
                   </kendo-chart-series-item>
                 </kendo-chart-series>
                 <kendo-chart-category-axis>
@@ -155,7 +155,7 @@ interface ChartDataItem {
   styles: [`
     .report-type-card {
       background: #fff;
-      border: 2px solid #e5e7eb;
+      border: 2px solid var(--border-subtle);
       border-radius: 12px;
       padding: 20px;
       cursor: pointer;
@@ -168,7 +168,7 @@ interface ChartDataItem {
       border-color: #3b82f6;
     }
     .report-type-card.selected {
-      border-color: #FFCD11;
+      border-color: var(--accent-primary);
       background: #fffef5;
     }
     .report-icon {
@@ -182,7 +182,7 @@ interface ChartDataItem {
       color: #374151;
     }
     .selected .report-icon {
-      background: #FFCD11;
+      background: var(--accent-primary);
       color: #1a1a2e;
     }
     .report-label {
@@ -191,13 +191,13 @@ interface ChartDataItem {
     }
     .chart-card {
       background: #fff;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border-subtle);
       border-radius: 12px;
       overflow: hidden;
     }
     .chart-header {
       padding: 16px 20px;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid var(--border-subtle);
     }
     .chart-body {
       padding: 16px;

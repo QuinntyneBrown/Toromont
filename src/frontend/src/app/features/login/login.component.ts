@@ -118,7 +118,7 @@ import { AuthService } from '../../core/services/auth.service';
     }
 
     .login-card {
-      background: #ffffff;
+      background: var(--surface-secondary);
       border-radius: var(--radius-lg);
       padding: 40px;
       width: 400px;
@@ -135,7 +135,7 @@ import { AuthService } from '../../core/services/auth.service';
 
     .sign-in-subtitle {
       font-size: 14px;
-      color: #6b7280;
+      color: var(--foreground-secondary);
       margin: 0 0 32px;
     }
 

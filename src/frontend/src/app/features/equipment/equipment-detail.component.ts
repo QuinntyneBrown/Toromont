@@ -129,7 +129,7 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
           <!-- Mini Map -->
           <div *ngIf="equipment.locationLat && equipment.locationLng" class="mt-3">
             <h6 class="fw-semibold">Location</h6>
-            <div class="border rounded" style="height:250px;background:#e5e7eb;display:flex;align-items:center;justify-content:center;">
+            <div class="border rounded" style="height:250px;background:var(--border-subtle);display:flex;align-items:center;justify-content:center;">
               <div class="text-center text-muted">
                 <div style="font-size:2rem">&#128205;</div>
                 <div>{{ equipment.locationLat | number:'1.4-4' }}, {{ equipment.locationLng | number:'1.4-4' }}</div>

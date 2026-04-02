@@ -162,23 +162,23 @@ interface PredictionRow extends AIPrediction {
   `,
   styles: [`
     .card {
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border-subtle);
       border-radius: 12px;
       overflow: hidden;
     }
     .card-header {
       padding: 16px 20px;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid var(--border-subtle);
     }
     .kpi-highlight {
       border-radius: 12px;
     }
     .kpi-red :host ::ng-deep .kpi-value,
-    .kpi-red .kpi-value { color: #ef4444; }
+    .kpi-red .kpi-value { color: var(--status-error); }
     .kpi-warning :host ::ng-deep .kpi-value,
-    .kpi-warning .kpi-value { color: #f59e0b; }
+    .kpi-warning .kpi-value { color: var(--status-warning); }
     .kpi-green :host ::ng-deep .kpi-value,
-    .kpi-green .kpi-value { color: #10b981; }
+    .kpi-green .kpi-value { color: var(--status-success); }
 
     .anomaly-icon {
       width: 36px;
@@ -189,21 +189,21 @@ interface PredictionRow extends AIPrediction {
       justify-content: center;
       flex-shrink: 0;
     }
-    .icon-critical { background: rgba(239,68,68,0.1); color: #ef4444; }
-    .icon-high { background: rgba(249,115,22,0.1); color: #f97316; }
-    .icon-medium { background: rgba(234,179,8,0.1); color: #eab308; }
-    .icon-low { background: rgba(107,114,128,0.1); color: #6b7280; }
+    .icon-critical { background: rgba(239,68,68,0.1); color: var(--status-error); }
+    .icon-high { background: rgba(249,115,22,0.1); color: var(--status-warning); }
+    .icon-medium { background: rgba(234,179,8,0.1); color: var(--status-warning); }
+    .icon-low { background: rgba(107,114,128,0.1); color: var(--foreground-secondary); }
 
     .anomaly-item:last-child {
       border-bottom: none !important;
     }
     .anomaly-item:hover {
-      background: #f9fafb;
+      background: var(--surface-primary);
     }
 
     .progress {
       border-radius: 4px;
-      background: #e5e7eb;
+      background: var(--border-subtle);
     }
   `]
 })

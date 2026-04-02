@@ -75,7 +75,7 @@ interface GpsPoint {
                     [data]="metrics"
                     field="engineHours"
                     categoryField="label"
-                    [color]="'#3b82f6'"
+                    [color]="'#FFCD11'"
                     [markers]="{ visible: true, size: 4 }">
                   </kendo-chart-series-item>
                 </kendo-chart-series>
@@ -110,7 +110,7 @@ interface GpsPoint {
                     [data]="metrics"
                     field="fuelConsumption"
                     categoryField="label"
-                    [color]="'#f59e0b'">
+                    [color]="'#FFCD11'">
                   </kendo-chart-series-item>
                 </kendo-chart-series>
                 <kendo-chart-category-axis>
@@ -144,7 +144,7 @@ interface GpsPoint {
                     [data]="metrics"
                     field="temperature"
                     categoryField="label"
-                    [color]="'#ef4444'"
+                    [color]="'#F59E0B'"
                     [markers]="{ visible: true, size: 4 }">
                   </kendo-chart-series-item>
                 </kendo-chart-series>
@@ -189,13 +189,13 @@ interface GpsPoint {
   styles: [`
     .chart-card {
       background: #fff;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border-subtle);
       border-radius: 12px;
       overflow: hidden;
     }
     .chart-header {
       padding: 16px 20px;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid var(--border-subtle);
     }
     .chart-body {
       padding: 16px;

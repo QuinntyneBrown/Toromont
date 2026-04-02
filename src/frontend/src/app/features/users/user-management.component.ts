@@ -108,7 +108,7 @@ type UserRole = 'Admin' | 'FleetManager' | 'Technician' | 'PartsSpecialist' | 'R
   `,
   styles: [`
     .card {
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border-subtle);
       border-radius: 12px;
       overflow: hidden;
     }
@@ -116,8 +116,8 @@ type UserRole = 'Admin' | 'FleetManager' | 'Technician' | 'PartsSpecialist' | 'R
       width: 34px;
       height: 34px;
       border-radius: 50%;
-      background: #e0e7ff;
-      color: #4f46e5;
+      background: var(--accent-primary);
+      color: var(--surface-inverse);
       font-size: 13px;
       font-weight: 700;
       display: flex;
