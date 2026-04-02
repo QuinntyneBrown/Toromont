@@ -36,6 +36,7 @@ public class WorkOrdersController : ControllerBase
         [FromQuery] int take = 20,
         [FromQuery] string? status = null,
         [FromQuery] string? sort = null,
+        [FromQuery] Guid? equipmentId = null,
         CancellationToken ct = default)
     {
         var query = _db.WorkOrders
@@ -43,6 +44,9 @@ public class WorkOrdersController : ControllerBase
             .Include(w => w.AssignedTo)
             .Where(w => w.OrganizationId == _tenant.OrganizationId)
             .AsNoTracking();
+
+        if (equipmentId.HasValue)
+            query = query.Where(w => w.EquipmentId == equipmentId.Value);
 
         if (!string.IsNullOrWhiteSpace(status))
             query = query.Where(w => w.Status == status);
