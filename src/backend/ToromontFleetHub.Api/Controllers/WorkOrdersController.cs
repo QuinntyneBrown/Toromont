@@ -161,7 +161,7 @@ public class WorkOrdersController : ControllerBase
         if (request.Status == "Completed")
             wo.CompletedDate = DateTime.UtcNow;
 
-        wo.History.Add(new WorkOrderHistory
+        var history = new WorkOrderHistory
         {
             Id = Guid.NewGuid(),
             WorkOrderId = wo.Id,
@@ -170,10 +170,19 @@ public class WorkOrdersController : ControllerBase
             Notes = request.Notes,
             ChangedByUserId = _tenant.UserId,
             ChangedAt = DateTime.UtcNow
-        });
+        };
+        _db.WorkOrderHistories.Add(history);
 
         await _db.SaveChangesAsync(ct);
-        return Ok(wo);
+
+        // Reload with history for response
+        var updated = await _db.WorkOrders
+            .Include(w => w.History)
+            .Include(w => w.Equipment)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(w => w.Id == id, ct);
+
+        return Ok(updated);
     }
 
     [HttpGet("calendar")]
@@ -210,8 +219,9 @@ public class WorkOrdersController : ControllerBase
             ["Open"] = new() { "InProgress", "Cancelled" },
             ["InProgress"] = new() { "OnHold", "Completed", "Cancelled" },
             ["OnHold"] = new() { "InProgress", "Cancelled" },
-            ["Completed"] = new() { "Open" },
-            ["Cancelled"] = new() { "Open" }
+            ["Completed"] = new() { "Closed" },
+            ["Closed"] = new(),
+            ["Cancelled"] = new()
         };
 
         if (!transitions.TryGetValue(currentStatus, out var allowed))
