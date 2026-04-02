@@ -51,7 +51,6 @@ export interface WorkOrder {
   equipment?: { name: string; make: string; model: string };
   history?: Array<{ previousStatus: string; newStatus: string; notes?: string; changedAt: string }>;
   createdAt: string;
-  [key: string]: unknown;
 }
 
 export interface TelemetryEvent {
