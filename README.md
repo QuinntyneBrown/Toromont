@@ -1,33 +1,39 @@
 # Toromont Fleet Hub
 
-A comprehensive fleet management system for Toromont to manage equipment, service operations, parts ordering, telemetry monitoring, AI-driven insights, and notifications/reporting.
+A comprehensive, multi-tenant fleet management system for Toromont to manage equipment, service operations, parts ordering, telemetry monitoring, AI-driven insights, and notifications/reporting.
 
 ## Tech Stack
 
-- **Backend:** ASP.NET Core (.NET 11.0), Entity Framework Core, Serilog, OpenAPI
-- **Frontend:** Angular 17, TypeScript, RxJS
-- **E2E Testing:** Playwright
+- **Backend:** ASP.NET Core (.NET 9.0), Entity Framework Core, MediatR (CQRS), FluentValidation, Serilog, SignalR, Dapper, OpenAPI
+- **Frontend:** Angular 21, TypeScript, Kendo UI, Bootstrap 5, RxJS, Leaflet, MSAL (Azure AD)
+- **Infrastructure:** Azure (App Service, Functions, Logic Apps, API Management, OpenAI, Communication Services)
+- **Data:** SQL Server 2022, EF Core migrations, time-series telemetry with 90-day retention
+- **Testing:** Playwright (E2E), Karma/Jasmine (unit)
 
 ## Project Structure
 
 ```
 src/
-├── backend/ToromontFleetHub.Api   # REST API (Controllers, Models, Services, Data)
-├── frontend/                      # Angular application
+├── backend/ToromontFleetHub.Api   # REST API (Controllers, Models, Services, DTOs, Hubs, Middleware)
+├── frontend/                      # Angular application (standalone components)
 docs/
 ├── specs/                         # L1 & L2 requirements documentation
-├── detailed-designs/              # Technical design documents per feature
+├── detailed-designs/              # Technical design documents per feature (7 modules)
+├── adrs/                          # Architecture Decision Records (35 ADRs)
+designs/
 ├── ui-design.pen                  # UI/UX design file
-e2e/                               # Playwright end-to-end tests
+├── exports/                       # Exported design assets (PNG)
+e2e/                               # Playwright end-to-end tests (9 spec files)
+Toromont.sln                       # Visual Studio solution
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- [.NET 11.0 SDK](https://dotnet.microsoft.com/download)
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download)
 - [Node.js](https://nodejs.org/) (LTS recommended)
-- [Angular CLI](https://angular.io/cli)
+- [Angular CLI](https://angular.dev/tools/cli)
 
 ### Backend
 
@@ -57,10 +63,12 @@ npx playwright test
 
 ## Feature Modules
 
-- **Authentication** — User login and role-based access
+- **Dashboard** — Overview of fleet status and key metrics
+- **Authentication** — Azure AD/Entra ID login with multi-tenant RBAC
 - **Equipment Management** — Track and manage fleet equipment
-- **Service Management** — Schedule and monitor service operations
-- **Parts Ordering** — Order and track parts inventory
-- **Telemetry Monitoring** — Real-time equipment telemetry data
-- **AI Insights** — AI-driven predictions and anomaly detection
-- **Notifications & Reporting** — Alerts, reports, and user preferences
+- **Service Management** — Schedule and monitor work orders
+- **Parts Ordering** — Browse catalog, manage cart, and track orders
+- **Telemetry Monitoring** — Real-time equipment telemetry with map visualization
+- **AI Insights** — Azure OpenAI-driven predictions and anomaly detection
+- **Notifications & Reporting** — Real-time alerts via SignalR, PDF/Excel/CSV report export
+- **User Management** — Multi-org user administration and preferences
