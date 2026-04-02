@@ -10,7 +10,7 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const requiredRoles = route.data['roles'] as string[];
 
   return authService.user$.pipe(
-    timeout(3000),
+    timeout(isDevMode() ? 100 : 3000),
     take(1),
     map(user => {
       if (user && requiredRoles.includes(user.role)) return true;
