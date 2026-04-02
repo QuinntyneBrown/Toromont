@@ -55,15 +55,15 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
               <div class="spec-item"><span class="spec-label">Year</span><span class="spec-value">{{ equipment.year }}</span></div>
               <div class="spec-item"><span class="spec-label">Serial Number</span><span class="spec-value">{{ equipment.serialNumber }}</span></div>
               <div class="spec-item"><span class="spec-label">Category</span><span class="spec-value">{{ equipment.category }}</span></div>
-              <div class="spec-item"><span class="spec-label">Engine</span><span class="spec-value">Cat C4.4</span></div>
+              <div class="spec-item"><span class="spec-label">Status</span><span class="spec-value">{{ equipment.status }}</span></div>
             </div>
           </div>
 
           <!-- Telemetry KPI Cards -->
           <div class="d-flex gap-3">
-            <app-kpi-card label="Engine Hours" [value]="(equipment.currentHours | number:'1.0-0') + ' hrs'" style="flex:1"></app-kpi-card>
-            <app-kpi-card label="Fuel Level" value="73%" style="flex:1"></app-kpi-card>
-            <app-kpi-card label="Temperature" value="185°F" style="flex:1"></app-kpi-card>
+            <app-kpi-card label="Engine Hours" [value]="latestTelemetry?.engineHours ? (latestTelemetry.engineHours | number:'1.0-0') + ' hrs' : 'N/A'" style="flex:1"></app-kpi-card>
+            <app-kpi-card label="Fuel Level" [value]="latestTelemetry?.fuelLevel ? (latestTelemetry.fuelLevel | number:'1.0-0') + '%' : 'N/A'" style="flex:1"></app-kpi-card>
+            <app-kpi-card label="Temperature" [value]="latestTelemetry?.temperature ? (latestTelemetry.temperature | number:'1.0-0') + '°F' : 'N/A'" style="flex:1"></app-kpi-card>
           </div>
         </div>
 
@@ -73,7 +73,7 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
           <div class="detail-card">
             <div class="card-title-row">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span class="fw-semibold" style="font-size:14px;">Toronto, ON</span>
+              <span class="fw-semibold" style="font-size:14px;">{{ equipment.location || 'Unknown Location' }}</span>
             </div>
             <div class="map-placeholder">
               <div style="width:12px;height:12px;border-radius:50%;background:var(--status-success);"></div>
@@ -142,6 +142,7 @@ export default class EquipmentDetailComponent implements OnInit {
   equipment: Equipment | null = null;
   workOrders: WorkOrder[] = [];
   telemetryEvents: TelemetryEvent[] = [];
+  latestTelemetry: any = null;
   private equipmentId = '';
 
   constructor(
@@ -174,8 +175,8 @@ export default class EquipmentDetailComponent implements OnInit {
   }
 
   loadTelemetry(): void {
-    this.api.get<TelemetryEvent[]>(`/telemetry/${this.equipmentId}/latest`).subscribe({
-      next: (res) => { this.telemetryEvents = Array.isArray(res) ? res : []; },
+    this.api.get<any>(`/telemetry/${this.equipmentId}/latest`).subscribe({
+      next: (res) => { this.latestTelemetry = res; },
       error: () => { this.telemetryEvents = []; }
     });
   }
