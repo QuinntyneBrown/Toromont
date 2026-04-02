@@ -3,7 +3,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'Admin' | 'FleetManager' | 'Technician' | 'PartsSpecialist' | 'ReadOnly';
+  role: 'Admin' | 'FleetManager' | 'Technician' | 'Operator';
   tenantId: string;
   isActive: boolean;
   createdAt: string;
@@ -12,16 +12,21 @@ export interface User {
 
 export interface Equipment {
   id: string;
+  name: string;
   serialNumber: string;
   model: string;
   make: string;
   year: number;
   category: string;
-  status: 'Active' | 'InService' | 'Down' | 'Retired';
-  locationLat?: number;
-  locationLng?: number;
-  currentHours: number;
-  tenantId: string;
+  status: 'Operational' | 'NeedsService' | 'OutOfService' | 'Idle';
+  latitude: number;
+  longitude: number;
+  location: string;
+  lastServiceDate?: string;
+  notes?: string;
+  organizationId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface WorkOrder {
