@@ -51,6 +51,7 @@ public class CartController : ControllerBase
         {
             existing.Quantity += request.Quantity;
             await _db.SaveChangesAsync(ct);
+            existing.Part = part;
             return Ok(existing);
         }
 
@@ -66,6 +67,7 @@ public class CartController : ControllerBase
         _db.CartItems.Add(item);
         await _db.SaveChangesAsync(ct);
 
+        item.Part = part;
         return CreatedAtAction(nameof(GetCart), item);
     }
 
