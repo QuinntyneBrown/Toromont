@@ -88,13 +88,16 @@ export interface AIPrediction {
 
 export interface AnomalyDetection {
   id: string;
+  organizationId?: string;
   equipmentId: string;
-  parameterName: string;
+  anomalyType: string;
+  metricName: string;
   expectedValue: number;
   actualValue: number;
-  deviationPercentage: number;
-  severity: 'Low' | 'Medium' | 'High' | 'Critical';
+  deviationSigma: number;
+  severity: string;
   detectedAt: string;
+  equipment?: { id: string; name: string; make: string; model: string };
 }
 
 export interface Notification {
