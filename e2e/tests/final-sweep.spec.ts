@@ -4,7 +4,7 @@ const pages = [
   { name: 'Dashboard', url: '/dashboard', expect: 'Fleet Overview', dataCheck: 'TOTAL EQUIPMENT' },
   { name: 'Equipment List', url: '/equipment', expect: 'Equipment Registry', rowSelector: '[data-testid="equipment-row"]' },
   { name: 'Equipment Detail', url: '/equipment/c1b2c3d4-0001-0000-0000-000000000001', expect: 'CAT 320' },
-  { name: 'Work Orders', url: '/service', expect: 'Work Orders', rowSelector: 'table tbody tr' },
+  { name: 'Work Orders', url: '/service', expect: 'Service Management', rowSelector: 'table tbody tr' },
   { name: 'Parts Catalog', url: '/parts', expect: 'Parts Catalog', rowSelector: '[data-testid="part-row"]' },
   { name: 'Cart', url: '/parts/cart', expect: 'Shopping Cart' },
   { name: 'Telemetry', url: '/telemetry', expect: 'Telemetry' },
