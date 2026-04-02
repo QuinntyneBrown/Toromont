@@ -30,7 +30,7 @@ import { HeaderComponent } from './shared/components/header/header.component';
     }
     .main-area {
       flex: 1;
-      margin-left: 260px;
+      margin-left: 240px;
       display: flex;
       flex-direction: column;
       transition: margin-left 0.2s ease;

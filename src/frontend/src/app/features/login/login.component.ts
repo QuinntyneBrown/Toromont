@@ -83,12 +83,12 @@ import { AuthService } from '../../core/services/auth.service';
     .login-branding {
       width: 600px;
       min-width: 600px;
-      background: #1a1a2e;
-      color: #ffffff;
+      background: var(--surface-inverse);
+      color: var(--foreground-inverse);
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 60px 48px 32px;
+      justify-content: center;
+      padding: 80px 60px;
     }
 
     .branding-content {
@@ -104,7 +104,7 @@ import { AuthService } from '../../core/services/auth.service';
     }
 
     .logo-text {
-      font-size: 32px;
+      font-size: 48px;
       font-weight: 800;
       letter-spacing: 2px;
       margin: 0;
@@ -116,10 +116,10 @@ import { AuthService } from '../../core/services/auth.service';
     }
 
     .tagline {
-      font-size: 22px;
-      font-weight: 600;
+      font-size: 18px;
+      font-weight: 400;
       margin: 12px 0 0;
-      color: rgba(255, 255, 255, 0.9);
+      color: var(--foreground-secondary);
     }
 
     .description {
@@ -154,15 +154,15 @@ import { AuthService } from '../../core/services/auth.service';
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f8f9fa;
+      background: var(--surface-secondary);
     }
 
     .login-card {
       background: #ffffff;
-      border-radius: 12px;
-      padding: 48px;
-      width: 420px;
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      width: 400px;
+      border: 1px solid var(--border-subtle);
       text-align: center;
     }
 
@@ -170,7 +170,7 @@ import { AuthService } from '../../core/services/auth.service';
       font-size: 26px;
       font-weight: 700;
       margin: 0 0 8px;
-      color: #1a1a2e;
+      color: var(--foreground-primary);
     }
 
     .sign-in-subtitle {

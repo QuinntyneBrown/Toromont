@@ -42,11 +42,72 @@ body {
 }
 
 // Override Kendo theme to match Toromont branding
+.k-grid {
+  font-family: var(--font-body);
+  border-color: var(--border-subtle);
+  border-radius: var(--radius-md);
+}
 .k-grid .k-grid-header {
   background-color: var(--surface-primary);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground-secondary);
 }
-.k-button-primary {
+.k-grid td {
+  font-size: 13px;
+  color: var(--foreground-primary);
+  border-color: var(--border-subtle);
+}
+.k-grid .k-grid-header th {
+  border-color: var(--border-subtle);
+}
+.k-grid .k-pager {
+  border-color: var(--border-subtle);
+}
+.k-button-primary, .k-button.k-primary {
   background-color: var(--accent-primary);
   border-color: var(--accent-primary);
   color: var(--surface-inverse);
+  font-weight: 600;
 }
+.k-button-primary:hover, .k-button.k-primary:hover {
+  background-color: var(--accent-primary-hover);
+  border-color: var(--accent-primary-hover);
+}
+.k-scheduler {
+  border-color: var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.k-chart {
+  font-family: var(--font-body);
+}
+.k-tabstrip .k-tabstrip-items .k-item.k-active {
+  border-bottom-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+.k-dropdownlist {
+  border-color: var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+.k-textbox {
+  border-color: var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+// Global utility
+.btn-warning {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--surface-inverse);
+  font-weight: 600;
+}
+.btn-warning:hover {
+  background-color: var(--accent-primary-hover);
+  border-color: var(--accent-primary-hover);
+  color: var(--surface-inverse);
+}
+
+// Google Fonts import
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');

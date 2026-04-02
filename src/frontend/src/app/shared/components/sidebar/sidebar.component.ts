@@ -14,20 +14,14 @@ interface NavItem {
   imports: [CommonModule, RouterModule],
   template: `
     <aside class="sidebar" [class.collapsed]="collapsed">
-      <div class="sidebar-header">
-        <div class="logo" *ngIf="!collapsed">
-          <span class="logo-fleet">FLEET</span><span class="logo-hub">HUB</span>
-        </div>
-        <div class="logo logo-small" *ngIf="collapsed">
-          <span class="logo-hub">FH</span>
-        </div>
-        <button class="toggle-btn" (click)="toggleCollapse()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            <line x1="3" y1="12" x2="21" y2="12"/>
-            <line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        </button>
+      <div class="sidebar-logo">
+        <svg *ngIf="!collapsed" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--sidebar-active)" stroke-width="2">
+          <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
+        </svg>
+        <span class="logo-text" *ngIf="!collapsed">FLEET HUB</span>
+        <svg *ngIf="collapsed" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sidebar-active)" stroke-width="2">
+          <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
+        </svg>
       </div>
       <nav class="sidebar-nav">
         <a *ngFor="let item of navItems"
@@ -43,7 +37,7 @@ interface NavItem {
   `,
   styles: [`
     .sidebar {
-      width: 260px;
+      width: 240px;
       min-height: 100vh;
       background-color: var(--sidebar-bg);
       color: var(--sidebar-text);
@@ -58,34 +52,23 @@ interface NavItem {
     .sidebar.collapsed {
       width: 64px;
     }
-    .sidebar-header {
+    .sidebar-logo {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      gap: 10px;
+      padding: 0 0 20px 0;
     }
-    .logo {
-      font-size: 20px;
+    .logo-text {
+      font-size: 18px;
       font-weight: 700;
-      letter-spacing: 2px;
+      color: var(--sidebar-active);
+      letter-spacing: 1px;
     }
-    .logo-fleet { color: #fff; }
-    .logo-hub { color: var(--sidebar-active); }
-    .logo-small { font-size: 16px; }
-    .toggle-btn {
-      background: none;
-      border: none;
-      color: var(--sidebar-text);
-      cursor: pointer;
-      padding: 4px;
-    }
-    .toggle-btn:hover { color: #fff; }
     .sidebar-nav {
       display: flex;
       flex-direction: column;
-      padding: 8px;
-      gap: 2px;
+      padding: 24px 16px;
+      gap: 4px;
     }
     .nav-item {
       display: flex;

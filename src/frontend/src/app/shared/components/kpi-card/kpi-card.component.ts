@@ -27,7 +27,7 @@ import { CommonModule } from '@angular/common';
     .kpi-card {
       background-color: var(--surface-secondary);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-md);
       padding: 20px;
       display: flex;
       flex-direction: column;
@@ -41,7 +41,7 @@ import { CommonModule } from '@angular/common';
       letter-spacing: 0.5px;
     }
     .kpi-value {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 700;
       color: var(--foreground-primary);
       font-family: var(--font-data);

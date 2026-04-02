@@ -10,27 +10,24 @@ import { CommonModule } from '@angular/common';
     .status-badge {
       display: inline-flex;
       align-items: center;
-      padding: 2px 10px;
+      justify-content: center;
+      padding: 4px 10px;
       border-radius: 12px;
       font-size: 12px;
-      font-weight: 600;
-      line-height: 20px;
+      font-weight: 500;
+      color: var(--foreground-inverse);
     }
     .badge-success {
-      background-color: rgba(16, 185, 129, 0.1);
-      color: var(--status-success);
+      background-color: var(--status-success);
     }
     .badge-warning {
-      background-color: rgba(245, 158, 11, 0.1);
-      color: var(--status-warning);
+      background-color: var(--status-warning);
     }
     .badge-error {
-      background-color: rgba(239, 68, 68, 0.1);
-      color: var(--status-error);
+      background-color: var(--status-error);
     }
     .badge-info {
-      background-color: rgba(59, 130, 246, 0.1);
-      color: var(--status-info);
+      background-color: var(--status-info);
     }
   `]
 })
