@@ -9,9 +9,8 @@ import { Subject, takeUntil } from 'rxjs';
 
 interface TelemetryMetric {
   timestamp: string;
-  label: string;
   engineHours: number;
-  fuelConsumption: number;
+  fuelLevel: number;
   temperature: number;
 }
 
@@ -74,7 +73,7 @@ interface GpsPoint {
                     type="line"
                     [data]="metrics"
                     field="engineHours"
-                    categoryField="label"
+                    categoryField="timestamp"
                     [color]="'#FFCD11'"
                     [markers]="{ visible: true, size: 4 }">
                   </kendo-chart-series-item>
@@ -108,8 +107,8 @@ interface GpsPoint {
                   <kendo-chart-series-item
                     type="column"
                     [data]="metrics"
-                    field="fuelConsumption"
-                    categoryField="label"
+                    field="fuelLevel"
+                    categoryField="timestamp"
                     [color]="'#FFCD11'">
                   </kendo-chart-series-item>
                 </kendo-chart-series>
@@ -143,7 +142,7 @@ interface GpsPoint {
                     type="line"
                     [data]="metrics"
                     field="temperature"
-                    categoryField="label"
+                    categoryField="timestamp"
                     [color]="'#F59E0B'"
                     [markers]="{ visible: true, size: 4 }">
                   </kendo-chart-series-item>
