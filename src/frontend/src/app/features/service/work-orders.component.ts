@@ -113,11 +113,15 @@ interface StatusTab {
           </kendo-dropdownlist>
         </div>
         <div class="mb-3">
-          <label class="form-label fw-semibold">Title</label>
-          <kendo-textbox [(value)]="newWorkOrder.title"></kendo-textbox>
+          <label class="form-label fw-semibold">Service Type</label>
+          <kendo-dropdownlist
+            [data]="serviceTypes"
+            [(value)]="newWorkOrder.title"
+            [style.width]="'100%'">
+          </kendo-dropdownlist>
         </div>
         <div class="mb-3">
-          <label class="form-label fw-semibold">Service Type / Description</label>
+          <label class="form-label fw-semibold">Description</label>
           <kendo-textarea [(value)]="newWorkOrder.description" [rows]="3"></kendo-textarea>
         </div>
         <div class="row mb-3">
@@ -182,11 +186,12 @@ export default class WorkOrdersComponent implements OnInit {
   ];
 
   priorities = ['Low', 'Medium', 'High', 'Critical'];
+  serviceTypes = ['Preventive', 'Corrective', 'Emergency'];
   equipmentList: { label: string; value: string }[] = [];
 
   newWorkOrder: any = {
     equipmentItem: null,
-    title: '',
+    title: 'Preventive',
     description: '',
     priority: 'Medium',
     scheduledDate: null,
@@ -295,7 +300,7 @@ export default class WorkOrdersComponent implements OnInit {
   private resetNewWorkOrder(): void {
     this.newWorkOrder = {
       equipmentItem: null,
-      title: '',
+      title: 'Preventive',
       description: '',
       priority: 'Medium',
       scheduledDate: null,
