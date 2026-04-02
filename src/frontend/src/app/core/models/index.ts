@@ -31,14 +31,19 @@ export interface Equipment {
 
 export interface WorkOrder {
   id: string;
+  organizationId: string;
+  workOrderNumber: string;
   equipmentId: string;
-  title: string;
+  serviceType: string;
   description: string;
-  status: 'Open' | 'InProgress' | 'Completed' | 'Cancelled';
+  status: 'Open' | 'InProgress' | 'OnHold' | 'Completed' | 'Closed' | 'Cancelled';
   priority: 'Low' | 'Medium' | 'High' | 'Critical';
-  assignedTo?: string;
-  scheduledDate?: string;
+  requestedDate: string;
   completedDate?: string;
+  assignedToUserId?: string;
+  assignedTo?: { displayName: string; role: string };
+  equipment?: { name: string; make: string; model: string };
+  history?: Array<{ previousStatus: string; newStatus: string; notes?: string; changedAt: string }>;
   createdAt: string;
 }
 
