@@ -51,7 +51,8 @@ public sealed class WorkOrdersAndNotificationsTests
                 .ToListAsync());
 
         var notification = Assert.Single(
-            notifications.Where(n => n.Message.Contains(created.WorkOrderNumber, StringComparison.Ordinal)));
+            notifications,
+            n => n.Message.Contains(created.WorkOrderNumber, StringComparison.Ordinal));
 
         Assert.Equal(TestSeedData.Org1Id, notification.OrganizationId);
         Assert.False(notification.IsRead);
