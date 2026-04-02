@@ -26,10 +26,7 @@ interface DashboardKpis {
   imports: [CommonModule, RouterModule, KpiCardComponent, BadgeComponent],
   template: `
     <div class="container-fluid p-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0 fw-bold">Dashboard</h2>
-        <span class="text-muted" style="font-size: 13px;">Last updated: {{ lastUpdated | date:'medium' }}</span>
-      </div>
+      <h2 class="mb-0 fw-bold" style="font-size: 22px; margin-bottom: 20px !important;">Fleet Overview</h2>
 
       <!-- KPI Cards Row -->
       <div class="row g-3 mb-4">

@@ -13,42 +13,25 @@ import { AuthService } from '../../core/services/auth.service';
       <div class="login-branding">
         <div class="branding-content">
           <div class="logo-section">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <rect width="48" height="48" rx="8" fill="#FFCD11"/>
-              <path d="M14 16h20v4H14zM14 24h14v4H14zM14 32h8v4H14z" fill="#1a1a2e"/>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFCD11" stroke-width="2">
+              <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
             </svg>
-            <h1 class="logo-text">FLEET <span class="logo-accent">HUB</span></h1>
+            <span class="brand-name">TOROMONT</span>
           </div>
-          <h2 class="tagline">Intelligent Fleet Management</h2>
-          <p class="description">
-            Monitor your entire fleet in real-time. Track equipment health, predict maintenance needs,
-            and optimize operations with AI-powered insights — all from a single platform.
+          <h1 class="logo-text">FLEET HUB</h1>
+          <p class="description">Equipment Fleet Management &amp; Service Portal</p>
+          <p class="tagline">
+            Manage your heavy equipment fleet, schedule service, track
+            work orders, and get AI-powered insights — all in one place.
           </p>
-          <div class="features">
-            <div class="feature-item">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFCD11" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              <span>Real-time Telemetry Monitoring</span>
-            </div>
-            <div class="feature-item">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFCD11" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              <span>AI-Powered Predictive Maintenance</span>
-            </div>
-            <div class="feature-item">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFCD11" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              <span>Comprehensive Reporting & Analytics</span>
-            </div>
-          </div>
-        </div>
-        <div class="branding-footer">
-          <span>&copy; {{ currentYear }} Toromont Industries. All rights reserved.</span>
         </div>
       </div>
 
       <!-- Right Panel: Sign In -->
       <div class="login-form-panel">
         <div class="login-card">
-          <h2 class="sign-in-title">Sign In</h2>
-          <p class="sign-in-subtitle">Access your fleet management dashboard</p>
+          <h2 class="sign-in-title">Welcome Back</h2>
+          <p class="sign-in-subtitle">Sign in to access your fleet dashboard</p>
 
           <button kendoButton
                   [themeColor]="'primary'"
@@ -63,11 +46,8 @@ import { AuthService } from '../../core/services/auth.service';
             Sign in with Microsoft
           </button>
 
-          <p class="terms-text">
-            By signing in, you agree to the
-            <a href="javascript:void(0)">Terms of Service</a> and
-            <a href="javascript:void(0)">Privacy Policy</a>.
-          </p>
+          <p class="secured-text">Secured by Microsoft Entra ID</p>
+          <p class="copyright-text">&copy; {{ currentYear }} Toromont Industries Ltd.</p>
         </div>
       </div>
     </div>
@@ -100,53 +80,33 @@ import { AuthService } from '../../core/services/auth.service';
     .logo-section {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
+    }
+
+    .brand-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground-inverse);
+      letter-spacing: 2px;
     }
 
     .logo-text {
       font-size: 48px;
       font-weight: 800;
-      letter-spacing: 2px;
       margin: 0;
-      color: #ffffff;
-    }
-
-    .logo-accent {
-      color: #FFCD11;
-    }
-
-    .tagline {
-      font-size: 18px;
-      font-weight: 400;
-      margin: 12px 0 0;
-      color: var(--foreground-secondary);
+      color: var(--foreground-inverse);
     }
 
     .description {
-      font-size: 15px;
-      line-height: 1.7;
-      color: rgba(255, 255, 255, 0.65);
-      max-width: 460px;
+      font-size: 18px;
+      color: var(--foreground-secondary);
     }
 
-    .features {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-top: 12px;
-    }
-
-    .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .tagline {
       font-size: 14px;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .branding-footer {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.4);
+      line-height: 1.6;
+      color: var(--sidebar-text);
+      max-width: 420px;
     }
 
     .login-form-panel {
@@ -191,19 +151,16 @@ import { AuthService } from '../../core/services/auth.service';
       border-radius: 8px;
     }
 
-    .terms-text {
+    .secured-text {
       margin-top: 24px;
       font-size: 12px;
-      color: #9ca3af;
+      color: var(--foreground-secondary);
     }
 
-    .terms-text a {
-      color: #3b82f6;
-      text-decoration: none;
-    }
-
-    .terms-text a:hover {
-      text-decoration: underline;
+    .copyright-text {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--foreground-disabled);
     }
 
     @media (max-width: 960px) {
