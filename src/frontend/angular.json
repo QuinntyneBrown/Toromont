@@ -52,7 +52,8 @@
               }
             ],
             "polyfills": [
-              "zone.js"
+              "zone.js",
+              "@angular/localize/init"
             ],
             "styles": [
               "src/styles.scss"
