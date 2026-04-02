@@ -160,7 +160,7 @@ interface Part {
                   <tr *ngFor="let dataItem of pagedData" data-testid="part-row">
                     <td data-testid="part-number">{{ dataItem.partNumber }}</td>
                     <td data-testid="part-name">{{ dataItem.name }}</td>
-                    <td>{{ dataItem.description | slice:0:60 }}{{ dataItem.description?.length > 60 ? '...' : '' }}</td>
+                    <td>{{ dataItem.description | slice:0:60 }}{{ (dataItem.description?.length || 0) > 60 ? '...' : '' }}</td>
                     <td data-testid="part-price">{{ dataItem.price | currency:'USD':'symbol':'1.2-2' }}</td>
                     <td data-testid="part-availability">
                       <app-badge [text]="getAvailabilityLabel(dataItem.availability)" [variant]="getAvailabilityVariant(dataItem.availability)"></app-badge>

@@ -116,7 +116,7 @@ interface CalendarEvent {
                 </a>
               </td>
               <td data-testid="wo-service-type">{{ item.serviceType }}</td>
-              <td data-testid="wo-description">{{ item.description | slice:0:50 }}{{ item.description?.length > 50 ? '...' : '' }}</td>
+              <td data-testid="wo-description">{{ item.description | slice:0:50 }}{{ (item.description?.length || 0) > 50 ? '...' : '' }}</td>
               <td data-testid="wo-priority"><app-badge [text]="item.priority" [variant]="getPriorityVariant(item.priority)"></app-badge></td>
               <td data-testid="wo-status"><app-badge [text]="item.status" [variant]="getStatusVariant(item.status)"></app-badge></td>
               <td data-testid="wo-due-date">{{ item.requestedDate ? (item.requestedDate | date:'mediumDate') : 'Unscheduled' }}</td>

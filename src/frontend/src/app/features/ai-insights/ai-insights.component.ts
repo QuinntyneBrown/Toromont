@@ -16,9 +16,6 @@ interface DashboardStats {
 
 interface PredictionRow extends AIPrediction {
   equipmentName?: string;
-  component?: string;
-  timeframe?: string;
-  priority?: string;
 }
 
 @Component({
@@ -107,7 +104,7 @@ interface PredictionRow extends AIPrediction {
                       <td>
                         <span data-testid="priority-badge">
                           <app-badge
-                            [text]="dataItem.priority"
+                            [text]="dataItem.priority || 'Low'"
                             [variant]="getPriorityVariant(dataItem.confidenceScore * 100)">
                           </app-badge>
                         </span>

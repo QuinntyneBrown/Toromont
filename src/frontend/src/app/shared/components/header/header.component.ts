@@ -50,7 +50,7 @@ import { Notification } from '../../../core/models';
         </div>
         <div class="user-info" *ngIf="user$ | async as user">
           <div class="user-avatar-wrapper">
-            <div class="user-avatar" data-testid="user-avatar" (click)="toggleUserMenu()">{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</div>
+            <div class="user-avatar" data-testid="user-avatar" (click)="toggleUserMenu()">{{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}</div>
             <div class="user-menu-dropdown" *ngIf="userMenuOpen">
               <button class="sign-out-btn" data-testid="sign-out-btn" (click)="signOut()">Sign Out</button>
             </div>
