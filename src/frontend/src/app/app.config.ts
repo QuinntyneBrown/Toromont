@@ -1,4 +1,4 @@
-import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners, isDevMode } from '@angular/core';
+import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners, isDevMode, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
@@ -60,6 +60,7 @@ export function msalInterceptorConfigFactory() {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(
       ...(isDevMode() ? [] : [withInterceptors([authInterceptor, tenantInterceptor])])
