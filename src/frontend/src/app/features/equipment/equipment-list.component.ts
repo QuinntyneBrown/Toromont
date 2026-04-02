@@ -166,10 +166,10 @@ export default class EquipmentListComponent implements OnInit {
 
   statuses = [
     { text: 'All Statuses', value: '' },
-    { text: 'Active', value: 'Active' },
-    { text: 'In Service', value: 'InService' },
-    { text: 'Down', value: 'Down' },
-    { text: 'Retired', value: 'Retired' }
+    { text: 'Operational', value: 'Operational' },
+    { text: 'Needs Service', value: 'NeedsService' },
+    { text: 'Out of Service', value: 'OutOfService' },
+    { text: 'Idle', value: 'Idle' }
   ];
   selectedStatus = this.statuses[0];
 
