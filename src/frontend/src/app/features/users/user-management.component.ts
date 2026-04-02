@@ -173,7 +173,8 @@ export default class UserManagementComponent implements OnInit, OnDestroy {
 
   toggleUserStatus(user: User): void {
     const newStatus = !user.isActive;
-    this.api.put(`/users/${user.id}/role`, { isActive: newStatus })
+    const action = newStatus ? 'activate' : 'deactivate';
+    this.api.put(`/users/${user.id}/${action}`, {})
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
