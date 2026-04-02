@@ -268,11 +268,11 @@ export default class WorkOrdersComponent implements OnInit {
   createWorkOrder(): void {
     const body = {
       equipmentId: this.newWorkOrder.equipmentItem?.value || '',
-      title: this.newWorkOrder.title,
+      serviceType: this.newWorkOrder.title,
       description: this.newWorkOrder.description,
       priority: this.newWorkOrder.priority,
-      scheduledDate: this.newWorkOrder.scheduledDate ? this.newWorkOrder.scheduledDate.toISOString() : null,
-      assignedTo: this.newWorkOrder.assignedTo || null
+      requestedDate: this.newWorkOrder.scheduledDate ? this.newWorkOrder.scheduledDate.toISOString() : new Date().toISOString(),
+      assignedToUserId: this.newWorkOrder.assignedTo || null
     };
 
     this.api.post<any>('/work-orders', body).subscribe({
