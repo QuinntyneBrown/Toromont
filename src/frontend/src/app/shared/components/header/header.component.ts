@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../core/services/notification.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -124,12 +124,16 @@ import { AuthService } from '../../../core/services/auth.service';
     }
   `]
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   private notificationService = inject(NotificationService);
   private authService = inject(AuthService);
 
   unreadCount$ = this.notificationService.unreadCount$;
   user$ = this.authService.user$;
+
+  ngOnInit(): void {
+    this.notificationService.loadInitialCount();
+  }
 
   toggleNotifications(): void {
     // Notification panel toggle - will be implemented later

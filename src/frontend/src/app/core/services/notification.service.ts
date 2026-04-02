@@ -1,13 +1,22 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { Notification } from '../models';
+import { ApiService } from './api.service';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
   private hubConnection!: signalR.HubConnection;
+  private api = inject(ApiService);
   notifications$ = new BehaviorSubject<Notification[]>([]);
   unreadCount$ = new BehaviorSubject<number>(0);
+
+  loadInitialCount(): void {
+    this.api.get<{ unreadCount: number }>('/notifications/unread-count').subscribe({
+      next: (data) => this.unreadCount$.next(data.unreadCount),
+      error: () => {} // silently fail if not authenticated
+    });
+  }
 
   startConnection(accessToken: string): void {
     this.hubConnection = new signalR.HubConnectionBuilder()
