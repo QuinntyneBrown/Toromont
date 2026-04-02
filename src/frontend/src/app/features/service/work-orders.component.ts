@@ -169,14 +169,18 @@ export default class WorkOrdersComponent implements OnInit {
       this.api.get<any>(`/work-orders/${event.event.id}`).subscribe({
         next: (detail) => {
           this.selectedWorkOrder = detail;
-          this.selectedWorkOrderHistory = (detail.history || []).map((h: any) => ({
-            status: h.newStatus,
-            user: h.changedBy?.displayName || h.changedBy || 'System',
-            timestamp: h.changedAt
-          }));
+          this.selectedWorkOrderHistory = this.mapHistoryItems(detail.history);
         }
       });
     }
+  }
+
+  private mapHistoryItems(history: any[]): HistoryItem[] {
+    return (history || []).map((h: any) => ({
+      status: h.newStatus,
+      user: h.changedBy?.displayName || h.changedBy || 'System',
+      timestamp: h.changedAt
+    }));
   }
 
   updateTabCounts(res: ApiResponse<WorkOrder[]>): void {
@@ -224,11 +228,7 @@ export default class WorkOrdersComponent implements OnInit {
     this.api.get<any>(`/work-orders/${item.id}`).subscribe({
       next: (detail) => {
         this.selectedWorkOrder = detail;
-        this.selectedWorkOrderHistory = (detail.history || []).map((h: any) => ({
-          status: h.newStatus,
-          user: h.changedBy?.displayName || h.changedBy || 'System',
-          timestamp: h.changedAt
-        }));
+        this.selectedWorkOrderHistory = this.mapHistoryItems(detail.history);
       },
       error: () => {
         // Show the item without history on error — no fabricated data
@@ -244,11 +244,7 @@ export default class WorkOrdersComponent implements OnInit {
     this.api.put<any>(`/work-orders/${id}/status`, { status: 'InProgress' }).subscribe({
       next: (updated) => {
         this.selectedWorkOrder = updated;
-        this.selectedWorkOrderHistory.unshift({
-          status: 'InProgress',
-          user: 'Current User',
-          timestamp: new Date().toISOString()
-        });
+        this.selectedWorkOrderHistory = this.mapHistoryItems(updated.history);
         this.loadData();
       },
       error: () => {
@@ -264,11 +260,7 @@ export default class WorkOrdersComponent implements OnInit {
       next: (updated) => {
         this.selectedWorkOrder = updated;
         this.showCompletionForm = false;
-        this.selectedWorkOrderHistory.unshift({
-          status: 'Completed',
-          user: 'Current User',
-          timestamp: new Date().toISOString()
-        });
+        this.selectedWorkOrderHistory = this.mapHistoryItems(updated.history);
         this.loadData();
       },
       error: () => {
