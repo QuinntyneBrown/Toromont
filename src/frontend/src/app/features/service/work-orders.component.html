@@ -1,36 +1,20 @@
 
-    <!-- Calendar View -->
+    <!-- Calendar View — Kendo Scheduler -->
     <div *ngIf="isCalendarView" class="container-fluid py-3">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="fw-bold mb-0" style="font-size:22px;">Service Calendar</h2>
-        <div class="btn-group">
-          <button class="btn btn-outline-secondary" data-testid="view-day" [class.active]="calendarView === 'day'" (click)="calendarView = 'day'">Day</button>
-          <button class="btn btn-outline-secondary" data-testid="view-week" [class.active]="calendarView === 'week'" (click)="calendarView = 'week'">Week</button>
-          <button class="btn btn-outline-secondary" data-testid="view-month" [class.active]="calendarView === 'month'" (click)="calendarView = 'month'">Month</button>
-        </div>
       </div>
-      <div data-testid="service-calendar" class="calendar-container border rounded p-3" style="min-height:400px; position:relative;">
-        <div *ngFor="let evt of calendarEvents"
-             data-testid="calendar-event"
-             class="calendar-event p-2 mb-2 rounded border-start border-4"
-             [ngClass]="'border-' + getPriorityColor(evt.priority)"
-             (click)="onCalendarEventClick(evt)"
-             style="cursor:pointer; background: var(--background-secondary, #f8f9fa);">
-          <strong>{{ evt.workOrderNumber }}</strong> - {{ evt.title }}
-          <div class="text-muted small">{{ evt.equipmentName }} | {{ evt.date | date:'shortDate' }}</div>
-        </div>
-        <div *ngIf="calendarEvents.length === 0" class="text-muted text-center py-5">No scheduled work orders</div>
-      </div>
-
-      <!-- Event Popup -->
-      <div *ngIf="selectedCalendarEvent" data-testid="event-popup" class="card shadow position-absolute" style="z-index:1050; top:50%; left:50%; transform:translate(-50%,-50%); min-width:300px;">
-        <div class="card-body">
-          <h5 class="card-title" data-testid="popup-wo-number">{{ selectedCalendarEvent.workOrderNumber }}</h5>
-          <p data-testid="popup-equipment">{{ selectedCalendarEvent.equipmentName }}</p>
-          <p>{{ selectedCalendarEvent.title }}</p>
-          <button class="btn btn-sm btn-secondary" (click)="selectedCalendarEvent = null">Close</button>
-        </div>
-      </div>
+      <kendo-scheduler
+        [kendoSchedulerBinding]="schedulerEvents"
+        [selectedDate]="selectedDate"
+        (dateChange)="onSchedulerDateChange($event)"
+        (eventDblClick)="onSchedulerEventClick($event)"
+        data-testid="service-kendo-scheduler"
+        style="min-height:400px;">
+        <kendo-scheduler-day-view></kendo-scheduler-day-view>
+        <kendo-scheduler-week-view></kendo-scheduler-week-view>
+        <kendo-scheduler-month-view></kendo-scheduler-month-view>
+      </kendo-scheduler>
     </div>
 
     <!-- Work Orders List View -->
@@ -55,69 +39,25 @@
         </li>
       </ul>
 
-      <!-- Desktop Grid (hidden on mobile) -->
-      <div data-testid="work-orders-grid" class="d-none d-md-block">
-        <table class="table table-hover align-middle">
-          <thead>
-            <tr>
-              <th style="width:130px">WO #</th>
-              <th style="width:180px">Equipment</th>
-              <th style="width:140px">Service Type</th>
-              <th style="width:200px">Description</th>
-              <th style="width:110px">Priority</th>
-              <th style="width:120px">Status</th>
-              <th style="width:130px">Due Date</th>
-              <th style="width:140px">Assigned To</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of gridData.data" data-testid="work-order-row" (click)="onRowClick(item)" style="cursor:pointer;">
-              <td data-testid="wo-number"><span class="fw-semibold">{{ item.workOrderNumber }}</span></td>
-              <td data-testid="wo-equipment">
-                <a [routerLink]="['/equipment', item.equipmentId]" class="text-decoration-none">
-                  {{ item.equipment?.name || 'Unknown' }}
-                </a>
-              </td>
-              <td data-testid="wo-service-type">{{ item.serviceType }}</td>
-              <td data-testid="wo-description">{{ item.description | slice:0:50 }}{{ (item.description?.length || 0) > 50 ? '...' : '' }}</td>
-              <td data-testid="wo-priority"><app-badge [text]="item.priority" [variant]="getPriorityVariant(item.priority)"></app-badge></td>
-              <td data-testid="wo-status"><app-badge [text]="item.status" [variant]="getStatusVariant(item.status)"></app-badge></td>
-              <td data-testid="wo-due-date">{{ item.requestedDate ? (item.requestedDate | date:'mediumDate') : 'Unscheduled' }}</td>
-              <td data-testid="wo-assigned-to">{{ item.assignedTo?.displayName || 'Unassigned' }}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Simple pagination -->
-        <div class="d-flex justify-content-between align-items-center mt-2" *ngIf="gridData.total > pageSize">
-          <span class="text-muted">Showing {{ skip + 1 }}-{{ skip + gridData.data.length }} of {{ gridData.total }}</span>
-          <div>
-            <button class="btn btn-sm btn-outline-secondary me-1" [disabled]="skip === 0" (click)="onPrevPage()">Prev</button>
-            <button class="btn btn-sm btn-outline-secondary" [disabled]="skip + pageSize >= gridData.total" (click)="onNextPage()">Next</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Mobile Card Layout (visible on mobile only) -->
-      <div class="d-md-none">
-        <div *ngFor="let item of gridData.data"
-             data-testid="work-order-card"
-             class="card mb-2 shadow-sm"
-             (click)="onRowClick(item)"
-             style="cursor:pointer;">
-          <div class="card-body py-2 px-3">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <span data-testid="wo-number" class="fw-semibold">{{ item.workOrderNumber }}</span>
-              <span data-testid="wo-status"><app-badge [text]="item.status" [variant]="getStatusVariant(item.status)"></app-badge></span>
-            </div>
-            <div data-testid="wo-description" class="text-truncate mb-1">{{ item.description }}</div>
-            <div class="d-flex justify-content-between">
-              <span data-testid="wo-priority"><app-badge [text]="item.priority" [variant]="getPriorityVariant(item.priority)"></app-badge></span>
-              <span class="text-muted small">{{ item.requestedDate ? (item.requestedDate | date:'shortDate') : '' }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Kendo Grid for Work Orders -->
+      <kendo-grid
+        [data]="gridData"
+        [pageSize]="pageSize"
+        [skip]="skip"
+        [pageable]="true"
+        [sortable]="true"
+        [filterable]="true"
+        (dataStateChange)="onDataStateChange($event)"
+        (cellClick)="onRowClick($event.dataItem)"
+        data-testid="work-orders-kendo-grid">
+        <kendo-grid-column field="workOrderNumber" title="WO #" [width]="130"></kendo-grid-column>
+        <kendo-grid-column field="equipment.name" title="Equipment" [width]="180"></kendo-grid-column>
+        <kendo-grid-column field="serviceType" title="Service Type" [width]="140"></kendo-grid-column>
+        <kendo-grid-column field="priority" title="Priority" [width]="110"></kendo-grid-column>
+        <kendo-grid-column field="status" title="Status" [width]="120"></kendo-grid-column>
+        <kendo-grid-column field="requestedDate" title="Due Date" [width]="130" format="{0:d}"></kendo-grid-column>
+        <kendo-grid-column field="assignedTo.displayName" title="Assigned To" [width]="140"></kendo-grid-column>
+      </kendo-grid>
 
       <!-- Work Order Detail View -->
       <div *ngIf="selectedWorkOrder" class="modal d-block" style="background:rgba(0,0,0,0.3);" (click)="selectedWorkOrder = null">
