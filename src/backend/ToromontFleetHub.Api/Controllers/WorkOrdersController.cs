@@ -165,7 +165,7 @@ public class WorkOrdersController : ControllerBase
         if (request.Status == "Completed")
             wo.CompletedDate = DateTime.UtcNow;
 
-        var history = new WorkOrderHistory
+        wo.History.Add(new WorkOrderHistory
         {
             Id = Guid.NewGuid(),
             WorkOrderId = wo.Id,
@@ -174,8 +174,7 @@ public class WorkOrdersController : ControllerBase
             Notes = request.Notes,
             ChangedByUserId = _tenant.UserId,
             ChangedAt = DateTime.UtcNow
-        };
-        _db.WorkOrderHistories.Add(history);
+        });
 
         await _db.SaveChangesAsync(ct);
 
