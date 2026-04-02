@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GridModule } from '@progress/kendo-angular-grid';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { KpiCardComponent } from '../../shared/components/kpi-card/kpi-card.component';
 import { BadgeComponent } from '../../shared/components/badge/badge.component';
@@ -25,27 +24,27 @@ interface PredictionRow extends AIPrediction {
 @Component({
   selector: 'app-ai-insights',
   standalone: true,
-  imports: [CommonModule, GridModule, ButtonsModule, KpiCardComponent, BadgeComponent],
+  imports: [CommonModule, ButtonsModule, KpiCardComponent, BadgeComponent],
   template: `
     <div class="container-fluid p-4">
       <h2 class="mb-4 fw-bold">AI Insights</h2>
 
       <!-- KPI Cards -->
       <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="col-12 col-sm-6 col-lg-3" data-testid="kpi-total-predictions">
           <app-kpi-card label="Total Predictions" [value]="stats.totalPredictions"></app-kpi-card>
         </div>
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="col-12 col-sm-6 col-lg-3" data-testid="kpi-high-priority">
           <div class="kpi-highlight kpi-red">
             <app-kpi-card label="High Priority" [value]="stats.highPriority"></app-kpi-card>
           </div>
         </div>
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="col-12 col-sm-6 col-lg-3" data-testid="kpi-anomalies">
           <div class="kpi-highlight kpi-warning">
             <app-kpi-card label="Active Anomalies" [value]="stats.activeAnomalies"></app-kpi-card>
           </div>
         </div>
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="col-12 col-sm-6 col-lg-3" data-testid="kpi-cost-savings">
           <div class="kpi-highlight kpi-green">
             <app-kpi-card label="Est. Cost Savings" [value]="'$' + formatNumber(stats.estimatedCostSavings)"></app-kpi-card>
           </div>
@@ -56,65 +55,80 @@ interface PredictionRow extends AIPrediction {
       <div class="row g-4">
         <!-- Predictions Grid -->
         <div class="col-12 col-xl">
-          <div class="card">
+          <div class="card" data-testid="predictions-grid">
             <div class="card-header bg-white">
               <h5 class="mb-0 fw-semibold">Predictive Maintenance</h5>
             </div>
             <div class="card-body p-0">
-              <kendo-grid [data]="predictions" [pageable]="true" [pageSize]="10" [sortable]="true" [style.font-size.px]="13">
-                <kendo-grid-column field="equipmentId" title="Equipment" [width]="160">
-                  <ng-template kendoGridCellTemplate let-dataItem>
-                    {{ dataItem.equipment?.name || 'Equipment #' + dataItem.equipmentId }}
-                  </ng-template>
-                </kendo-grid-column>
-                <kendo-grid-column field="component" title="Component" [width]="140">
-                  <ng-template kendoGridCellTemplate let-dataItem>
-                    {{ dataItem.component }}
-                  </ng-template>
-                </kendo-grid-column>
-                <kendo-grid-column field="confidenceScore" title="Confidence" [width]="160">
-                  <ng-template kendoGridCellTemplate let-dataItem>
-                    <div class="d-flex align-items-center gap-2">
-                      <div class="progress flex-grow-1" style="height: 6px;">
-                        <div class="progress-bar"
-                             [style.width.%]="dataItem.confidenceScore * 100"
-                             [ngClass]="{
-                               'bg-danger': dataItem.confidenceScore >= 0.8,
-                               'bg-warning': dataItem.confidenceScore >= 0.5 && dataItem.confidenceScore < 0.8,
-                               'bg-secondary': dataItem.confidenceScore < 0.5
-                             }">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0" style="font-size: 13px;">
+                  <thead>
+                    <tr>
+                      <th class="sortable-header" style="width: 160px;" (click)="sortBy('equipmentId')">
+                        Equipment <span *ngIf="sortField === 'equipmentId'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+                      </th>
+                      <th class="sortable-header" style="width: 140px;" (click)="sortBy('component')">
+                        Component <span *ngIf="sortField === 'component'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+                      </th>
+                      <th class="sortable-header" style="width: 160px;" (click)="sortBy('confidenceScore')">
+                        Confidence <span *ngIf="sortField === 'confidenceScore'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+                      </th>
+                      <th style="width: 200px;">Recommended Action</th>
+                      <th class="sortable-header" style="width: 120px;" (click)="sortBy('timeframe')">
+                        Timeframe <span *ngIf="sortField === 'timeframe'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+                      </th>
+                      <th class="sortable-header" style="width: 120px;" (click)="sortBy('priority')">
+                        Priority <span *ngIf="sortField === 'priority'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+                      </th>
+                      <th style="width: 100px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let dataItem of pagedPredictions" data-testid="prediction-row">
+                      <td data-testid="pred-equipment">{{ dataItem.equipment?.name || 'Equipment #' + dataItem.equipmentId }}</td>
+                      <td data-testid="pred-component">{{ dataItem.component }}</td>
+                      <td data-testid="pred-confidence">
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px;">
+                            <div class="progress-bar"
+                                 [style.width.%]="dataItem.confidenceScore * 100"
+                                 [ngClass]="{
+                                   'bg-danger': dataItem.confidenceScore >= 0.8,
+                                   'bg-warning': dataItem.confidenceScore >= 0.5 && dataItem.confidenceScore < 0.8,
+                                   'bg-secondary': dataItem.confidenceScore < 0.5
+                                 }">
+                            </div>
+                          </div>
+                          <span style="min-width: 38px; font-size: 12px;">{{ (dataItem.confidenceScore * 100 | number:'1.0-0') }}%</span>
                         </div>
-                      </div>
-                      <span style="min-width: 38px; font-size: 12px;">{{ (dataItem.confidenceScore * 100 | number:'1.0-0') }}%</span>
-                    </div>
-                  </ng-template>
-                </kendo-grid-column>
-                <kendo-grid-column field="recommendedAction" title="Recommended Action" [width]="200">
-                  <ng-template kendoGridCellTemplate let-dataItem>
-                    {{ dataItem.recommendedAction || 'N/A' }}
-                  </ng-template>
-                </kendo-grid-column>
-                <kendo-grid-column field="timeframe" title="Timeframe" [width]="120">
-                  <ng-template kendoGridCellTemplate let-dataItem>
-                    {{ dataItem.timeframe || 'TBD' }}
-                  </ng-template>
-                </kendo-grid-column>
-                <kendo-grid-column field="priority" title="Priority" [width]="120">
-                  <ng-template kendoGridCellTemplate let-dataItem>
-                    <app-badge
-                      [text]="dataItem.priority"
-                      [variant]="getPriorityVariant(dataItem.confidenceScore * 100)">
-                    </app-badge>
-                  </ng-template>
-                </kendo-grid-column>
-                <kendo-grid-column title="Actions" [width]="100">
-                  <ng-template kendoGridCellTemplate let-dataItem>
-                    <button class="btn btn-sm btn-outline-secondary" (click)="dismissPrediction(dataItem)">
-                      Dismiss
-                    </button>
-                  </ng-template>
-                </kendo-grid-column>
-              </kendo-grid>
+                      </td>
+                      <td>{{ dataItem.recommendedAction || 'N/A' }}</td>
+                      <td data-testid="pred-timeframe">{{ dataItem.timeframe || 'TBD' }}</td>
+                      <td>
+                        <span data-testid="priority-badge">
+                          <app-badge
+                            [text]="dataItem.priority"
+                            [variant]="getPriorityVariant(dataItem.confidenceScore * 100)">
+                          </app-badge>
+                        </span>
+                      </td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-secondary" (click)="dismissPrediction(dataItem)">
+                          Dismiss
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- Pagination -->
+              <div *ngIf="predictions.length > pageSize" class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+                <span style="font-size: 12px;" class="text-muted">{{ (currentPage - 1) * pageSize + 1 }}–{{ currentPage * pageSize < predictions.length ? currentPage * pageSize : predictions.length }} of {{ predictions.length }}</span>
+                <div class="d-flex gap-1">
+                  <button class="btn btn-sm btn-outline-secondary" [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1">Prev</button>
+                  <button class="btn btn-sm btn-outline-secondary" [disabled]="currentPage >= totalPages" (click)="currentPage = currentPage + 1">Next</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

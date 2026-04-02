@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 interface NavItem {
   label: string;
@@ -13,7 +13,29 @@ interface NavItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <aside class="sidebar" [class.collapsed]="collapsed">
+    <!-- Hamburger menu button (mobile only) -->
+    <button class="hamburger-btn" data-testid="hamburger-menu" (click)="toggleMobileNav()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
+    <!-- Mobile nav overlay -->
+    <div class="mobile-nav-overlay" data-testid="mobile-nav-overlay" *ngIf="mobileNavOpen" (click)="closeMobileNav()">
+      <div class="mobile-nav-panel" (click)="$event.stopPropagation()">
+        <a *ngFor="let item of navItems"
+           [routerLink]="item.route"
+           class="mobile-nav-link"
+           [attr.data-testid]="'mobile-nav-' + item.label.toLowerCase().replace(' ', '-')"
+           (click)="closeMobileNav()">
+          <span class="nav-icon" [innerHTML]="getIcon(item.icon)"></span>
+          <span>{{ item.label }}</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Desktop sidebar -->
+    <aside class="sidebar" [class.collapsed]="collapsed" data-testid="sidebar">
       <div class="sidebar-logo">
         <svg *ngIf="!collapsed" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--sidebar-active)" stroke-width="2">
           <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
@@ -27,6 +49,9 @@ interface NavItem {
         <a *ngFor="let item of navItems"
            [routerLink]="item.route"
            class="nav-item"
+           data-testid="nav-item"
+           [attr.data-testid-specific]="'nav-item-' + item.label.toLowerCase().replace(' ', '-')"
+           [attr.data-testid]="'nav-item-' + item.label.toLowerCase().replace(' ', '-')"
            [class.active]="currentRoute === item.route"
            [title]="item.label">
           <span class="nav-icon" [innerHTML]="getIcon(item.icon)"></span>
@@ -34,6 +59,32 @@ interface NavItem {
         </a>
       </nav>
     </aside>
+
+    <!-- Bottom navigation bar (mobile only) -->
+    <nav class="bottom-nav" data-testid="bottom-nav">
+      <a class="bottom-nav-item" data-testid="bottom-nav-item" [attr.data-testid]="'bottom-nav-home'" routerLink="/dashboard">
+        <span class="nav-icon" [innerHTML]="getIcon('dashboard')"></span>
+        <span class="bottom-nav-label">Home</span>
+      </a>
+      <a class="bottom-nav-item" data-testid="bottom-nav-item" [attr.data-testid]="'bottom-nav-equip'" routerLink="/equipment">
+        <span class="nav-icon" [innerHTML]="getIcon('equipment')"></span>
+        <span class="bottom-nav-label">Equip</span>
+      </a>
+      <a class="bottom-nav-item" data-testid="bottom-nav-item" [attr.data-testid]="'bottom-nav-orders'" routerLink="/parts">
+        <span class="nav-icon" [innerHTML]="getIcon('package')"></span>
+        <span class="bottom-nav-label">Orders</span>
+      </a>
+      <a class="bottom-nav-item" data-testid="bottom-nav-item" [attr.data-testid]="'bottom-nav-telem'" routerLink="/telemetry">
+        <span class="nav-icon" [innerHTML]="getIcon('activity')"></span>
+        <span class="bottom-nav-label">Telem</span>
+      </a>
+      <a class="bottom-nav-item" data-testid="bottom-nav-item" [attr.data-testid]="'bottom-nav-more'" (click)="toggleMobileNav()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+        </svg>
+        <span class="bottom-nav-label">More</span>
+      </a>
+    </nav>
   `,
   styles: [`
     .sidebar {
@@ -99,9 +150,96 @@ interface NavItem {
       width: 20px;
       height: 20px;
     }
+
+    /* Hamburger button - mobile only */
+    .hamburger-btn {
+      display: none;
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 1100;
+      background: var(--surface-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      cursor: pointer;
+      color: var(--foreground-primary);
+    }
+
+    /* Mobile nav overlay */
+    .mobile-nav-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1200;
+    }
+    .mobile-nav-panel {
+      background: var(--sidebar-bg);
+      width: 260px;
+      height: 100%;
+      padding: 60px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mobile-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      color: var(--sidebar-text);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .mobile-nav-link:hover {
+      background-color: rgba(255,255,255,0.08);
+    }
+
+    /* Bottom nav - mobile only */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface-secondary);
+      border-top: 1px solid var(--border-subtle);
+      z-index: 1000;
+      justify-content: space-around;
+      align-items: center;
+      height: 56px;
+    }
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      text-decoration: none;
+      color: var(--foreground-secondary);
+      font-size: 10px;
+      cursor: pointer;
+      padding: 4px 8px;
+      background: none;
+      border: none;
+    }
+    .bottom-nav-label {
+      font-size: 10px;
+    }
+
     @media (max-width: 768px) {
-      .sidebar { width: 64px; }
-      .nav-label { display: none; }
+      .sidebar { display: none; }
+      .hamburger-btn { display: block; }
+      .mobile-nav-overlay { display: flex; }
+      .bottom-nav { display: flex; }
+    }
+    @media (min-width: 769px) {
+      .mobile-nav-overlay { display: none !important; }
+      .bottom-nav { display: none !important; }
     }
   `]
 })
@@ -109,6 +247,7 @@ export class SidebarComponent {
   @Input() currentRoute = '/dashboard';
   @Output() collapsedChange = new EventEmitter<boolean>();
   collapsed = false;
+  mobileNavOpen = false;
 
   navItems: NavItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'dashboard' },
@@ -124,6 +263,14 @@ export class SidebarComponent {
   toggleCollapse(): void {
     this.collapsed = !this.collapsed;
     this.collapsedChange.emit(this.collapsed);
+  }
+
+  toggleMobileNav(): void {
+    this.mobileNavOpen = !this.mobileNavOpen;
+  }
+
+  closeMobileNav(): void {
+    this.mobileNavOpen = false;
   }
 
   getIcon(name: string): string {

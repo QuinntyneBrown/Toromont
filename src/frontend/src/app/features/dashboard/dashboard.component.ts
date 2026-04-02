@@ -78,22 +78,22 @@ interface DashboardKpis {
 
         <!-- Active Alerts Panel -->
         <div class="col-12 col-lg-5">
-          <div class="card h-100">
+          <div class="card h-100" data-testid="alerts-panel">
             <div class="card-header d-flex justify-content-between align-items-center bg-white">
               <h5 class="mb-0 fw-semibold" style="font-size: 15px;">Active Alerts</h5>
-              <a routerLink="/alerts" class="text-decoration-none" style="font-size: 13px; color: var(--status-info);">View All</a>
+              <a routerLink="/alerts" class="text-decoration-none" data-testid="view-all-alerts" style="font-size: 13px; color: var(--status-info);">View All</a>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body p-0" data-testid="alerts-list">
               <div *ngIf="alerts.length === 0" class="text-center text-muted py-4">
                 No active alerts
               </div>
-              <div *ngFor="let alert of alerts" class="alert-row d-flex align-items-center px-3 py-3" style="border-bottom: 1px solid var(--border-subtle);">
+              <div *ngFor="let alert of alerts" class="alert-row d-flex align-items-center px-3 py-3" data-testid="alert-item" style="border-bottom: 1px solid var(--border-subtle);">
                 <span class="severity-dot me-3" [ngClass]="'dot-' + alert.severity.toLowerCase()"></span>
                 <div class="flex-grow-1">
                   <div class="fw-medium" style="font-size: 13px;">{{ alert.equipment?.name || 'Equipment' }} - {{ alert.message }}</div>
                   <div style="font-size: 12px; color: var(--foreground-secondary);">{{ getTimeAgo(alert.createdAt) }}</div>
                 </div>
-                <app-badge [text]="alert.severity" [variant]="getSeverityVariant(alert.severity)"></app-badge>
+                <app-badge [text]="alert.severity" [variant]="getSeverityVariant(alert.severity)" data-testid="alert-severity"></app-badge>
               </div>
             </div>
           </div>
@@ -130,6 +130,27 @@ interface DashboardKpis {
       border-bottom: 1px solid var(--border-subtle);
       padding: 14px 16px;
     }
+    .map-marker {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--status-info);
+      border: 2px solid #fff;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+    }
+    .marker-popup {
+      position: absolute;
+      background: #fff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      font-size: 12px;
+      transform: translate(-50%, -120%);
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
   `]
 })
 export default class DashboardComponent implements OnInit, OnDestroy {
@@ -147,6 +168,15 @@ export default class DashboardComponent implements OnInit, OnDestroy {
 
   alerts: (Alert & { equipmentName?: string })[] = [];
   lastUpdated = new Date();
+
+  mapMarkers = [
+    { x: 25, y: 30, label: 'CAT 320 Excavator' },
+    { x: 55, y: 50, label: 'CAT D6 Dozer' },
+    { x: 70, y: 25, label: 'CAT 745 Truck' },
+    { x: 40, y: 70, label: 'CAT 950 Loader' },
+    { x: 80, y: 60, label: 'CAT 140 Grader' }
+  ];
+  selectedMarker: number | null = null;
 
   ngOnInit(): void {
     this.loadData();
