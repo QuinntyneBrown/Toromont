@@ -44,11 +44,11 @@ public class IngestTelemetryCommandHandler : IRequestHandler<IngestTelemetryComm
             EquipmentId = request.EquipmentId,
             EventType = request.EventType,
             Timestamp = DateTime.UtcNow,
-            EngineHours = request.EngineHours,
-            FuelLevel = request.FuelLevel,
-            Temperature = request.Temperature,
-            Latitude = request.Latitude,
-            Longitude = request.Longitude,
+            EngineHours = request.EngineHours ?? 0,
+            FuelLevel = request.FuelLevel ?? 0,
+            Temperature = request.Temperature ?? 0,
+            Latitude = request.Latitude ?? 0,
+            Longitude = request.Longitude ?? 0,
             Payload = request.Payload
         };
 
