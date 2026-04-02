@@ -55,20 +55,24 @@ interface StatusTab {
         [selectable]="true"
         (selectionChange)="onRowSelect($event)"
         [style.width]="'100%'">
-        <kendo-grid-column field="id" title="WO #" [width]="110">
+        <kendo-grid-column field="workOrderNumber" title="WO #" [width]="130">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <span class="fw-semibold">{{ dataItem.id | slice:0:8 }}</span>
+            <span class="fw-semibold">{{ dataItem.workOrderNumber }}</span>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="title" title="Title" [width]="200"></kendo-grid-column>
-        <kendo-grid-column field="equipmentId" title="Equipment" [width]="140">
+        <kendo-grid-column field="equipmentId" title="Equipment" [width]="180">
           <ng-template kendoGridCellTemplate let-dataItem>
             <a [routerLink]="['/equipment', dataItem.equipmentId]" class="text-decoration-none">
-              {{ dataItem.equipmentId | slice:0:8 }}
+              {{ dataItem.equipment?.name || 'Unknown' }}
             </a>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="description" title="Service Type" [width]="180">
+        <kendo-grid-column field="serviceType" title="Service Type" [width]="140">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.serviceType }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="description" title="Description" [width]="200">
           <ng-template kendoGridCellTemplate let-dataItem>
             {{ dataItem.description | slice:0:50 }}{{ dataItem.description?.length > 50 ? '...' : '' }}
           </ng-template>
@@ -83,14 +87,14 @@ interface StatusTab {
             <app-badge [text]="dataItem.status" [variant]="getStatusVariant(dataItem.status)"></app-badge>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="scheduledDate" title="Scheduled" [width]="130">
+        <kendo-grid-column field="requestedDate" title="Requested" [width]="130">
           <ng-template kendoGridCellTemplate let-dataItem>
-            {{ dataItem.scheduledDate ? (dataItem.scheduledDate | date:'mediumDate') : 'Unscheduled' }}
+            {{ dataItem.requestedDate ? (dataItem.requestedDate | date:'mediumDate') : 'Unscheduled' }}
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="assignedTo" title="Assigned To" [width]="130">
+        <kendo-grid-column field="assignedTo" title="Assigned To" [width]="140">
           <ng-template kendoGridCellTemplate let-dataItem>
-            {{ dataItem.assignedTo || 'Unassigned' }}
+            {{ dataItem.assignedTo?.displayName || 'Unassigned' }}
           </ng-template>
         </kendo-grid-column>
       </kendo-grid>
