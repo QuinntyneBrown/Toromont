@@ -83,7 +83,13 @@ else
         });
 }
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("RequireFleetManager", policy => policy.RequireRole("Admin", "FleetManager"));
+    options.AddPolicy("RequireWrite", policy => policy.RequireRole("Admin", "FleetManager", "Technician"));
+    options.AddPolicy("RequireRead", policy => policy.RequireAuthenticatedUser());
+});
 
 // --- SignalR ---
 builder.Services.AddSignalR();
