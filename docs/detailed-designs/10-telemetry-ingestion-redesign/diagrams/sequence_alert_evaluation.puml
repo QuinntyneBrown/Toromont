@@ -1,0 +1,42 @@
+@startuml sequence_alert_evaluation
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Alert Evaluation Pipeline
+
+participant "TelemetryIngestionFunction" as Func
+participant "AlertEvaluatorService" as Eval
+database "SQL Server" as DB
+participant "SignalR Hub" as Hub
+
+Func -> Eval: EvaluateAsync(telemetryEvent)
+activate Eval
+
+Eval -> DB: SELECT Equipment\nWHERE Id = @EquipmentId
+DB --> Eval: equipment (make, model, orgId)
+
+Eval -> DB: SELECT AlertThreshold\nWHERE EquipmentModel = @Model\nOR EquipmentId = @Id
+DB --> Eval: thresholds
+
+alt Temperature > CriticalThreshold
+    Eval -> DB: INSERT Alert\n(Severity="Critical", Status="Active")
+    Eval -> Hub: Push "CriticalAlert"\nto org group
+    Hub --> Eval: delivered
+else Temperature > WarningThreshold
+    Eval -> DB: INSERT Alert\n(Severity="High", Status="Active")
+    Eval -> Hub: Push "HighAlert"\nto org group
+end
+
+alt FuelLevel < 5%
+    Eval -> DB: INSERT Alert\n(Severity="High", Type="FuelLevel")
+    Eval -> Hub: Push alert
+else FuelLevel < 10%
+    Eval -> DB: INSERT Alert\n(Severity="Medium", Type="FuelLevel")
+end
+
+Eval -> DB: SaveChangesAsync()
+DB --> Eval: saved
+
+deactivate Eval
+
+@enduml

@@ -1,0 +1,48 @@
+@startuml c4_component
+!theme plain
+skinparam rectangle {
+    StereotypeFontSize 10
+    shadowing false
+}
+
+title Tenant Resolution Pipeline - Component Diagram
+
+skinparam rectangle<<middleware>> {
+    BackgroundColor #438DD5
+    FontColor White
+    BorderColor #3C7FC0
+}
+skinparam rectangle<<service>> {
+    BackgroundColor #85BBF0
+    FontColor Black
+    BorderColor #78A8D8
+}
+skinparam rectangle<<database>> {
+    BackgroundColor #438DD5
+    FontColor White
+    BorderColor #3C7FC0
+}
+
+rectangle "JwtBearerMiddleware\n\n[ASP.NET Core]\nValidates JWT signature,\nissuer, audience" <<middleware>> as jwt
+
+rectangle "TenantContextMiddleware\n\n[Custom Middleware]\nResolves org from claims,\nenforces 403 on failure" <<middleware>> as tenant
+
+rectangle "IUserBlacklist\n\n[Singleton Service]\nIn-memory ConcurrentDictionary\n30-min auto-expiry" <<service>> as blacklist
+
+rectangle "ITenantContext\n\n[Scoped Service]\nHolds OrgId, UserId, Role\nfor request lifetime" <<service>> as ctx
+
+database "Users +\nUserOrganization\n\n[SQL Server]\nMulti-org membership" <<database>> as db
+
+database "Organizations\n\n[SQL Server]\nIsActive check" <<database>> as orgs
+
+rectangle "EF Core\nGlobal Query Filters\n\n[DbContext]\nAppends WHERE OrgId = @\nto all tenant-scoped entities" <<service>> as filters
+
+jwt --> tenant : authenticated principal
+tenant --> blacklist : IsBlacklisted(userId)?
+tenant --> db : Lookup user by EntraObjectId
+tenant --> db : Lookup UserOrganization
+tenant --> orgs : Verify org is active
+tenant --> ctx : Set(orgId, userId, role)
+ctx --> filters : provides OrgId
+
+@enduml

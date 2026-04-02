@@ -12,3 +12,5 @@
 | 06 | [AI Insights](06-ai-insights/README.md) | Draft | Predictive maintenance, anomaly detection, ML pipeline |
 | 07 | [Notifications & Reporting](07-notifications-reporting/README.md) | Draft | SignalR in-app, email/SMS via Logic Apps, fleet reports, exports |
 | 08 | [MediatR CQRS Refactor](08-mediatr-cqrs-refactor/README.md) | Draft | Move controller logic into MediatR request handlers with pipeline behaviors |
+| 09 | [Tenant & Identity Hardening](09-tenant-identity-hardening/README.md) | Draft | Multi-org membership, tenant enforcement, deactivation blacklist, accept-invite (Audit #2, #4, #11) |
+| 10 | [Telemetry Ingestion Redesign](10-telemetry-ingestion-redesign/README.md) | Draft | Azure Function ingestion, Dapper bulk inserts, retry/dead-letter, alert pagination/thresholds (Audit #3, #10) |

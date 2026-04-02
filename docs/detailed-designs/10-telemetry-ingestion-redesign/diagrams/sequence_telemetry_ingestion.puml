@@ -1,0 +1,66 @@
+@startuml sequence_telemetry_ingestion
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Telemetry Ingestion - Happy Path + Retry + Dead Letter
+
+participant "IoT Device" as IoT
+participant "TelemetryIngestionFunction" as Func
+participant "DapperTelemetryRepository" as Repo
+database "SQL Server" as DB
+participant "DeadLetterService" as DL
+participant "AlertEvaluatorService" as Alert
+
+== Happy Path ==
+
+IoT -> Func: POST /api/telemetry\nX-Api-Key: <configured-key>\n{ equipmentId, payload... }
+
+Func -> Func: Validate API key\n(no hardcoded fallback)
+Func -> Func: Deserialize & validate payload
+
+Func -> Repo: InsertAsync(event)
+Repo -> DB: Dapper INSERT TelemetryEvents\n(attempt 1)
+DB --> Repo: success
+Repo --> Func: eventId
+
+Func -> Alert: EvaluateAsync(event)
+note right: Fire-and-forget\n(does not block response)
+
+Func --> IoT: **202 Accepted**\n{ eventId: "guid", status: "accepted" }
+
+== Transient Failure with Retry ==
+
+IoT -> Func: POST /api/telemetry
+Func -> Repo: InsertAsync(event)
+
+Repo -> DB: Dapper INSERT (attempt 1)
+DB --> Repo: SqlException (transient)
+
+Repo -> Repo: Wait 1000ms
+Repo -> DB: Dapper INSERT (attempt 2)
+DB --> Repo: SqlException (transient)
+
+Repo -> Repo: Wait 4000ms
+Repo -> DB: Dapper INSERT (attempt 3)
+DB --> Repo: success
+Repo --> Func: eventId
+
+Func --> IoT: 202 Accepted
+
+== Permanent Failure -> Dead Letter ==
+
+IoT -> Func: POST /api/telemetry
+Func -> Repo: InsertAsync(event)
+
+Repo -> DB: attempt 1 - FAIL
+Repo -> DB: attempt 2 - FAIL
+Repo -> DB: attempt 3 - FAIL
+Repo --> Func: TelemetryInsertFailedException
+
+Func -> DL: EnqueueAsync(event, error)
+DL -> DB: INSERT TelemetryDeadLetterQueue
+DB --> DL: stored
+
+Func --> IoT: **202 Accepted**\n(event accepted for processing)
+
+@enduml

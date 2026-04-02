@@ -1,0 +1,73 @@
+@startuml sequence_tenant_resolution
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Tenant Resolution - Happy Path + Failure Cases
+
+participant "HTTP Request" as Req
+participant "JwtBearerMiddleware" as JWT
+participant "TenantContextMiddleware" as TCM
+participant "IUserBlacklist" as BL
+database "Users / UserOrganization" as DB
+participant "ITenantContext" as Ctx
+participant "Controller" as Ctrl
+
+== Happy Path ==
+
+Req -> JWT: Authorization: Bearer <token>
+JWT -> JWT: Validate signature, issuer, audience
+JWT -> TCM: Authenticated ClaimsPrincipal
+
+TCM -> TCM: Extract EntraObjectId from claims
+TCM -> BL: IsBlacklisted(userId)?
+BL --> TCM: false
+
+TCM -> DB: FindUser(EntraObjectId)
+DB --> TCM: User { Id, IsActive=true }
+
+TCM -> TCM: Check User.IsActive == true
+
+TCM -> DB: GetActiveOrgMembership(userId, orgHeader?)
+DB --> TCM: UserOrganization { OrgId, IsActive=true }
+
+TCM -> DB: GetOrganization(orgId)
+DB --> TCM: Organization { IsActive=true }
+
+TCM -> Ctx: Set(orgId, userId, role)
+TCM -> Ctrl: next()
+
+== Failure: No Org Claim / Unknown User ==
+
+Req -> JWT: Authorization: Bearer <token>
+JWT -> TCM: Authenticated user (no Entra match)
+
+TCM -> DB: FindUser(EntraObjectId)
+DB --> TCM: null
+
+TCM --> Req: **403 Forbidden**\n"User not found in system"
+
+== Failure: Deactivated User (Blacklisted) ==
+
+Req -> JWT: Authorization: Bearer <token>
+JWT -> TCM: Authenticated user
+
+TCM -> BL: IsBlacklisted(userId)?
+BL --> TCM: **true**
+
+TCM --> Req: **403 Forbidden**\n"Account deactivated"
+
+== Failure: Inactive Organization ==
+
+Req -> JWT: Authorization: Bearer <token>
+JWT -> TCM: Authenticated user
+
+TCM -> BL: IsBlacklisted(userId)?
+BL --> TCM: false
+TCM -> DB: FindUser
+DB --> TCM: User (active)
+TCM -> DB: GetOrganization(orgId)
+DB --> TCM: Organization { IsActive=**false** }
+
+TCM --> Req: **403 Forbidden**\n"Organization inactive"
+
+@enduml

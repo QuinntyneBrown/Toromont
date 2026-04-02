@@ -1,0 +1,71 @@
+@startuml class_diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+
+title Tenant & Identity Model - Class Diagram
+
+class User {
+    +Id: Guid
+    +EntraObjectId: string
+    +Email: string
+    +DisplayName: string
+    +Role: string
+    +OrganizationId: Guid <<deprecated>>
+    +IsActive: bool
+    +LastLoginAt: DateTime?
+    +CreatedAt: DateTime
+}
+
+class UserOrganization <<NEW>> {
+    +Id: Guid
+    +UserId: Guid
+    +OrganizationId: Guid
+    +IsActive: bool
+    +IsDefault: bool
+    +JoinedAt: DateTime
+}
+
+class Organization {
+    +Id: Guid
+    +Name: string
+    +ContactEmail: string
+    +IsActive: bool
+}
+
+class UserInvitation {
+    +Id: Guid
+    +Email: string
+    +Role: string
+    +OrganizationId: Guid
+    +Token: string
+    +IsUsed: bool
+    +InvitedByUserId: Guid
+    +CreatedAt: DateTime
+}
+
+interface IUserBlacklist <<NEW>> {
+    +Add(userId: Guid): void
+    +Remove(userId: Guid): void
+    +IsBlacklisted(userId: Guid): bool
+}
+
+class InMemoryUserBlacklist <<NEW>> {
+    -_blacklist: ConcurrentDictionary<Guid, DateTime>
+    +Add(userId: Guid): void
+    +Remove(userId: Guid): void
+    +IsBlacklisted(userId: Guid): bool
+}
+
+interface ITenantContext {
+    +OrganizationId: Guid
+    +UserId: Guid
+    +UserRole: string
+}
+
+User "1" -- "*" UserOrganization : has memberships
+UserOrganization "*" -- "1" Organization : belongs to
+UserInvitation "*" -- "1" Organization : scoped to
+InMemoryUserBlacklist ..|> IUserBlacklist
+
+@enduml

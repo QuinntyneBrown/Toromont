@@ -1,0 +1,92 @@
+@startuml class_diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+
+title Telemetry Ingestion - Class Diagram
+
+package "Azure Function" {
+    class TelemetryIngestionFunction {
+        +Run(req: HttpRequestData, ct): Task<HttpResponseData>
+    }
+    interface ITelemetryRepository {
+        +InsertAsync(event: TelemetryEvent, ct): Task<Guid>
+    }
+    class DapperTelemetryRepository {
+        -_connectionString: string
+        -RetryDelaysMs: int[] = {1000, 4000, 16000}
+        +InsertAsync(event: TelemetryEvent, ct): Task<Guid>
+        -IsTransient(ex: SqlException): bool
+    }
+    interface IDeadLetterService {
+        +EnqueueAsync(event, error, ct): Task
+    }
+    class DeadLetterService {
+        -_connectionString: string
+        +EnqueueAsync(event, error, ct): Task
+    }
+}
+
+package "API Controller" {
+    class TelemetryController <<refactored>> {
+        -_mediator: IMediator
+        +GetMetrics(id, range, metrics): Task<ActionResult>
+        +GetLatest(id): Task<ActionResult>
+        +GetGpsTrail(id, range): Task<ActionResult>
+    }
+    class AlertsController <<refactored>> {
+        -_mediator: IMediator
+        +GetAll(page, pageSize): Task<ActionResult>
+        +Acknowledge(id): Task<ActionResult>
+        +Resolve(id): Task<ActionResult>
+    }
+    class ThresholdsController <<NEW>> {
+        -_mediator: IMediator
+        +GetAll(): Task<ActionResult>
+        +Create(request): Task<ActionResult>
+        +Update(id, request): Task<ActionResult>
+        +Delete(id): Task<ActionResult>
+    }
+}
+
+package "Domain" {
+    class TelemetryEvent <<modified>> {
+        +Id: Guid
+        +EquipmentId: Guid
+        +**OrganizationId: Guid** <<NEW>>
+        +EventType: string
+        +Timestamp: DateTime
+        +EngineHours: double
+        +FuelLevel: double
+        +Temperature: double
+        +Latitude: double
+        +Longitude: double
+        +Payload: string?
+    }
+    class TelemetryDeadLetterEntry <<NEW>> {
+        +Id: Guid
+        +EquipmentId: Guid
+        +OriginalPayload: string
+        +ErrorMessage: string
+        +FailedAt: DateTime
+        +RetryCount: int
+        +IsReprocessed: bool
+    }
+    class AlertThreshold <<renamed>> {
+        +Id: Guid
+        +EquipmentId: Guid?
+        +EquipmentModel: string
+        +MetricName: string
+        +WarningValue: double
+        +CriticalValue: double
+    }
+}
+
+TelemetryIngestionFunction --> ITelemetryRepository
+TelemetryIngestionFunction --> IDeadLetterService
+DapperTelemetryRepository ..|> ITelemetryRepository
+DeadLetterService ..|> IDeadLetterService
+DapperTelemetryRepository --> TelemetryEvent : persists
+DeadLetterService --> TelemetryDeadLetterEntry : persists
+
+@enduml

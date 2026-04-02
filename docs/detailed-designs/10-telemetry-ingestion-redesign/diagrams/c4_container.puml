@@ -1,0 +1,55 @@
+@startuml c4_container
+!theme plain
+skinparam rectangle {
+    StereotypeFontSize 10
+    shadowing false
+}
+
+title Telemetry Pipeline - Container Diagram (Redesigned)
+
+skinparam rectangle<<person>> {
+    BackgroundColor #08427B
+    FontColor White
+    BorderColor #073B6F
+}
+skinparam rectangle<<container>> {
+    BackgroundColor #438DD5
+    FontColor White
+    BorderColor #3C7FC0
+}
+skinparam rectangle<<function>> {
+    BackgroundColor #2E86C1
+    FontColor White
+    BorderColor #2874A6
+}
+skinparam rectangle<<external>> {
+    BackgroundColor #999999
+    FontColor White
+    BorderColor #888888
+}
+
+rectangle "IoT/GPS Device\n\n[External]\nSends telemetry readings" <<external>> as iot
+rectangle "Angular SPA\n\n[Frontend]\nDisplays charts, alerts" <<person>> as spa
+
+rectangle "Azure Function\n\n[TelemetryIngestionFunction]\n.NET 8+ Isolated Worker\nDapper bulk inserts\n3-retry + dead letter" <<function>> as func
+
+rectangle "Fleet Hub API\n\n[ASP.NET Core 9]\nTelemetry read endpoints\nAlert management\nThreshold CRUD" <<container>> as api
+
+rectangle "AlertEvaluatorService\n\n[Domain Service]\nThreshold comparison\nAlert creation" <<container>> as alerts
+
+database "SQL Server\n\n[TelemetryEvents]\n[Alerts]\n[AlertThresholds]\n[TelemetryDeadLetterQueue]" as db
+
+rectangle "SignalR Hub\n\n[ASP.NET Core]\nReal-time alert push" <<container>> as signalr
+
+iot --> func : POST /api/telemetry\n[X-Api-Key + JSON]
+func --> db : Dapper INSERT\n(3-retry, exponential backoff)
+func --> db : Dead letter on failure
+func --> alerts : Evaluate thresholds
+alerts --> db : Create Alert records
+alerts --> signalr : Push alert notifications
+
+spa --> api : GET /api/v1/equipment/{id}/telemetry\nGET /api/v1/alerts\nCRUD /api/v1/alerts/thresholds
+api --> db : Dapper time-series queries\nEF Core for alerts/thresholds
+signalr --> spa : Real-time alert events
+
+@enduml

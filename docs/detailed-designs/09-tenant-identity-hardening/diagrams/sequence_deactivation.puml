@@ -1,0 +1,51 @@
+@startuml sequence_deactivation
+!theme plain
+skinparam sequenceMessageAlign center
+
+title User Deactivation with Immediate Token Blacklist
+
+actor "Admin" as Admin
+participant "UsersController" as Ctrl
+database "FleetHubDbContext" as DB
+participant "IUserBlacklist" as BL
+participant "TenantContextMiddleware" as TCM
+
+== Admin Deactivates User ==
+
+Admin -> Ctrl: PUT /api/v1/users/{id}/deactivate
+Ctrl -> DB: user.IsActive = false
+Ctrl -> DB: SaveChangesAsync()
+DB --> Ctrl: saved
+Ctrl -> BL: Add(userId)
+note right of BL: ConcurrentDictionary\nAuto-expires after 30 min\n(JWT max lifetime)
+BL --> Ctrl: stored
+Ctrl --> Admin: 200 OK { user }
+
+== Deactivated User Attempts Access ==
+
+actor "Deactivated User" as DU
+DU -> TCM: GET /api/v1/equipment\nBearer <still-valid-JWT>
+TCM -> TCM: Extract EntraObjectId
+TCM -> BL: IsBlacklisted(userId)?
+BL --> TCM: **true**
+TCM --> DU: **403 Forbidden**\n"Account deactivated"
+
+== Admin Reactivates User ==
+
+Admin -> Ctrl: PUT /api/v1/users/{id}/activate
+Ctrl -> DB: user.IsActive = true
+Ctrl -> DB: SaveChangesAsync()
+Ctrl -> BL: Remove(userId)
+BL --> Ctrl: removed
+Ctrl --> Admin: 200 OK { user }
+
+== Reactivated User Regains Access ==
+
+DU -> TCM: GET /api/v1/equipment
+TCM -> BL: IsBlacklisted(userId)?
+BL --> TCM: **false**
+TCM -> DB: FindUser (IsActive=true)
+TCM -> TCM: Proceed with normal resolution
+TCM --> DU: Request continues to controller
+
+@enduml
