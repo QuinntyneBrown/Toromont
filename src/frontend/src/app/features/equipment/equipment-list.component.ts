@@ -69,8 +69,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
           [selectable]="true"
           (selectionChange)="onRowSelect($event)"
           [style.width]="'100%'">
-          <kendo-grid-column field="serialNumber" title="#" [width]="130"></kendo-grid-column>
-          <kendo-grid-column field="name" title="Name" [width]="180">
+          <kendo-grid-column field="name" title="Name" [width]="220">
             <ng-template kendoGridCellTemplate let-dataItem>
               <a class="text-decoration-none fw-semibold" [routerLink]="['/equipment', dataItem.id]">
                 {{ dataItem.name }}
