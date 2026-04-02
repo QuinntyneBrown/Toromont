@@ -241,8 +241,9 @@ export default class WorkOrdersComponent implements OnInit {
       this.statusTabs[0].count = res.totalCount || data.length;
       this.statusTabs[1].count = data.filter(w => w.status === 'Open').length;
       this.statusTabs[2].count = data.filter(w => w.status === 'InProgress').length;
-      this.statusTabs[3].count = data.filter(w => w.status === 'Completed').length;
-      this.statusTabs[4].count = data.filter(w => w.status === 'Cancelled').length;
+      this.statusTabs[3].count = data.filter(w => w.status === 'OnHold').length;
+      this.statusTabs[4].count = data.filter(w => w.status === 'Completed').length;
+      this.statusTabs[5].count = data.filter(w => w.status === 'Closed').length;
     }
   }
 
