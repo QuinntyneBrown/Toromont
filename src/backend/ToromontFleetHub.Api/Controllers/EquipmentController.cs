@@ -102,6 +102,16 @@ public class EquipmentController : ControllerBase
     [Authorize(Policy = "RequireAdminOrFleetManager")]
     public async Task<ActionResult<Equipment>> Create([FromBody] CreateEquipmentRequest request, CancellationToken ct)
     {
+        var errors = new List<string>();
+        if (string.IsNullOrWhiteSpace(request.Name)) errors.Add("Name is required.");
+        if (string.IsNullOrWhiteSpace(request.Make)) errors.Add("Make is required.");
+        if (string.IsNullOrWhiteSpace(request.Model)) errors.Add("Model is required.");
+        if (request.Year < 1900 || request.Year > DateTime.UtcNow.Year + 2) errors.Add("Year must be valid.");
+        if (string.IsNullOrWhiteSpace(request.SerialNumber)) errors.Add("Serial number is required.");
+        if (string.IsNullOrWhiteSpace(request.Category)) errors.Add("Category is required.");
+        if (errors.Count > 0)
+            return BadRequest(new { Errors = errors });
+
         var exists = await _db.Equipment.AnyAsync(
             e => e.SerialNumber == request.SerialNumber && e.OrganizationId == _tenant.OrganizationId, ct);
 
