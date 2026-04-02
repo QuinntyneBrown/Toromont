@@ -1,0 +1,136 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: equipment.spec.ts >> Equipment Detail >> shows service history timeline
+- Location: tests\equipment.spec.ts:127:7
+
+# Error details
+
+```
+Test timeout of 30000ms exceeded while running "beforeEach" hook.
+```
+
+```
+Error: locator.click: Test timeout of 30000ms exceeded.
+Call log:
+  - waiting for locator('[data-testid="equipment-row"]').first()
+
+```
+
+# Test source
+
+```ts
+  1   | import { Page, Locator } from '@playwright/test';
+  2   | import { BasePage } from './base.page';
+  3   | 
+  4   | export class EquipmentListPage extends BasePage {
+  5   |   readonly pageTitle: Locator;
+  6   |   readonly addEquipmentButton: Locator;
+  7   |   readonly statusFilter: Locator;
+  8   |   readonly categoryFilter: Locator;
+  9   |   readonly searchInput: Locator;
+  10  |   readonly dataGrid: Locator;
+  11  |   readonly gridRows: Locator;
+  12  |   readonly gridHeaders: Locator;
+  13  |   readonly pagination: Locator;
+  14  |   readonly paginationInfo: Locator;
+  15  |   readonly paginationButtons: Locator;
+  16  |   readonly mobileCards: Locator;
+  17  |   readonly mobileStatusChips: Locator;
+  18  | 
+  19  |   constructor(page: Page) {
+  20  |     super(page);
+  21  |     this.pageTitle = page.locator('[data-testid="equipment-title"]');
+  22  |     this.addEquipmentButton = page.locator('[data-testid="add-equipment-btn"]');
+  23  |     this.statusFilter = page.locator('[data-testid="status-filter"]');
+  24  |     this.categoryFilter = page.locator('[data-testid="category-filter"]');
+  25  |     this.searchInput = page.locator('[data-testid="equipment-search"]');
+  26  |     this.dataGrid = page.locator('[data-testid="equipment-grid"]');
+  27  |     this.gridRows = page.locator('[data-testid="equipment-row"]');
+  28  |     this.gridHeaders = page.locator('[data-testid="grid-header"] th');
+  29  |     this.pagination = page.locator('[data-testid="pagination"]');
+  30  |     this.paginationInfo = page.locator('[data-testid="pagination-info"]');
+  31  |     this.paginationButtons = page.locator('[data-testid="pagination-btn"]');
+  32  |     this.mobileCards = page.locator('[data-testid="equipment-card"]');
+  33  |     this.mobileStatusChips = page.locator('[data-testid="status-chip"]');
+  34  |   }
+  35  | 
+  36  |   async goto() {
+  37  |     await this.page.goto('/equipment');
+  38  |   }
+  39  | 
+  40  |   async searchEquipment(query: string) {
+  41  |     await this.searchInput.fill(query);
+  42  |     await this.searchInput.press('Enter');
+  43  |   }
+  44  | 
+  45  |   async selectStatusFilter(status: string) {
+  46  |     await this.statusFilter.click();
+  47  |     await this.page.locator(`[data-testid="status-option-${status}"]`).click();
+  48  |   }
+  49  | 
+  50  |   async selectCategoryFilter(category: string) {
+  51  |     await this.categoryFilter.click();
+  52  |     await this.page.locator(`[data-testid="category-option-${category}"]`).click();
+  53  |   }
+  54  | 
+  55  |   async clickColumnHeader(column: string) {
+  56  |     await this.page.locator(`[data-testid="grid-header-${column}"]`).click();
+  57  |   }
+  58  | 
+  59  |   async getRowCount(): Promise<number> {
+  60  |     return this.gridRows.count();
+  61  |   }
+  62  | 
+  63  |   async getRowData(index: number, column: string): Promise<string> {
+  64  |     return (await this.gridRows.nth(index).locator(`[data-testid="cell-${column}"]`).textContent()) ?? '';
+  65  |   }
+  66  | 
+  67  |   async clickRow(index: number) {
+> 68  |     await this.gridRows.nth(index).click();
+      |                                    ^ Error: locator.click: Test timeout of 30000ms exceeded.
+  69  |   }
+  70  | 
+  71  |   async clickAddEquipment() {
+  72  |     await this.addEquipmentButton.click();
+  73  |   }
+  74  | 
+  75  |   async getPageNumber(): Promise<string> {
+  76  |     return (await this.page.locator('[data-testid="pagination-current"]').textContent()) ?? '';
+  77  |   }
+  78  | 
+  79  |   async goToPage(pageNum: number) {
+  80  |     await this.page.locator(`[data-testid="pagination-page-${pageNum}"]`).click();
+  81  |   }
+  82  | 
+  83  |   async selectMobileStatusChip(status: string) {
+  84  |     await this.page.locator(`[data-testid="status-chip-${status.toLowerCase()}"]`).click();
+  85  |   }
+  86  | 
+  87  |   async getCardName(index: number): Promise<string> {
+  88  |     return (await this.mobileCards.nth(index).locator('[data-testid="card-name"]').textContent()) ?? '';
+  89  |   }
+  90  | 
+  91  |   async getCardStatus(index: number): Promise<string> {
+  92  |     return (await this.mobileCards.nth(index).locator('[data-testid="card-status"]').textContent()) ?? '';
+  93  |   }
+  94  | 
+  95  |   async getCardSerial(index: number): Promise<string> {
+  96  |     return (await this.mobileCards.nth(index).locator('[data-testid="card-serial"]').textContent()) ?? '';
+  97  |   }
+  98  | 
+  99  |   async getCardHours(index: number): Promise<string> {
+  100 |     return (await this.mobileCards.nth(index).locator('[data-testid="card-hours"]').textContent()) ?? '';
+  101 |   }
+  102 | 
+  103 |   async getCardLocation(index: number): Promise<string> {
+  104 |     return (await this.mobileCards.nth(index).locator('[data-testid="card-location"]').textContent()) ?? '';
+  105 |   }
+  106 | }
+  107 | 
+```
