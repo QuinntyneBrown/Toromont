@@ -18,6 +18,7 @@ public class TenantContextMiddleware
     {
         if (context.User.Identity?.IsAuthenticated == true)
         {
+            // Try Entra ID object ID first
             var objectId = context.User.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier")
                            ?? context.User.FindFirstValue("oid")
                            ?? string.Empty;
@@ -34,7 +35,22 @@ public class TenantContextMiddleware
                 }
             }
 
-            // Dev mode: check for header-based tenant override
+            // Dev auth: use organizationId claim directly
+            if (tenantContext.OrganizationId == Guid.Empty)
+            {
+                var orgClaim = context.User.FindFirstValue("organizationId");
+                var role = context.User.FindFirstValue(ClaimTypes.Role) ?? "Admin";
+                if (Guid.TryParse(orgClaim, out var claimOrgId))
+                {
+                    // Find first user in this org, or use a synthetic ID
+                    var devUser = await db.Users.AsNoTracking()
+                        .FirstOrDefaultAsync(u => u.OrganizationId == claimOrgId);
+                    var devUserId = devUser?.Id ?? Guid.NewGuid();
+                    tenantContext.Set(claimOrgId, devUserId, devUser?.Role ?? role);
+                }
+            }
+
+            // Header-based tenant override (last resort)
             if (tenantContext.OrganizationId == Guid.Empty)
             {
                 var devOrgId = context.Request.Headers["X-Organization-Id"].FirstOrDefault();
