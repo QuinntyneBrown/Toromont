@@ -139,15 +139,15 @@ interface PredictionRow extends AIPrediction {
                     </svg>
                   </div>
                   <div class="flex-grow-1">
-                    <div class="fw-semibold" style="font-size: 13px;">{{ anomaly.parameterName }}</div>
+                    <div class="fw-semibold" style="font-size: 13px;">{{ anomaly.metricName }} — {{ anomaly.equipment?.name || 'Equipment' }}</div>
                     <div class="text-muted" style="font-size: 12px;">
                       Expected: {{ anomaly.expectedValue | number:'1.1-1' }} |
                       Actual: {{ anomaly.actualValue | number:'1.1-1' }}
                     </div>
                     <div class="d-flex justify-content-between mt-1">
-                      <span class="deviation" [ngClass]="'text-' + (anomaly.deviationPercentage > 20 ? 'danger' : 'warning')"
+                      <span class="deviation" [ngClass]="'text-' + (anomaly.deviationSigma > 2 ? 'danger' : 'warning')"
                             style="font-size: 12px; font-weight: 600;">
-                        {{ anomaly.deviationPercentage > 0 ? '+' : '' }}{{ anomaly.deviationPercentage | number:'1.1-1' }}% deviation
+                        {{ anomaly.deviationSigma > 0 ? '+' : '' }}{{ anomaly.deviationSigma | number:'1.1-1' }}σ deviation
                       </span>
                       <span class="text-muted" style="font-size: 11px;">{{ getTimeAgo(anomaly.detectedAt) }}</span>
                     </div>
