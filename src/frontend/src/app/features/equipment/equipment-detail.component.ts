@@ -160,22 +160,22 @@ export default class EquipmentDetailComponent implements OnInit {
   }
 
   loadEquipment(): void {
-    this.api.get<ApiResponse<Equipment>>(`/equipment/${this.equipmentId}`).subscribe({
-      next: (res) => { this.equipment = res.data; },
+    this.api.get<Equipment>(`/equipment/${this.equipmentId}`).subscribe({
+      next: (res) => { this.equipment = res; },
       error: (err) => { console.error('Failed to load equipment', err); }
     });
   }
 
   loadWorkOrders(): void {
-    this.api.get<ApiResponse<WorkOrder[]>>('/work-orders', { skip: 0, take: 50, equipmentId: this.equipmentId }).subscribe({
-      next: (res) => { this.workOrders = res.data || []; },
+    this.api.get<any>('/work-orders', { skip: 0, take: 50, equipmentId: this.equipmentId }).subscribe({
+      next: (res) => { this.workOrders = res.items || []; },
       error: () => { this.workOrders = []; }
     });
   }
 
   loadTelemetry(): void {
-    this.api.get<ApiResponse<TelemetryEvent[]>>(`/equipment/${this.equipmentId}/telemetry`, { skip: 0, take: 20 }).subscribe({
-      next: (res) => { this.telemetryEvents = res.data || []; },
+    this.api.get<TelemetryEvent[]>(`/telemetry/${this.equipmentId}/latest`).subscribe({
+      next: (res) => { this.telemetryEvents = Array.isArray(res) ? res : []; },
       error: () => { this.telemetryEvents = []; }
     });
   }

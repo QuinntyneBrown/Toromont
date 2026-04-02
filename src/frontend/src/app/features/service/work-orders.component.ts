@@ -203,13 +203,15 @@ export default class WorkOrdersComponent implements OnInit {
     };
     if (this.activeStatus) params['status'] = this.activeStatus;
 
-    this.api.get<ApiResponse<WorkOrder[]>>('/work-orders', params).subscribe({
+    this.api.get<any>('/work-orders', params).subscribe({
       next: (res) => {
+        const items = res.items || [];
+        const total = res.pagination?.totalItems || items.length;
         this.gridData = {
-          data: res.data || [],
-          total: res.totalCount || (res.data ? res.data.length : 0)
+          data: items,
+          total: total
         };
-        this.updateTabCounts(res);
+        this.updateTabCounts({ data: items, totalCount: total } as any);
       },
       error: () => {
         this.gridData = { data: [], total: 0 };
@@ -218,9 +220,9 @@ export default class WorkOrdersComponent implements OnInit {
   }
 
   loadEquipmentList(): void {
-    this.api.get<ApiResponse<any[]>>('/equipment', { skip: 0, take: 100 }).subscribe({
+    this.api.get<any>('/equipment', { skip: 0, take: 100 }).subscribe({
       next: (res) => {
-        this.equipmentList = (res.data || []).map(e => ({
+        this.equipmentList = (res.items || []).map((e: any) => ({
           label: `${e.make} ${e.model} (${e.serialNumber})`,
           value: e.id
         }));

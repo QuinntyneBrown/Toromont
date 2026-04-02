@@ -206,11 +206,11 @@ export default class EquipmentListComponent implements OnInit {
     if (this.selectedCategory.value) params['category'] = this.selectedCategory.value;
     if (this.searchText) params['search'] = this.searchText;
 
-    this.api.get<ApiResponse<Equipment[]>>('/equipment', params).subscribe({
+    this.api.get<any>('/equipment', params).subscribe({
       next: (res) => {
         this.gridData = {
-          data: res.data || [],
-          total: res.totalCount || (res.data ? res.data.length : 0)
+          data: res.items || [],
+          total: res.pagination?.totalItems || (res.items ? res.items.length : 0)
         };
       },
       error: () => {
