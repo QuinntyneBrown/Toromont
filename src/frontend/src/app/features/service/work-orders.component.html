@@ -157,13 +157,13 @@
                 <label class="form-label fw-semibold">Assigned Technician</label>
                 <div data-testid="wo-assignee" class="dropdown position-relative">
                   <button class="btn btn-outline-secondary w-100 text-start" type="button" (click)="assigneeDropdownOpen = !assigneeDropdownOpen">
-                    {{ newWorkOrder.assignedTo || 'Select technician...' }}
+                    {{ newWorkOrder.assignedTo?.displayName || 'Select technician...' }}
                   </button>
                   <div *ngIf="assigneeDropdownOpen" class="dropdown-menu show w-100">
                     <a *ngFor="let tech of technicians"
                        data-testid="assignee-option"
                        class="dropdown-item"
-                       (click)="selectAssignee(tech)">{{ tech }}</a>
+                       (click)="selectAssignee(tech)">{{ tech.displayName }}</a>
                   </div>
                 </div>
               </div>

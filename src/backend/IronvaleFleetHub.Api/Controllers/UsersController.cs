@@ -25,6 +25,14 @@ public class UsersController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("assignable")]
+    [Authorize(Policy = "RequireWrite")]
+    public async Task<ActionResult<List<User>>> GetAssignable(CancellationToken ct)
+    {
+        var result = await _mediator.Send(new GetAssignableUsersQuery(), ct);
+        return Ok(result);
+    }
+
     [HttpPost("invite")]
     public async Task<ActionResult<UserInvitation>> InviteUser(
         [FromBody] InviteUserRequest request,
