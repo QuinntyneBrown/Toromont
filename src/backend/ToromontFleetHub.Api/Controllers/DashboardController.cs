@@ -32,41 +32,29 @@ public class DashboardController : ControllerBase
         var totalEquipment = await _db.Equipment
             .CountAsync(e => e.OrganizationId == orgId, ct);
 
-        var operationalEquipment = await _db.Equipment
+        var activeEquipment = await _db.Equipment
             .CountAsync(e => e.OrganizationId == orgId && e.Status == "Operational", ct);
 
-        var needsServiceEquipment = await _db.Equipment
-            .CountAsync(e => e.OrganizationId == orgId && e.Status == "NeedsService", ct);
+        var serviceRequired = await _db.Equipment
+            .CountAsync(e => e.OrganizationId == orgId
+                && (e.Status == "NeedsService" || e.Status == "OutOfService"), ct);
 
-        var outOfServiceEquipment = await _db.Equipment
-            .CountAsync(e => e.OrganizationId == orgId && e.Status == "OutOfService", ct);
-
-        var openWorkOrders = await _db.WorkOrders
+        var overdueWorkOrders = await _db.WorkOrders
             .CountAsync(w => w.OrganizationId == orgId
-                && (w.Status == "Open" || w.Status == "InProgress"), ct);
+                && (w.Status == "Open" || w.Status == "InProgress")
+                && w.RequestedDate < DateTime.UtcNow, ct);
 
-        var criticalAlerts = await _db.Alerts
-            .CountAsync(a => a.OrganizationId == orgId
-                && a.Status == "Active"
-                && a.Severity == "Critical", ct);
-
-        var pendingOrders = await _db.PartsOrders
-            .CountAsync(o => o.OrganizationId == orgId
-                && o.Status == "Submitted", ct);
-
-        var aiPredictions = await _db.AIPredictions
-            .CountAsync(p => p.OrganizationId == orgId && !p.IsDismissed, ct);
+        var fleetUtilization = totalEquipment > 0
+            ? Math.Round((double)activeEquipment / totalEquipment * 100, 1)
+            : 0;
 
         return Ok(new DashboardStats
         {
             TotalEquipment = totalEquipment,
-            OperationalEquipment = operationalEquipment,
-            NeedsServiceEquipment = needsServiceEquipment,
-            OutOfServiceEquipment = outOfServiceEquipment,
-            OpenWorkOrders = openWorkOrders,
-            CriticalAlerts = criticalAlerts,
-            PendingOrders = pendingOrders,
-            AIPredictions = aiPredictions
+            ActiveEquipment = activeEquipment,
+            ServiceRequired = serviceRequired,
+            OverdueWorkOrders = overdueWorkOrders,
+            FleetUtilization = fleetUtilization
         });
     }
 
