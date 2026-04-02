@@ -247,11 +247,11 @@ export default class TelemetryDashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadEquipment(): void {
-    this.api.get<Equipment[]>('/equipment', { take: 999 })
+    this.api.get<any>('/equipment', { take: 999 })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (data) => {
-          this.equipmentList = (data || []).map(e => ({
+        next: (res) => {
+          this.equipmentList = (res.items || []).map((e: any) => ({
             id: e.id,
             displayName: `${e.make} ${e.model} (${e.serialNumber})`
           }));
