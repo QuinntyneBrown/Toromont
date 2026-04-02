@@ -65,38 +65,8 @@ builder.Services.AddFluentValidationAutoValidation();
 var useDevAuth = builder.Configuration.GetValue<bool>("Authentication:UseDevMode");
 if (useDevAuth)
 {
-    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateLifetime = false,
-                ValidateIssuerSigningKey = false,
-                RequireSignedTokens = false,
-            };
-            // Allow anonymous in dev mode by not requiring auth
-            options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    // Accept any token or no token in dev mode
-                    if (string.IsNullOrEmpty(context.Token))
-                    {
-                        context.Token = "dev-token";
-                    }
-                    return Task.CompletedTask;
-                },
-                OnTokenValidated = _ => Task.CompletedTask,
-                OnAuthenticationFailed = context =>
-                {
-                    // In dev mode, don't fail authentication
-                    context.NoResult();
-                    return Task.CompletedTask;
-                },
-            };
-        });
+    builder.Services.AddAuthentication("DevScheme")
+        .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, DevAuthHandler>("DevScheme", null);
 }
 else
 {
@@ -222,3 +192,29 @@ app.Run();
 
 // Make Program class accessible for integration tests
 public partial class Program { }
+
+// Dev authentication handler that always succeeds
+public class DevAuthHandler : Microsoft.AspNetCore.Authentication.AuthenticationHandler<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions>
+{
+    public DevAuthHandler(
+        Microsoft.Extensions.Options.IOptionsMonitor<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions> options,
+        Microsoft.Extensions.Logging.ILoggerFactory logger,
+        System.Text.Encodings.Web.UrlEncoder encoder)
+        : base(options, logger, encoder) { }
+
+    protected override Task<Microsoft.AspNetCore.Authentication.AuthenticateResult> HandleAuthenticateAsync()
+    {
+        var claims = new[]
+        {
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, "dev-user-1"),
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Email, "admin@toromont.com"),
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, "Dev Admin"),
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, "Admin"),
+            new System.Security.Claims.Claim("organizationId", "00000000-0000-0000-0000-000000000001"),
+        };
+        var identity = new System.Security.Claims.ClaimsIdentity(claims, Scheme.Name);
+        var principal = new System.Security.Claims.ClaimsPrincipal(identity);
+        var ticket = new Microsoft.AspNetCore.Authentication.AuthenticationTicket(principal, Scheme.Name);
+        return Task.FromResult(Microsoft.AspNetCore.Authentication.AuthenticateResult.Success(ticket));
+    }
+}
