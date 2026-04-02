@@ -41,6 +41,12 @@ public class UsersController : ControllerBase
         [FromBody] InviteUserRequest request,
         CancellationToken ct)
     {
+        var validRoles = new[] { "Admin", "FleetManager", "Technician", "Operator" };
+        if (string.IsNullOrWhiteSpace(request.Email))
+            return BadRequest(new { Error = "Email is required." });
+        if (!validRoles.Contains(request.Role))
+            return BadRequest(new { Error = $"Invalid role. Must be one of: {string.Join(", ", validRoles)}" });
+
         var existingUser = await _db.Users
             .AnyAsync(u => u.Email == request.Email && u.OrganizationId == _tenant.OrganizationId, ct);
 
