@@ -1,0 +1,388 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: reports.spec.ts >> Reports >> generates maintenance costs report
+- Location: tests\reports.spec.ts:72:7
+
+# Error details
+
+```
+Error: locator.fill: Error: Element is not an <input>, <textarea>, <select> or [contenteditable] and does not have a role allowing [aria-readonly]
+Call log:
+  - waiting for locator('[data-testid="date-range-start"]')
+    - locator resolved to <kendo-dateinput placeholder="Start date" kendodaterangestartinput="" class="k-input k-dateinput" _ngcontent-ng-c3999351741="" data-testid="date-range-start">…</kendo-dateinput>
+    - fill("2026-01-01")
+  - attempting fill action
+    - waiting for element to be visible, enabled and editable
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - img [ref=e6]
+        - generic [ref=e11]: FLEET HUB
+      - navigation [ref=e12]:
+        - link "Dashboard" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e16]: Dashboard
+        - link "Equipment" [ref=e18] [cursor=pointer]:
+          - /url: /equipment
+          - generic [ref=e20]: Equipment
+        - link "Service" [ref=e22] [cursor=pointer]:
+          - /url: /service
+          - generic [ref=e24]: Service
+        - link "Parts" [ref=e26] [cursor=pointer]:
+          - /url: /parts
+          - generic [ref=e28]: Parts
+        - link "Telemetry" [ref=e30] [cursor=pointer]:
+          - /url: /telemetry
+          - generic [ref=e32]: Telemetry
+        - link "AI Insights" [ref=e34] [cursor=pointer]:
+          - /url: /ai-insights
+          - generic [ref=e36]: AI Insights
+        - link "Reports" [ref=e38] [cursor=pointer]:
+          - /url: /reports
+          - generic [ref=e40]: Reports
+        - link "Admin" [ref=e42] [cursor=pointer]:
+          - /url: /admin/users
+          - generic [ref=e44]: Admin
+    - generic [ref=e45]:
+      - banner [ref=e47]:
+        - generic [ref=e49]:
+          - img [ref=e50]
+          - textbox "Search equipment, orders, alerts..." [ref=e53]
+        - button [ref=e56] [cursor=pointer]:
+          - img [ref=e57]
+      - main [ref=e60]:
+        - generic [ref=e62]:
+          - heading "Reports & Analytics" [level=2] [ref=e63]
+          - generic [ref=e64]:
+            - generic [ref=e66] [cursor=pointer]:
+              - img [ref=e68]
+              - generic [ref=e72]: Fleet Utilization
+            - generic [ref=e74] [cursor=pointer]:
+              - img [ref=e76]
+              - generic [ref=e78]: Maintenance Costs
+            - generic [ref=e80] [cursor=pointer]:
+              - img [ref=e82]
+              - generic [ref=e87]: Equipment Lifecycle
+          - generic [ref=e88]:
+            - generic [ref=e89]:
+              - generic [ref=e90]: Date Range
+              - generic [ref=e91]:
+                - combobox "Start date" [expanded] [ref=e93]: 1/1/2026
+                - combobox "End date" [expanded] [ref=e95]: 4/1/2026
+              - button "Apply" [ref=e96] [cursor=pointer]:
+                - generic [ref=e97]: Apply
+            - generic [ref=e98]:
+              - generic [ref=e99]: Equipment
+              - combobox [ref=e100] [cursor=pointer]:
+                - generic [ref=e102]: All Equipment
+                - button "Select" [ref=e103]:
+                  - generic [ref=e105]:
+                    - img
+            - button "Generate Report" [ref=e107] [cursor=pointer]:
+              - generic [ref=e108]: Generate Report
+            - generic [ref=e109]:
+              - button "PDF" [ref=e110] [cursor=pointer]:
+                - generic [ref=e111]: PDF
+              - button "Excel" [ref=e112] [cursor=pointer]:
+                - generic [ref=e113]: Excel
+              - button "CSV" [ref=e114] [cursor=pointer]:
+                - generic [ref=e115]: CSV
+          - generic [ref=e116]:
+            - img [ref=e117]
+            - generic [ref=e121]: Select a report type and click "Generate Report" to view charts
+  - generic [ref=e125]:
+    - generic [ref=e126]:
+      - button "January 2026 - February 2026" [ref=e127] [cursor=pointer]:
+        - generic [ref=e128]: January 2026 - February 2026
+      - generic [ref=e129]:
+        - button "Navigate to previous view" [ref=e130] [cursor=pointer]:
+          - generic [ref=e132]:
+            - img
+        - link "Today" [ref=e133] [cursor=pointer]:
+          - generic [ref=e134]: Today
+        - button "Navigate to next view" [ref=e135] [cursor=pointer]:
+          - generic [ref=e137]:
+            - img
+    - grid "January 2026 - February 2026" [active] [ref=e138]:
+      - rowgroup [ref=e139]:
+        - row "Sunday Monday Tuesday Wednesday Thursday Friday Saturday" [ref=e140]:
+          - columnheader "Sunday" [ref=e141]: Su
+          - columnheader "Monday" [ref=e142]: Mo
+          - columnheader "Tuesday" [ref=e143]: Tu
+          - columnheader "Wednesday" [ref=e144]: We
+          - columnheader "Thursday" [ref=e145]: Th
+          - columnheader "Friday" [ref=e146]: Fr
+          - columnheader "Saturday" [ref=e147]: Sa
+      - rowgroup [ref=e148]:
+        - row "1 2 3" [ref=e149]:
+          - gridcell [ref=e150]
+          - gridcell [ref=e151]
+          - gridcell [ref=e152]
+          - gridcell [ref=e153]
+          - gridcell "1" [selected] [ref=e154]:
+            - generic [ref=e155] [cursor=pointer]: "1"
+          - gridcell "2" [selected] [ref=e156]:
+            - generic [ref=e157] [cursor=pointer]: "2"
+          - gridcell "3" [selected] [ref=e158]:
+            - generic [ref=e159] [cursor=pointer]: "3"
+        - row "4 5 6 7 8 9 10" [ref=e160]:
+          - gridcell "4" [selected] [ref=e161]:
+            - generic [ref=e162] [cursor=pointer]: "4"
+          - gridcell "5" [selected] [ref=e163]:
+            - generic [ref=e164] [cursor=pointer]: "5"
+          - gridcell "6" [selected] [ref=e165]:
+            - generic [ref=e166] [cursor=pointer]: "6"
+          - gridcell "7" [selected] [ref=e167]:
+            - generic [ref=e168] [cursor=pointer]: "7"
+          - gridcell "8" [selected] [ref=e169]:
+            - generic [ref=e170] [cursor=pointer]: "8"
+          - gridcell "9" [selected] [ref=e171]:
+            - generic [ref=e172] [cursor=pointer]: "9"
+          - gridcell "10" [selected] [ref=e173]:
+            - generic [ref=e174] [cursor=pointer]: "10"
+        - row "11 12 13 14 15 16 17" [ref=e175]:
+          - gridcell "11" [selected] [ref=e176]:
+            - generic [ref=e177] [cursor=pointer]: "11"
+          - gridcell "12" [selected] [ref=e178]:
+            - generic [ref=e179] [cursor=pointer]: "12"
+          - gridcell "13" [selected] [ref=e180]:
+            - generic [ref=e181] [cursor=pointer]: "13"
+          - gridcell "14" [selected] [ref=e182]:
+            - generic [ref=e183] [cursor=pointer]: "14"
+          - gridcell "15" [selected] [ref=e184]:
+            - generic [ref=e185] [cursor=pointer]: "15"
+          - gridcell "16" [selected] [ref=e186]:
+            - generic [ref=e187] [cursor=pointer]: "16"
+          - gridcell "17" [selected] [ref=e188]:
+            - generic [ref=e189] [cursor=pointer]: "17"
+        - row "18 19 20 21 22 23 24" [ref=e190]:
+          - gridcell "18" [selected] [ref=e191]:
+            - generic [ref=e192] [cursor=pointer]: "18"
+          - gridcell "19" [selected] [ref=e193]:
+            - generic [ref=e194] [cursor=pointer]: "19"
+          - gridcell "20" [selected] [ref=e195]:
+            - generic [ref=e196] [cursor=pointer]: "20"
+          - gridcell "21" [selected] [ref=e197]:
+            - generic [ref=e198] [cursor=pointer]: "21"
+          - gridcell "22" [selected] [ref=e199]:
+            - generic [ref=e200] [cursor=pointer]: "22"
+          - gridcell "23" [selected] [ref=e201]:
+            - generic [ref=e202] [cursor=pointer]: "23"
+          - gridcell "24" [selected] [ref=e203]:
+            - generic [ref=e204] [cursor=pointer]: "24"
+        - row "25 26 27 28 29 30 31" [ref=e205]:
+          - gridcell "25" [selected] [ref=e206]:
+            - generic [ref=e207] [cursor=pointer]: "25"
+          - gridcell "26" [selected] [ref=e208]:
+            - generic [ref=e209] [cursor=pointer]: "26"
+          - gridcell "27" [selected] [ref=e210]:
+            - generic [ref=e211] [cursor=pointer]: "27"
+          - gridcell "28" [selected] [ref=e212]:
+            - generic [ref=e213] [cursor=pointer]: "28"
+          - gridcell "29" [selected] [ref=e214]:
+            - generic [ref=e215] [cursor=pointer]: "29"
+          - gridcell "30" [selected] [ref=e216]:
+            - generic [ref=e217] [cursor=pointer]: "30"
+          - gridcell "31" [selected] [ref=e218]:
+            - generic [ref=e219] [cursor=pointer]: "31"
+        - row [ref=e220]:
+          - gridcell [ref=e221]
+          - gridcell [ref=e222]
+          - gridcell [ref=e223]
+          - gridcell [ref=e224]
+          - gridcell [ref=e225]
+          - gridcell [ref=e226]
+          - gridcell [ref=e227]
+      - rowgroup [ref=e228]:
+        - row "Sunday Monday Tuesday Wednesday Thursday Friday Saturday" [ref=e229]:
+          - columnheader "Sunday" [ref=e230]: Su
+          - columnheader "Monday" [ref=e231]: Mo
+          - columnheader "Tuesday" [ref=e232]: Tu
+          - columnheader "Wednesday" [ref=e233]: We
+          - columnheader "Thursday" [ref=e234]: Th
+          - columnheader "Friday" [ref=e235]: Fr
+          - columnheader "Saturday" [ref=e236]: Sa
+      - rowgroup [ref=e237]:
+        - row "1 2 3 4 5 6 7" [ref=e238]:
+          - gridcell "1" [selected] [ref=e239]:
+            - generic [ref=e240] [cursor=pointer]: "1"
+          - gridcell "2" [selected] [ref=e241]:
+            - generic [ref=e242] [cursor=pointer]: "2"
+          - gridcell "3" [selected] [ref=e243]:
+            - generic [ref=e244] [cursor=pointer]: "3"
+          - gridcell "4" [selected] [ref=e245]:
+            - generic [ref=e246] [cursor=pointer]: "4"
+          - gridcell "5" [selected] [ref=e247]:
+            - generic [ref=e248] [cursor=pointer]: "5"
+          - gridcell "6" [selected] [ref=e249]:
+            - generic [ref=e250] [cursor=pointer]: "6"
+          - gridcell "7" [selected] [ref=e251]:
+            - generic [ref=e252] [cursor=pointer]: "7"
+        - row "8 9 10 11 12 13 14" [ref=e253]:
+          - gridcell "8" [selected] [ref=e254]:
+            - generic [ref=e255] [cursor=pointer]: "8"
+          - gridcell "9" [selected] [ref=e256]:
+            - generic [ref=e257] [cursor=pointer]: "9"
+          - gridcell "10" [selected] [ref=e258]:
+            - generic [ref=e259] [cursor=pointer]: "10"
+          - gridcell "11" [selected] [ref=e260]:
+            - generic [ref=e261] [cursor=pointer]: "11"
+          - gridcell "12" [selected] [ref=e262]:
+            - generic [ref=e263] [cursor=pointer]: "12"
+          - gridcell "13" [selected] [ref=e264]:
+            - generic [ref=e265] [cursor=pointer]: "13"
+          - gridcell "14" [selected] [ref=e266]:
+            - generic [ref=e267] [cursor=pointer]: "14"
+        - row "15 16 17 18 19 20 21" [ref=e268]:
+          - gridcell "15" [selected] [ref=e269]:
+            - generic [ref=e270] [cursor=pointer]: "15"
+          - gridcell "16" [selected] [ref=e271]:
+            - generic [ref=e272] [cursor=pointer]: "16"
+          - gridcell "17" [selected] [ref=e273]:
+            - generic [ref=e274] [cursor=pointer]: "17"
+          - gridcell "18" [selected] [ref=e275]:
+            - generic [ref=e276] [cursor=pointer]: "18"
+          - gridcell "19" [selected] [ref=e277]:
+            - generic [ref=e278] [cursor=pointer]: "19"
+          - gridcell "20" [selected] [ref=e279]:
+            - generic [ref=e280] [cursor=pointer]: "20"
+          - gridcell "21" [selected] [ref=e281]:
+            - generic [ref=e282] [cursor=pointer]: "21"
+        - row "22 23 24 25 26 27 28" [ref=e283]:
+          - gridcell "22" [selected] [ref=e284]:
+            - generic [ref=e285] [cursor=pointer]: "22"
+          - gridcell "23" [selected] [ref=e286]:
+            - generic [ref=e287] [cursor=pointer]: "23"
+          - gridcell "24" [selected] [ref=e288]:
+            - generic [ref=e289] [cursor=pointer]: "24"
+          - gridcell "25" [selected] [ref=e290]:
+            - generic [ref=e291] [cursor=pointer]: "25"
+          - gridcell "26" [selected] [ref=e292]:
+            - generic [ref=e293] [cursor=pointer]: "26"
+          - gridcell "27" [selected] [ref=e294]:
+            - generic [ref=e295] [cursor=pointer]: "27"
+          - gridcell "28" [selected] [ref=e296]:
+            - generic [ref=e297] [cursor=pointer]: "28"
+        - row [ref=e298]:
+          - gridcell [ref=e299]
+          - gridcell [ref=e300]
+          - gridcell [ref=e301]
+          - gridcell [ref=e302]
+          - gridcell [ref=e303]
+          - gridcell [ref=e304]
+          - gridcell [ref=e305]
+        - row [ref=e306]:
+          - gridcell [ref=e307]
+          - gridcell [ref=e308]
+          - gridcell [ref=e309]
+          - gridcell [ref=e310]
+          - gridcell [ref=e311]
+          - gridcell [ref=e312]
+          - gridcell [ref=e313]
+```
+
+# Test source
+
+```ts
+  1  | // Acceptance Test
+  2  | // Traces to: L2-021, L2-022
+  3  | // Description: Verify report generation, chart display, and export
+  4  | 
+  5  | import { test, expect } from '@playwright/test';
+  6  | 
+  7  | test.describe('Reports', () => {
+  8  |   test.beforeEach(async ({ page }) => {
+  9  |     await page.goto('/reports');
+  10 |   });
+  11 | 
+  12 |   // L2-021 AC1: Fleet Utilization report configuration form
+  13 |   test('displays report type selector cards', async ({ page }) => {
+  14 |     await expect(page.locator('[data-testid="report-card-fleet-utilization"]')).toBeVisible();
+  15 |     await expect(page.locator('[data-testid="report-card-maintenance-costs"]')).toBeVisible();
+  16 |     await expect(page.locator('[data-testid="report-card-equipment-lifecycle"]')).toBeVisible();
+  17 |   });
+  18 | 
+  19 |   test('Fleet Utilization report shows configuration form', async ({ page }) => {
+  20 |     await page.locator('[data-testid="report-card-fleet-utilization"]').click();
+  21 | 
+  22 |     await expect(page.locator('[data-testid="date-range-picker"]')).toBeVisible();
+  23 |     await expect(page.locator('[data-testid="equipment-filter"]')).toBeVisible();
+  24 |     await expect(page.locator('[data-testid="generate-report-btn"]')).toBeVisible();
+  25 |   });
+  26 | 
+  27 |   // L2-021 AC2: Generating report displays charts
+  28 |   test('generates fleet utilization report with charts', async ({ page }) => {
+  29 |     await page.locator('[data-testid="report-card-fleet-utilization"]').click();
+  30 |     const dateRangePicker = page.locator('[data-testid="date-range-picker"]');
+  31 |     await dateRangePicker.click();
+  32 |     await page.locator('[data-testid="date-range-start"]').fill('2026-01-01');
+  33 |     await page.locator('[data-testid="date-range-end"]').fill('2026-03-31');
+  34 |     await page.locator('[data-testid="date-range-apply"]').click();
+  35 |     await page.locator('[data-testid="generate-report-btn"]').click();
+  36 | 
+  37 |     await expect(page.locator('[data-testid="report-charts"]')).toBeVisible();
+  38 |   });
+  39 | 
+  40 |   // L2-021 AC3-4: Export buttons present
+  41 |   test('export buttons are available after report generation', async ({ page }) => {
+  42 |     await page.locator('[data-testid="report-card-fleet-utilization"]').click();
+  43 |     const dateRangePicker = page.locator('[data-testid="date-range-picker"]');
+  44 |     await dateRangePicker.click();
+  45 |     await page.locator('[data-testid="date-range-start"]').fill('2026-01-01');
+  46 |     await page.locator('[data-testid="date-range-end"]').fill('2026-03-31');
+  47 |     await page.locator('[data-testid="date-range-apply"]').click();
+  48 |     await page.locator('[data-testid="generate-report-btn"]').click();
+  49 | 
+  50 |     await expect(page.locator('[data-testid="export-pdf-btn"]')).toBeVisible();
+  51 |     await expect(page.locator('[data-testid="export-excel-btn"]')).toBeVisible();
+  52 |     await expect(page.locator('[data-testid="export-csv-btn"]')).toBeVisible();
+  53 |   });
+  54 | 
+  55 |   // L2-021 AC3: PDF export triggers download
+  56 |   test('PDF export triggers file download', async ({ page }) => {
+  57 |     await page.locator('[data-testid="report-card-fleet-utilization"]').click();
+  58 |     const dateRangePicker = page.locator('[data-testid="date-range-picker"]');
+  59 |     await dateRangePicker.click();
+  60 |     await page.locator('[data-testid="date-range-start"]').fill('2026-01-01');
+  61 |     await page.locator('[data-testid="date-range-end"]').fill('2026-03-31');
+  62 |     await page.locator('[data-testid="date-range-apply"]').click();
+  63 |     await page.locator('[data-testid="generate-report-btn"]').click();
+  64 | 
+  65 |     const downloadPromise = page.waitForEvent('download');
+  66 |     await page.locator('[data-testid="export-pdf-btn"]').click();
+  67 |     const download = await downloadPromise;
+  68 |     expect(download.suggestedFilename()).toContain('.pdf');
+  69 |   });
+  70 | 
+  71 |   // L2-022: Maintenance Costs report
+  72 |   test('generates maintenance costs report', async ({ page }) => {
+  73 |     await page.locator('[data-testid="report-card-maintenance-costs"]').click();
+  74 | 
+  75 |     await expect(page.locator('[data-testid="date-range-picker"]')).toBeVisible();
+  76 |     await expect(page.locator('[data-testid="equipment-filter"]')).toBeVisible();
+  77 |     const dateRangePicker = page.locator('[data-testid="date-range-picker"]');
+  78 |     await dateRangePicker.click();
+> 79 |     await page.locator('[data-testid="date-range-start"]').fill('2026-01-01');
+     |                                                            ^ Error: locator.fill: Error: Element is not an <input>, <textarea>, <select> or [contenteditable] and does not have a role allowing [aria-readonly]
+  80 |     await page.locator('[data-testid="date-range-end"]').fill('2026-03-31');
+  81 |     await page.locator('[data-testid="date-range-apply"]').click();
+  82 |     await page.locator('[data-testid="generate-report-btn"]').click();
+  83 | 
+  84 |     await expect(page.locator('[data-testid="report-charts"]')).toBeVisible();
+  85 |   });
+  86 | });
+  87 | 
+```
