@@ -40,7 +40,7 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
       <!-- KPI Cards -->
       <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
-          <app-kpi-card label="Current Hours" [value]="equipment.currentHours | number:'1.0-0'"></app-kpi-card>
+          <app-kpi-card label="Current Hours" [value]="(equipment.currentHours | number:'1.0-0') || ''"></app-kpi-card>
         </div>
         <div class="col-6 col-lg-3">
           <app-kpi-card label="Status" [value]="equipment.status"></app-kpi-card>
