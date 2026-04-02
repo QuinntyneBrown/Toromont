@@ -86,6 +86,7 @@ else
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("RequireAdminOrFleetManager", policy => policy.RequireRole("Admin", "FleetManager"));
     options.AddPolicy("RequireFleetManager", policy => policy.RequireRole("Admin", "FleetManager"));
     options.AddPolicy("RequireWrite", policy => policy.RequireRole("Admin", "FleetManager", "Technician"));
     options.AddPolicy("RequireRead", policy => policy.RequireAuthenticatedUser());
