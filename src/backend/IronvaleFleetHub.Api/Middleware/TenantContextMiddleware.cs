@@ -139,7 +139,7 @@ public class TenantContextMiddleware
         }
 
         // Dev auth: use organizationId claim directly — only in Development
-        if (env.IsDevelopment() && tenantContext.OrganizationId == Guid.Empty)
+        if (env.IsDevelopment())
         {
             var orgClaim = context.User.FindFirstValue("organizationId");
             var role = context.User.FindFirstValue(ClaimTypes.Role) ?? "Admin";

@@ -12,7 +12,16 @@ public class InMemoryUserBlacklist : IUserBlacklist
     public void Remove(Guid userId) =>
         _blacklist.TryRemove(userId, out _);
 
-    public bool IsBlacklisted(Guid userId) =>
-        _blacklist.TryGetValue(userId, out var addedAt)
-        && DateTime.UtcNow - addedAt < TimeSpan.FromMinutes(30);
+    public bool IsBlacklisted(Guid userId)
+    {
+        if (!_blacklist.TryGetValue(userId, out var addedAt))
+            return false;
+
+        if (DateTime.UtcNow - addedAt < TimeSpan.FromMinutes(30))
+            return true;
+
+        // Entry has expired — remove it to prevent unbounded growth
+        _blacklist.TryRemove(userId, out _);
+        return false;
+    }
 }

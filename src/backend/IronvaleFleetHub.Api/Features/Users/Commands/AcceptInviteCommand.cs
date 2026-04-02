@@ -21,6 +21,12 @@ public class AcceptInviteCommandHandler : IRequestHandler<AcceptInviteCommand, R
 
     public async Task<Result<User>> Handle(AcceptInviteCommand request, CancellationToken ct)
     {
+        if (string.IsNullOrEmpty(request.Token))
+            return Result<User>.Failure("Invitation token is required.");
+
+        if (string.IsNullOrEmpty(request.EntraObjectId))
+            return Result<User>.Failure("Authenticated identity is required to accept an invitation.");
+
         var invitation = await _db.UserInvitations
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(i => i.Token == request.Token && !i.IsUsed, ct);

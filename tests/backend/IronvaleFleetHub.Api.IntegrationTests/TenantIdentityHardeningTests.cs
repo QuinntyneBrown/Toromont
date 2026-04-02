@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using IronvaleFleetHub.Api.DTOs;
 using IronvaleFleetHub.Api.IntegrationTests.Infrastructure;
 using IronvaleFleetHub.Api.Models;
 using Xunit;
@@ -9,6 +11,10 @@ namespace IronvaleFleetHub.Api.IntegrationTests;
 
 public sealed class TenantIdentityHardeningTests
 {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        PropertyNameCaseInsensitive = true,
+    };
     [Fact]
     public async Task Request_WithNoOrgClaim_Returns403()
     {
@@ -129,8 +135,13 @@ public sealed class TenantIdentityHardeningTests
 
         var response = await client.GetAsync("/api/v1/equipment?skip=0&take=20");
 
-        // Assert: succeeds and returns org2's equipment (4 items)
+        // Assert: succeeds and returns org2's equipment
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<PaginatedResponse<Equipment>>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.NotEmpty(payload.Items);
+        Assert.All(payload.Items, eq => Assert.Equal(TestSeedData.Org2Id, eq.OrganizationId));
     }
 
     [Fact]
