@@ -63,9 +63,9 @@ type UserRole = 'Admin' | 'FleetManager' | 'Technician' | 'Operator';
                 </app-badge>
               </ng-template>
             </kendo-grid-column>
-            <kendo-grid-column field="lastLogin" title="Last Login" [width]="160">
+            <kendo-grid-column field="lastLoginAt" title="Last Login" [width]="160">
               <ng-template kendoGridCellTemplate let-dataItem>
-                {{ dataItem.lastLogin ? (dataItem.lastLogin | date:'medium') : 'Never' }}
+                {{ dataItem.lastLoginAt ? (dataItem.lastLoginAt | date:'medium') : 'Never' }}
               </ng-template>
             </kendo-grid-column>
             <kendo-grid-column title="Actions" [width]="140">
