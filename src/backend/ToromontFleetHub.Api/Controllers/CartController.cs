@@ -1,10 +1,10 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ToromontFleetHub.Api.Data;
 using ToromontFleetHub.Api.DTOs;
+using ToromontFleetHub.Api.Features.Cart.Commands;
+using ToromontFleetHub.Api.Features.Cart.Queries;
 using ToromontFleetHub.Api.Models;
-using ToromontFleetHub.Api.Services;
 
 namespace ToromontFleetHub.Api.Controllers;
 
@@ -13,94 +13,38 @@ namespace ToromontFleetHub.Api.Controllers;
 [Authorize]
 public class CartController : ControllerBase
 {
-    private readonly FleetHubDbContext _db;
-    private readonly ITenantContext _tenant;
-    private readonly ILogger<CartController> _logger;
+    private readonly IMediator _mediator;
 
-    public CartController(FleetHubDbContext db, ITenantContext tenant, ILogger<CartController> logger)
-    {
-        _db = db;
-        _tenant = tenant;
-        _logger = logger;
-    }
+    public CartController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet]
     public async Task<ActionResult<List<CartItem>>> GetCart(CancellationToken ct)
     {
-        var items = await _db.CartItems
-            .Include(c => c.Part)
-            .Where(c => c.UserId == _tenant.UserId)
-            .AsNoTracking()
-            .OrderByDescending(c => c.AddedAt)
-            .ToListAsync(ct);
-
-        return Ok(items);
+        var result = await _mediator.Send(new GetCartQuery(), ct);
+        return Ok(result);
     }
 
     [HttpPost("items")]
     public async Task<ActionResult<CartItem>> AddItem([FromBody] AddCartItemRequest request, CancellationToken ct)
     {
-        var part = await _db.Parts.AsNoTracking().FirstOrDefaultAsync(p => p.Id == request.PartId, ct);
-        if (part is null)
-            return BadRequest(new { Error = "Part not found." });
-
-        var existing = await _db.CartItems
-            .FirstOrDefaultAsync(c => c.UserId == _tenant.UserId && c.PartId == request.PartId, ct);
-
-        if (existing is not null)
-        {
-            existing.Quantity += request.Quantity;
-            await _db.SaveChangesAsync(ct);
-            existing.Part = part;
-            return Ok(existing);
-        }
-
-        var item = new CartItem
-        {
-            Id = Guid.NewGuid(),
-            UserId = _tenant.UserId,
-            PartId = request.PartId,
-            Quantity = request.Quantity > 0 ? request.Quantity : 1,
-            AddedAt = DateTime.UtcNow
-        };
-
-        _db.CartItems.Add(item);
-        await _db.SaveChangesAsync(ct);
-
-        item.Part = part;
-        return CreatedAtAction(nameof(GetCart), item);
+        var result = await _mediator.Send(new AddCartItemCommand(request.PartId, request.Quantity), ct);
+        if (!result.IsSuccess) return BadRequest(new { Error = result.Error });
+        return CreatedAtAction(nameof(GetCart), result.Value);
     }
 
     [HttpPut("items/{id:guid}")]
     public async Task<ActionResult<CartItem>> UpdateItem(Guid id, [FromBody] UpdateCartItemRequest request, CancellationToken ct)
     {
-        var item = await _db.CartItems
-            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == _tenant.UserId, ct);
-
-        if (item is null)
-            return NotFound();
-
-        if (request.Quantity <= 0)
-            return BadRequest(new { Error = "Quantity must be greater than zero." });
-
-        item.Quantity = request.Quantity;
-        await _db.SaveChangesAsync(ct);
-
-        return Ok(item);
+        var result = await _mediator.Send(new UpdateCartItemCommand(id, request.Quantity), ct);
+        if (!result.IsSuccess) return result.Error == "Not found." ? NotFound() : BadRequest(new { Error = result.Error });
+        return Ok(result.Value);
     }
 
     [HttpDelete("items/{id:guid}")]
     public async Task<IActionResult> RemoveItem(Guid id, CancellationToken ct)
     {
-        var item = await _db.CartItems
-            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == _tenant.UserId, ct);
-
-        if (item is null)
-            return NotFound();
-
-        _db.CartItems.Remove(item);
-        await _db.SaveChangesAsync(ct);
-
+        var result = await _mediator.Send(new RemoveCartItemCommand(id), ct);
+        if (!result.IsSuccess) return NotFound();
         return NoContent();
     }
 }
