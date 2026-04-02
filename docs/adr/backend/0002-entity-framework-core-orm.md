@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** backend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub requires a data access layer that supports 13+ domain entities with complex relationships, including Equipment, WorkOrder, TelemetryEvent, PartsOrder, User, Alert, and others. The system operates in a multi-tenant environment where data isolation by OrganizationId is a critical security requirement. The ORM must support code-first schema evolution, complex querying with joins and aggregations, and automatic tenant scoping to prevent cross-organization data leakage.
+Ironvale Fleet Hub requires a data access layer that supports 13+ domain entities with complex relationships, including Equipment, WorkOrder, TelemetryEvent, PartsOrder, User, Alert, and others. The system operates in a multi-tenant environment where data isolation by OrganizationId is a critical security requirement. The ORM must support code-first schema evolution, complex querying with joins and aggregations, and automatic tenant scoping to prevent cross-organization data leakage.
 
 ## Decision
 
@@ -51,7 +51,7 @@ Use Entity Framework Core as the primary ORM with global query filters for multi
 - Change tracker memory pressure during batch operations could cause performance degradation if not properly managed with `AsNoTracking()`.
 
 ## Implementation Notes
-- Configure `ToromontFleetHubDbContext` with global query filters applying `OrganizationId` scoping to all tenant-specific entities.
+- Configure `IronvaleFleetHubDbContext` with global query filters applying `OrganizationId` scoping to all tenant-specific entities.
 - Use code-first migrations stored in the `Data/Migrations` directory.
 - Apply `AsNoTracking()` for read-only query scenarios to reduce memory overhead.
 - Use explicit loading or projection via `.Select()` instead of eager loading with `.Include()` where possible to minimize data transfer.

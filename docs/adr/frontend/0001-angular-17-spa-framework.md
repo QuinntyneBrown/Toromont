@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** frontend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub requires an enterprise-grade single-page application (SPA) framework to deliver a fleet management dashboard, equipment management views, work order tracking, parts ordering, telemetry visualization, and AI-driven insights. The frontend must support complex forms, data-heavy grids, real-time updates, and a responsive layout across desktop and mobile devices. The chosen framework must provide strong typing, scalable project structure, and long-term maintainability for a multi-year enterprise product.
+Ironvale Fleet Hub requires an enterprise-grade single-page application (SPA) framework to deliver a fleet management dashboard, equipment management views, work order tracking, parts ordering, telemetry visualization, and AI-driven insights. The frontend must support complex forms, data-heavy grids, real-time updates, and a responsive layout across desktop and mobile devices. The chosen framework must provide strong typing, scalable project structure, and long-term maintainability for a multi-year enterprise product.
 
 ## Decision
 

@@ -138,7 +138,7 @@ These tests are written for an xUnit integration test project using `WebApplicat
 
 ### 5.1 Test Project Setup
 
-Create `tests/ToromontFleetHub.Api.Tests/ToromontFleetHub.Api.Tests.csproj` (xUnit + `Microsoft.AspNetCore.Mvc.Testing`).
+Create `tests/IronvaleFleetHub.Api.Tests/IronvaleFleetHub.Api.Tests.csproj` (xUnit + `Microsoft.AspNetCore.Mvc.Testing`).
 
 ### 5.2 Test: Tenant resolution returns 403 when org claim is missing
 

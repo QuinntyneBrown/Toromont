@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** testing
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-The Toromont Fleet Hub Angular frontend requires reliable end-to-end testing to validate critical user flows across the platform. These flows include equipment management (CRUD operations, status tracking), work order lifecycle (creation through completion), parts ordering (search, cart, checkout), and telemetry dashboards (real-time data visualization, chart interactions). The E2E test suite must run across multiple browsers to ensure broad compatibility, support parallel execution for fast CI feedback, and provide strong debugging capabilities to quickly diagnose failures.
+The Ironvale Fleet Hub Angular frontend requires reliable end-to-end testing to validate critical user flows across the platform. These flows include equipment management (CRUD operations, status tracking), work order lifecycle (creation through completion), parts ordering (search, cart, checkout), and telemetry dashboards (real-time data visualization, chart interactions). The E2E test suite must run across multiple browsers to ensure broad compatibility, support parallel execution for fast CI feedback, and provide strong debugging capabilities to quickly diagnose failures.
 
 ## Decision
 

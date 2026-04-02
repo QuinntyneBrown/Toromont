@@ -1,6 +1,6 @@
-# Toromont Fleet Hub
+# Ironvale Fleet Hub
 
-A comprehensive, multi-tenant fleet management system for Toromont to manage equipment, service operations, parts ordering, telemetry monitoring, AI-driven insights, and notifications/reporting.
+A comprehensive, multi-tenant fleet management system for Ironvale to manage equipment, service operations, parts ordering, telemetry monitoring, AI-driven insights, and notifications/reporting.
 
 ## Tech Stack
 
@@ -14,7 +14,7 @@ A comprehensive, multi-tenant fleet management system for Toromont to manage equ
 
 ```
 src/
-├── backend/ToromontFleetHub.Api   # REST API (Controllers, Models, Services, DTOs, Hubs, Middleware)
+├── backend/IronvaleFleetHub.Api   # REST API (Controllers, Models, Services, DTOs, Hubs, Middleware)
 ├── frontend/                      # Angular application (standalone components)
 docs/
 ├── specs/                         # L1 & L2 requirements documentation
@@ -24,7 +24,7 @@ designs/
 ├── ui-design.pen                  # UI/UX design file
 ├── exports/                       # Exported design assets (PNG)
 e2e/                               # Playwright end-to-end tests (9 spec files)
-Toromont.sln                       # Visual Studio solution
+Ironvale.sln                       # Visual Studio solution
 ```
 
 ## Getting Started
@@ -38,7 +38,7 @@ Toromont.sln                       # Visual Studio solution
 ### Backend
 
 ```bash
-cd src/backend/ToromontFleetHub.Api
+cd src/backend/IronvaleFleetHub.Api
 dotnet restore
 dotnet run
 ```

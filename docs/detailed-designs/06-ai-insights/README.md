@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-This feature provides AI-driven predictive maintenance recommendations and anomaly detection for the Toromont Fleet Hub. An Azure Function runs daily scheduled analysis (2 AM UTC) on historical telemetry data and service records to predict component failures before they occur using **Azure OpenAI Service**. Real-time anomaly detection identifies unusual patterns in telemetry streams (temperature deviations >2 sigma, fuel consumption >30% increase, irregular operating patterns). Results are displayed on a dedicated AI Insights dashboard with KPI cards, a predictions grid, anomaly alerts, and confidence score visualizations.
+This feature provides AI-driven predictive maintenance recommendations and anomaly detection for the Ironvale Fleet Hub. An Azure Function runs daily scheduled analysis (2 AM UTC) on historical telemetry data and service records to predict component failures before they occur using **Azure OpenAI Service**. Real-time anomaly detection identifies unusual patterns in telemetry streams (temperature deviations >2 sigma, fuel consumption >30% increase, irregular operating patterns). Results are displayed on a dedicated AI Insights dashboard with KPI cards, a predictions grid, anomaly alerts, and confidence score visualizations.
 
 Per the UI design in `docs/ui-design.pen`, screen **"08 - AI Insights"** (frame `KAcQ5`) presents a sidebar (AI Insights active) with a header and content area containing 4 KPI cards, a predictions **Kendo UI Grid**, anomaly alerts list, and confidence score indicators.
 

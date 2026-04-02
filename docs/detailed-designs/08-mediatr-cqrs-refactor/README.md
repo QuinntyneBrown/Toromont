@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-The Toromont Fleet Hub API currently embeds all business logic directly in ASP.NET Core controller actions. This design documents the refactoring of that logic into MediatR request handlers, implementing the CQRS (Command Query Responsibility Segregation) pattern mandated by [ADR-0008](../../adr/backend/0008-mediatr-cqrs-pattern.md).
+The Ironvale Fleet Hub API currently embeds all business logic directly in ASP.NET Core controller actions. This design documents the refactoring of that logic into MediatR request handlers, implementing the CQRS (Command Query Responsibility Segregation) pattern mandated by [ADR-0008](../../adr/backend/0008-mediatr-cqrs-pattern.md).
 
 **Problem:** All 12 controllers contain inline business logic — validation, entity construction, state machines, query composition, and side effects — making them difficult to test in isolation and tightly coupling HTTP concerns with domain logic.
 
@@ -347,7 +347,7 @@ Complete list of MediatR requests to create, organized by feature area.
 The refactored folder layout follows a **vertical-slice** organization — each feature's commands, queries, handlers, and validators are co-located.
 
 ```
-src/backend/ToromontFleetHub.Api/
+src/backend/IronvaleFleetHub.Api/
 ├── Program.cs
 ├── Controllers/                          # Thin HTTP adapters (existing, refactored)
 │   ├── EquipmentController.cs
@@ -486,7 +486,7 @@ src/backend/ToromontFleetHub.Api/
 ```csharp
 // Features/Equipment/Commands/CreateEquipmentCommand.cs
 
-namespace ToromontFleetHub.Api.Features.Equipment.Commands;
+namespace IronvaleFleetHub.Api.Features.Equipment.Commands;
 
 public record CreateEquipmentCommand(
     string Name,
@@ -628,7 +628,7 @@ public class EquipmentController : ControllerBase
 ```csharp
 // Behaviors/ValidationBehavior.cs
 
-namespace ToromontFleetHub.Api.Behaviors;
+namespace IronvaleFleetHub.Api.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
@@ -668,7 +668,7 @@ public class ValidationBehavior<TRequest, TResponse>
 ```csharp
 // Behaviors/LoggingBehavior.cs
 
-namespace ToromontFleetHub.Api.Behaviors;
+namespace IronvaleFleetHub.Api.Behaviors;
 
 public class LoggingBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
@@ -704,7 +704,7 @@ public class LoggingBehavior<TRequest, TResponse>
 ```csharp
 // Features/WorkOrders/Notifications/WorkOrderCreatedNotification.cs
 
-namespace ToromontFleetHub.Api.Features.WorkOrders.Notifications;
+namespace IronvaleFleetHub.Api.Features.WorkOrders.Notifications;
 
 public record WorkOrderCreatedNotification(
     Guid WorkOrderId,

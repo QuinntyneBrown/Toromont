@@ -6,6 +6,9 @@
 # dotenv files
 .env
 
+# Playwright artifacts
+e2e/playwright-report/
+
 # User-specific files
 *.rsuser
 *.suo

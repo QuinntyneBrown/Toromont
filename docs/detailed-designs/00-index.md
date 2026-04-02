@@ -1,6 +1,6 @@
 # Detailed Designs — Index
 
-## Toromont Fleet Hub — Equipment Fleet Management & Service Portal
+## Ironvale Fleet Hub — Equipment Fleet Management & Service Portal
 
 | # | Feature | Status | Description |
 |---|---------|--------|-------------|

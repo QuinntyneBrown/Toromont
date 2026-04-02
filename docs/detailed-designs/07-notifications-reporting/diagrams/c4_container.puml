@@ -6,7 +6,7 @@ title Notifications & Reporting - Container Diagram
 
 Person(user, "Fleet Manager", "Views reports, receives notifications")
 
-System_Boundary(sb, "Toromont Fleet Hub") {
+System_Boundary(sb, "Ironvale Fleet Hub") {
     Container(spa, "Angular SPA", "Angular, Kendo UI, Bootstrap 5", "Notification bell, report charts,\nexport controls")
     Container(api, "Fleet Hub API", ".NET 8+, C#, MediatR", "RESTful API + SignalR Hub")
     Container(logicApps, "Azure Logic Apps", "Azure", "Email/SMS dispatch,\nservice reminders")

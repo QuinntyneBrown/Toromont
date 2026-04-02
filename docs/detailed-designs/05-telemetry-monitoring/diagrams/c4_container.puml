@@ -9,7 +9,7 @@ Person(user, "User", "Fleet Manager, Technician,\nor Operator")
 System_Ext(catLink, "CAT Product Link", "Equipment Telemetry Source")
 System_Ext(emailSvc, "Email Service", "Alert email delivery")
 
-System_Boundary(sb, "Toromont Fleet Hub") {
+System_Boundary(sb, "Ironvale Fleet Hub") {
     Container(spa, "Angular SPA", "Angular, Kendo UI,\nBootstrap 5", "Telemetry dashboard with\nLine, Bar charts, GPS map,\n60s auto-refresh")
     Container(apiGw, "API Management", "Azure APIM", "Gateway, rate limiting,\nAPI key validation")
     Container(api, "Fleet Hub API", "ASP.NET Core 8,\nC#, MediatR", "RESTful API for telemetry\nqueries and alert management")

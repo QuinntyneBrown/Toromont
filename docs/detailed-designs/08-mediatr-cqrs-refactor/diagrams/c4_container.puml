@@ -5,7 +5,7 @@ skinparam rectangle {
     shadowing false
 }
 
-title Toromont Fleet Hub - Container Diagram (MediatR Pipeline)
+title Ironvale Fleet Hub - Container Diagram (MediatR Pipeline)
 
 skinparam rectangle<<person>> {
     BackgroundColor #08427B
@@ -30,7 +30,7 @@ skinparam rectangle<<external>> {
 
 rectangle "API Consumer\n\n[Person]\nAngular SPA or IoT device" <<person>> as user
 
-package "Toromont Fleet Hub" {
+package "Ironvale Fleet Hub" {
     rectangle "Controllers\n\n[ASP.NET Core]\nThin HTTP adapters:\nroute, auth, dispatch" <<container>> as controllers
     rectangle "MediatR Pipeline\n\n[MediatR 12.x]\nPipeline behaviors:\nlogging, validation" <<container>> as pipeline
     rectangle "Request Handlers\n\n[C# Classes]\nBusiness logic:\ncommands and queries" <<container>> as handlers

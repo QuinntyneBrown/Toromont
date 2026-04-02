@@ -3,7 +3,7 @@ using '../main.bicep'
 param environmentName = 'prod'
 param location = 'canadacentral'
 param tags = {
-  application: 'ToromontFleetHub'
+  application: 'IronvaleFleetHub'
   environment: 'prod'
   owner: 'platform-team'
 }

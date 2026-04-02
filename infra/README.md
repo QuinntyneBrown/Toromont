@@ -1,6 +1,6 @@
 # Infrastructure Scaffold
 
-This folder contains the initial Bicep scaffold for Toromont Fleet Hub Azure infrastructure.
+This folder contains the initial Bicep scaffold for Ironvale Fleet Hub Azure infrastructure.
 
 ## Layout
 

@@ -9,7 +9,7 @@ Person(technician, "Technician", "Updates WO status,\nlogs completion notes")
 
 System_Ext(entraId, "Microsoft Entra ID", "OAuth2/OIDC Provider")
 
-System_Boundary(sb, "Toromont Fleet Hub") {
+System_Boundary(sb, "Ironvale Fleet Hub") {
     Container(spa, "Angular SPA", "Angular, Kendo UI,\nBootstrap 5", "Work order list (Kendo Grid),\nservice calendar (Kendo Scheduler),\nstatus tabs, drag-drop scheduling")
     Container(apiGw, "API Management", "Azure APIM", "Gateway, rate limiting,\nAPI versioning")
     Container(api, "Fleet Hub API", "ASP.NET Core 8,\nC#, MediatR", "Work order CRUD,\nstatus transitions,\ncalendar data endpoints")

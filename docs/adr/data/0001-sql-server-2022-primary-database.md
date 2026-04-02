@@ -3,22 +3,22 @@
 **Date:** 2026-04-01
 **Category:** data
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-The Toromont Fleet Hub fleet management system requires a robust relational database to support 13+ entity types with complex relationships, multi-tenant data isolation by organization, time-series telemetry ingestion from heavy equipment, and reporting workloads that leverage window functions. The system is built on the Microsoft ecosystem (ASP.NET Core, EF Core, Azure) and must scale to handle growing fleets across multiple Toromont divisions. Currently, the prototype uses EF Core InMemory provider for rapid development and will migrate to a production-grade database engine.
+The Ironvale Fleet Hub fleet management system requires a robust relational database to support 13+ entity types with complex relationships, multi-tenant data isolation by organization, time-series telemetry ingestion from heavy equipment, and reporting workloads that leverage window functions. The system is built on the Microsoft ecosystem (ASP.NET Core, EF Core, Azure) and must scale to handle growing fleets across multiple Ironvale divisions. Currently, the prototype uses EF Core InMemory provider for rapid development and will migrate to a production-grade database engine.
 
 ## Decision
 
-Use SQL Server 2022 as the primary relational database for the Toromont Fleet Hub, with Azure SQL Database as the managed deployment option.
+Use SQL Server 2022 as the primary relational database for the Ironvale Fleet Hub, with Azure SQL Database as the managed deployment option.
 
 ## Options Considered
 
 ### Option 1: SQL Server 2022 (chosen)
 
 - **Pros:**
-  - Enterprise licensing alignment with Toromont's existing Microsoft ecosystem and Azure investment
+  - Enterprise licensing alignment with Ironvale's existing Microsoft ecosystem and Azure investment
   - Excellent EF Core provider support with mature tooling and first-class integration
   - Window functions (ROW_NUMBER, RANK, LAG, LEAD) enable complex fleet reporting and trend analysis
   - Full-text search capabilities for the parts catalog, enabling natural-language search over part descriptions and specifications

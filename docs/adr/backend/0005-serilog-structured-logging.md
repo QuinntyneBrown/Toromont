@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** backend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub requires comprehensive observability across fleet management operations. The system must log equipment alert triggers, work order state transitions, telemetry processing throughput, authentication and authorization events, parts order lifecycle changes, and AI prediction requests. Logs must support correlation across distributed operations, structured querying in Azure Application Insights, and configurable verbosity levels to manage log volume in production. The built-in `ILogger` abstraction provides a foundation, but a more capable logging framework is needed for structured properties, enrichment, and flexible sink configuration.
+Ironvale Fleet Hub requires comprehensive observability across fleet management operations. The system must log equipment alert triggers, work order state transitions, telemetry processing throughput, authentication and authorization events, parts order lifecycle changes, and AI prediction requests. Logs must support correlation across distributed operations, structured querying in Azure Application Insights, and configurable verbosity levels to manage log volume in production. The built-in `ILogger` abstraction provides a foundation, but a more capable logging framework is needed for structured properties, enrichment, and flexible sink configuration.
 
 ## Decision
 

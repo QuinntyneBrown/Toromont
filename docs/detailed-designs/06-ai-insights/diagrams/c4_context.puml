@@ -8,7 +8,7 @@ Person(fleetMgr, "Fleet Manager", "Reviews AI predictions,\nacts on maintenance\
 Person(admin, "Admin", "Configures anomaly\ndetection thresholds")
 Person(technician, "Technician", "Views predictions for\nassigned equipment")
 
-System(fleetHub, "Toromont Fleet Hub", "Equipment Fleet Management\n& Service Portal\n(.NET 8+ / Angular / SQL Server 2022)")
+System(fleetHub, "Ironvale Fleet Hub", "Equipment Fleet Management\n& Service Portal\n(.NET 8+ / Angular / SQL Server 2022)")
 
 System_Ext(azureOpenAI, "Azure OpenAI Service", "LLM for failure pattern\nanalysis and natural\nlanguage search")
 System_Ext(entraId, "Microsoft Entra ID", "Identity provider\n(OAuth2/OIDC)")

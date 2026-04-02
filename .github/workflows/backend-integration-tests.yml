@@ -23,12 +23,12 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore backend integration test project
-        run: dotnet restore tests/backend/ToromontFleetHub.Api.IntegrationTests/ToromontFleetHub.Api.IntegrationTests.csproj
+        run: dotnet restore tests/backend/IronvaleFleetHub.Api.IntegrationTests/IronvaleFleetHub.Api.IntegrationTests.csproj
 
       - name: Run backend integration tests
         run: >
           dotnet test
-          tests/backend/ToromontFleetHub.Api.IntegrationTests/ToromontFleetHub.Api.IntegrationTests.csproj
+          tests/backend/IronvaleFleetHub.Api.IntegrationTests/IronvaleFleetHub.Api.IntegrationTests.csproj
           --configuration Release
           --no-restore
           /p:UseAppHost=false

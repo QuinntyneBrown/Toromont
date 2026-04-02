@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-This feature provides identity management, authentication, authorization, and multi-tenant data isolation for the Toromont Fleet Hub. All users authenticate via Microsoft Entra ID using OAuth2 Authorization Code flow with PKCE. The system enforces role-based access control (RBAC) with four roles and claims-based multi-tenant isolation ensuring complete data separation between customer organizations.
+This feature provides identity management, authentication, authorization, and multi-tenant data isolation for the Ironvale Fleet Hub. All users authenticate via Microsoft Entra ID using OAuth2 Authorization Code flow with PKCE. The system enforces role-based access control (RBAC) with four roles and claims-based multi-tenant isolation ensuring complete data separation between customer organizations.
 
 Per the UI design in `docs/ui-design.pen`, screen **"01 - Login Page"** (frame `wsHL3`) presents a split layout with a left branding panel (FLEET HUB logo and tagline) and a right login form card featuring a Microsoft Entra ID sign-in button. Screen **"10 - User Management"** (frame `YU8YG`) provides an admin-facing user table (rendered via **Kendo UI Grid**) with an "Invite User" button and a role column for managing organization members.
 

@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** infrastructure
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Equipment in the Toromont fleet sends periodic telemetry data including engine hours, fuel levels, temperature readings, and GPS coordinates. The system must ingest over 100 events per second during peak periods, with the ingestion layer scaling independently of the main API to avoid degrading user-facing request performance. The ingestion pipeline must handle burst traffic from fleet-wide reporting windows, persist data reliably, and support bulk database inserts for efficiency. Additionally, a daily predictive maintenance function must run against accumulated telemetry data to generate AI-driven maintenance predictions.
+Equipment in the Ironvale fleet sends periodic telemetry data including engine hours, fuel levels, temperature readings, and GPS coordinates. The system must ingest over 100 events per second during peak periods, with the ingestion layer scaling independently of the main API to avoid degrading user-facing request performance. The ingestion pipeline must handle burst traffic from fleet-wide reporting windows, persist data reliably, and support bulk database inserts for efficiency. Additionally, a daily predictive maintenance function must run against accumulated telemetry data to generate AI-driven maintenance predictions.
 
 ## Decision
 

@@ -9,7 +9,7 @@ Person(user, "User", "Fleet Manager, Admin,\nor Technician")
 System_Ext(azureOpenAI, "Azure OpenAI Service", "LLM & Embeddings")
 System_Ext(emailSvc, "Email Service", "Alert email delivery")
 
-System_Boundary(sb, "Toromont Fleet Hub") {
+System_Boundary(sb, "Ironvale Fleet Hub") {
     Container(spa, "Angular SPA", "Angular, Kendo UI,\nBootstrap 5", "AI Insights dashboard with\nKPI cards, predictions grid,\nanomaly alerts, confidence bars")
     Container(apiGw, "API Management", "Azure APIM", "Gateway, rate limiting,\nAPI versioning")
     Container(api, "Fleet Hub API", "ASP.NET Core 8,\nC#, MediatR", "RESTful API for predictions,\nanomalies, dashboard stats,\nnatural language search")

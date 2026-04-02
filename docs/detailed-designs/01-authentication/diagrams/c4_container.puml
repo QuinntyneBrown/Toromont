@@ -2,14 +2,14 @@
 !theme plain
 !include <C4/C4_Container>
 
-title Toromont Fleet Hub - Container Diagram
+title Ironvale Fleet Hub - Container Diagram
 
 Person(user, "User", "Fleet Manager, Technician,\nOperator, or Admin")
 
 System_Ext(entraId, "Microsoft Entra ID", "OAuth2/OIDC Provider")
 System_Ext(catLink, "CAT Product Link", "Telemetry Source")
 
-System_Boundary(sb, "Toromont Fleet Hub") {
+System_Boundary(sb, "Ironvale Fleet Hub") {
     Container(spa, "Angular SPA", "Angular 17, Kendo UI,\nBootstrap 5", "Single-page application\nfor all user interactions")
     Container(apiGw, "API Management", "Azure APIM", "Gateway, rate limiting,\nAPI versioning")
     Container(api, "Web API", "ASP.NET Core 8,\nC#, MediatR", "RESTful API with\nCQRS pattern")

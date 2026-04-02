@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** integration
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-The Toromont Fleet Hub platform requires AI-powered capabilities in two key areas. First, the parts ordering workflow needs natural language search so technicians can find parts using everyday language (e.g., "I need a hydraulic cylinder for my 320 excavator") rather than navigating rigid catalog hierarchies. Second, the fleet management domain benefits from predictive maintenance insights that analyze telemetry data and produce confidence-scored predictions to help prioritize service actions. These capabilities must integrate with the existing Azure-hosted infrastructure while meeting enterprise compliance requirements around data residency and governance.
+The Ironvale Fleet Hub platform requires AI-powered capabilities in two key areas. First, the parts ordering workflow needs natural language search so technicians can find parts using everyday language (e.g., "I need a hydraulic cylinder for my 320 excavator") rather than navigating rigid catalog hierarchies. Second, the fleet management domain benefits from predictive maintenance insights that analyze telemetry data and produce confidence-scored predictions to help prioritize service actions. These capabilities must integrate with the existing Azure-hosted infrastructure while meeting enterprise compliance requirements around data residency and governance.
 
 ## Decision
 

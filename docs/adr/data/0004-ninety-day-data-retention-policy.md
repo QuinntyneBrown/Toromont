@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** data
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub generates significant volumes of transient data across three domains: raw telemetry events from equipment sensors (Design 05 Decision 1), AI predictions that have been dismissed or have expired (Design 06 Decision 5), and notifications that have been read by users (Design 07 Decision 3). Without a retention policy, these tables will grow unbounded, degrading query performance and increasing storage costs. The dashboard time-range selector supports up to 90 days of historical data for trend analysis, establishing a natural retention boundary. A single nightly cleanup job is preferred over per-entity scheduled tasks to simplify operations and reduce the number of scheduled jobs to monitor.
+Ironvale Fleet Hub generates significant volumes of transient data across three domains: raw telemetry events from equipment sensors (Design 05 Decision 1), AI predictions that have been dismissed or have expired (Design 06 Decision 5), and notifications that have been read by users (Design 07 Decision 3). Without a retention policy, these tables will grow unbounded, degrading query performance and increasing storage costs. The dashboard time-range selector supports up to 90 days of historical data for trend analysis, establishing a natural retention boundary. A single nightly cleanup job is preferred over per-entity scheduled tasks to simplify operations and reduce the number of scheduled jobs to monitor.
 
 ## Decision
 

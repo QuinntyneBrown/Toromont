@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** backend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub must support migrating equipment data from legacy fleet management systems. These legacy systems commonly export data in XML format. Design 02 describes an XML import endpoint (POST /api/v1/equipment/import) that accepts XML files, validates them against an XSD schema, and processes valid records into the system. The import must enforce a maximum file size of 10MB and prevent XML External Entity (XXE) attacks by prohibiting DTD processing. Clear error reporting is required so administrators can identify and correct invalid records before re-importing.
+Ironvale Fleet Hub must support migrating equipment data from legacy fleet management systems. These legacy systems commonly export data in XML format. Design 02 describes an XML import endpoint (POST /api/v1/equipment/import) that accepts XML files, validates them against an XSD schema, and processes valid records into the system. The import must enforce a maximum file size of 10MB and prevent XML External Entity (XXE) attacks by prohibiting DTD processing. Clear error reporting is required so administrators can identify and correct invalid records before re-importing.
 
 ## Decision
 

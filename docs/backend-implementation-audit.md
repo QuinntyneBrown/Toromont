@@ -4,7 +4,7 @@ Date: 2026-04-02
 
 ## Scope
 
-This document compares the current backend implementation in `src/backend/ToromontFleetHub.Api` against the detailed design set in `docs/detailed-designs/01-*` through `08-*`.
+This document compares the current backend implementation in `src/backend/IronvaleFleetHub.Api` against the detailed design set in `docs/detailed-designs/01-*` through `08-*`.
 
 This was a static code audit. I did not execute end-to-end backend scenarios. The design set is still marked Draft, so this document calls out both implementation gaps and a small number of design ambiguities that affect the comparison.
 
@@ -36,10 +36,10 @@ Evidence:
 - `docs/detailed-designs/08-mediatr-cqrs-refactor/README.md:9-19`
 - `docs/detailed-designs/08-mediatr-cqrs-refactor/README.md:92-101`
 - `docs/detailed-designs/08-mediatr-cqrs-refactor/README.md:357-460`
-- `src/backend/ToromontFleetHub.Api/Program.cs:59-63`
-- `src/backend/ToromontFleetHub.Api/Controllers/EquipmentController.cs:101-167`
-- `src/backend/ToromontFleetHub.Api/Controllers/WorkOrdersController.cs:104-167`
-- `src/backend/ToromontFleetHub.Api/Controllers/OrdersController.cs:27-75`
+- `src/backend/IronvaleFleetHub.Api/Program.cs:59-63`
+- `src/backend/IronvaleFleetHub.Api/Controllers/EquipmentController.cs:101-167`
+- `src/backend/IronvaleFleetHub.Api/Controllers/WorkOrdersController.cs:104-167`
+- `src/backend/IronvaleFleetHub.Api/Controllers/OrdersController.cs:27-75`
 
 ### 2. Tenant and identity model diverge from the authentication design
 
@@ -53,8 +53,8 @@ Evidence:
 - `docs/detailed-designs/01-authentication/README.md:68-70`
 - `docs/detailed-designs/01-authentication/README.md:119-122`
 - `docs/detailed-designs/01-authentication/README.md:172-174`
-- `src/backend/ToromontFleetHub.Api/Middleware/TenantContextMiddleware.cs:17-64`
-- `src/backend/ToromontFleetHub.Api/Models/User.cs:6-11`
+- `src/backend/IronvaleFleetHub.Api/Middleware/TenantContextMiddleware.cs:17-64`
+- `src/backend/IronvaleFleetHub.Api/Models/User.cs:6-11`
 - repo search for `UserOrganization` returned no matches
 
 ### 3. Telemetry ingestion architecture does not match the design
@@ -68,7 +68,7 @@ Evidence:
 - `docs/detailed-designs/05-telemetry-monitoring/README.md:31-37`
 - `docs/detailed-designs/05-telemetry-monitoring/README.md:89-94`
 - `docs/detailed-designs/05-telemetry-monitoring/README.md:177`
-- `src/backend/ToromontFleetHub.Api/Controllers/TelemetryController.cs:32-74`
+- `src/backend/IronvaleFleetHub.Api/Controllers/TelemetryController.cs:32-74`
 
 ## High Findings
 
@@ -82,7 +82,7 @@ Evidence:
 
 - `docs/detailed-designs/01-authentication/README.md:68-70`
 - `docs/detailed-designs/01-authentication/README.md:174`
-- `src/backend/ToromontFleetHub.Api/Controllers/UsersController.cs:27-142`
+- `src/backend/IronvaleFleetHub.Api/Controllers/UsersController.cs:27-142`
 
 ### 5. Equipment management contracts and import behavior drift from the design
 
@@ -97,8 +97,8 @@ Evidence:
 - `docs/detailed-designs/02-equipment-management/README.md:53-54`
 - `docs/detailed-designs/02-equipment-management/README.md:107-113`
 - `docs/detailed-designs/02-equipment-management/README.md:171`
-- `src/backend/ToromontFleetHub.Api/Controllers/EquipmentController.cs:27-98`
-- `src/backend/ToromontFleetHub.Api/Controllers/EquipmentController.cs:206-267`
+- `src/backend/IronvaleFleetHub.Api/Controllers/EquipmentController.cs:27-98`
+- `src/backend/IronvaleFleetHub.Api/Controllers/EquipmentController.cs:206-267`
 
 ### 6. Work order authorization and side effects are lighter than designed
 
@@ -112,9 +112,9 @@ Evidence:
 - `docs/detailed-designs/03-service-management/README.md:33`
 - `docs/detailed-designs/03-service-management/README.md:38-47`
 - `docs/detailed-designs/03-service-management/README.md:163`
-- `src/backend/ToromontFleetHub.Api/Controllers/WorkOrdersController.cs:12-13`
-- `src/backend/ToromontFleetHub.Api/Controllers/WorkOrdersController.cs:104-167`
-- `src/backend/ToromontFleetHub.Api/Controllers/WorkOrdersController.cs:221-235`
+- `src/backend/IronvaleFleetHub.Api/Controllers/WorkOrdersController.cs:12-13`
+- `src/backend/IronvaleFleetHub.Api/Controllers/WorkOrdersController.cs:104-167`
+- `src/backend/IronvaleFleetHub.Api/Controllers/WorkOrdersController.cs:221-235`
 
 ### 7. Parts catalog, cart, and order APIs do not follow the documented route and workflow contracts
 
@@ -129,10 +129,10 @@ Evidence:
 - `docs/detailed-designs/04-parts-ordering/README.md:96-99`
 - `docs/detailed-designs/04-parts-ordering/README.md:105-108`
 - `docs/detailed-designs/04-parts-ordering/README.md:152-180`
-- `src/backend/ToromontFleetHub.Api/Controllers/PartsController.cs:27-123`
-- `src/backend/ToromontFleetHub.Api/Controllers/CartController.cs:27-105`
-- `src/backend/ToromontFleetHub.Api/Controllers/OrdersController.cs:12-43`
-- `src/backend/ToromontFleetHub.Api/Controllers/OrdersController.cs:45-86`
+- `src/backend/IronvaleFleetHub.Api/Controllers/PartsController.cs:27-123`
+- `src/backend/IronvaleFleetHub.Api/Controllers/CartController.cs:27-105`
+- `src/backend/IronvaleFleetHub.Api/Controllers/OrdersController.cs:12-43`
+- `src/backend/IronvaleFleetHub.Api/Controllers/OrdersController.cs:45-86`
 
 ### 8. AI Insights endpoints exist, but several routes and response contracts differ from the design
 
@@ -144,7 +144,7 @@ Evidence:
 
 - `docs/detailed-designs/06-ai-insights/README.md:53-64`
 - `docs/detailed-designs/06-ai-insights/README.md:159-181`
-- `src/backend/ToromontFleetHub.Api/Controllers/AIInsightsController.cs:26-124`
+- `src/backend/IronvaleFleetHub.Api/Controllers/AIInsightsController.cs:26-124`
 
 ### 9. Notifications and reporting are only partially implemented to the design depth
 
@@ -157,11 +157,11 @@ Evidence:
 - `docs/detailed-designs/07-notifications-reporting/README.md:37-39`
 - `docs/detailed-designs/07-notifications-reporting/README.md:46-60`
 - `docs/detailed-designs/07-notifications-reporting/README.md:150`
-- `src/backend/ToromontFleetHub.Api/Hubs/NotificationHub.cs:16-64`
-- `src/backend/ToromontFleetHub.Api/Controllers/NotificationsController.cs:69-110`
-- `src/backend/ToromontFleetHub.Api/Services/NotificationDispatchService.cs:60-101`
-- `src/backend/ToromontFleetHub.Api/Services/ReportGenerationService.cs:16-76`
-- `src/backend/ToromontFleetHub.Api/Services/ExportService.cs:68-75`
+- `src/backend/IronvaleFleetHub.Api/Hubs/NotificationHub.cs:16-64`
+- `src/backend/IronvaleFleetHub.Api/Controllers/NotificationsController.cs:69-110`
+- `src/backend/IronvaleFleetHub.Api/Services/NotificationDispatchService.cs:60-101`
+- `src/backend/IronvaleFleetHub.Api/Services/ReportGenerationService.cs:16-76`
+- `src/backend/IronvaleFleetHub.Api/Services/ExportService.cs:68-75`
 
 ### 10. Alerts are implemented as a minimal workflow and omit threshold management
 
@@ -174,8 +174,8 @@ Evidence:
 - `docs/detailed-designs/05-telemetry-monitoring/README.md:40-41`
 - `docs/detailed-designs/05-telemetry-monitoring/README.md:54-57`
 - `docs/detailed-designs/05-telemetry-monitoring/README.md:146-161`
-- `src/backend/ToromontFleetHub.Api/Controllers/AlertsController.cs:11-81`
-- `src/backend/ToromontFleetHub.Api/Services/AlertEvaluatorService.cs:20-57`
+- `src/backend/IronvaleFleetHub.Api/Controllers/AlertsController.cs:11-81`
+- `src/backend/IronvaleFleetHub.Api/Services/AlertEvaluatorService.cs:20-57`
 
 ## Medium Findings
 
@@ -189,8 +189,8 @@ Evidence:
 
 - `docs/detailed-designs/01-authentication/README.md:49-50`
 - `docs/detailed-designs/01-authentication/README.md:121`
-- `src/backend/ToromontFleetHub.Api/Data/FleetHubDbContext.cs:18-32`
-- `src/backend/ToromontFleetHub.Api/Data/FleetHubDbContext.cs:237-243`
+- `src/backend/IronvaleFleetHub.Api/Data/FleetHubDbContext.cs:18-32`
+- `src/backend/IronvaleFleetHub.Api/Data/FleetHubDbContext.cs:237-243`
 
 ### 12. Security headers are present but not as complete as the design implies
 
@@ -200,7 +200,7 @@ Impact: not an immediate correctness issue, but the backend remains below the ex
 
 Evidence:
 
-- `src/backend/ToromontFleetHub.Api/Program.cs:162-169`
+- `src/backend/IronvaleFleetHub.Api/Program.cs:162-169`
 
 ## Design Ambiguities Found During Comparison
 
@@ -212,7 +212,7 @@ Evidence:
 
 - `docs/detailed-designs/02-equipment-management/README.md:37`
 - `docs/detailed-designs/02-equipment-management/README.md:181`
-- `src/backend/ToromontFleetHub.Api/Controllers/EquipmentController.cs:171-203`
+- `src/backend/IronvaleFleetHub.Api/Controllers/EquipmentController.cs:171-203`
 
 ### 14. The authentication design mixes single-org and multi-org assumptions
 
@@ -222,7 +222,7 @@ Evidence:
 
 - `docs/detailed-designs/01-authentication/README.md:86`
 - `docs/detailed-designs/01-authentication/README.md:172`
-- `src/backend/ToromontFleetHub.Api/Models/User.cs:6-11`
+- `src/backend/IronvaleFleetHub.Api/Models/User.cs:6-11`
 
 ## Areas That Already Partially Align
 

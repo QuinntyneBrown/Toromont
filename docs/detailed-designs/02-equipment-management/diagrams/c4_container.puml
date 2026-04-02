@@ -10,7 +10,7 @@ Person(operator, "Operator", "Views equipment (read-only)")
 System_Ext(entraId, "Microsoft Entra ID", "OAuth2/OIDC identity provider")
 System_Ext(legacyFeed, "Legacy XML Feed", "Equipment data exports")
 
-System_Boundary(sb, "Toromont Fleet Hub") {
+System_Boundary(sb, "Ironvale Fleet Hub") {
     Container(spa, "Angular SPA", "Angular, Kendo UI,\nBootstrap 5, TypeScript", "Responsive fleet management UI\nwith equipment grid, detail\ntabs, and import forms")
     Container(apim, "API Management", "Azure API Management", "Gateway, rate limiting,\nAPI versioning")
     Container(api, "Fleet Hub API", ".NET 8+, C#, MediatR", "RESTful API with CQRS\nfor equipment CRUD\nand XML import")

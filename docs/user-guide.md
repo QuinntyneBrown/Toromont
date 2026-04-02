@@ -1,8 +1,8 @@
-# Toromont Fleet Hub — User Guide
+# Ironvale Fleet Hub — User Guide
 
 > **Audience:** End users (non-developers) — Fleet Managers, Technicians, Operators, and Administrators.
 >
-> This guide walks you through every screen and action available in the Toromont Fleet Hub application so you can manage your equipment fleet, schedule service, order parts, monitor telemetry, review AI insights, and generate reports.
+> This guide walks you through every screen and action available in the Ironvale Fleet Hub application so you can manage your equipment fleet, schedule service, order parts, monitor telemetry, review AI insights, and generate reports.
 
 ---
 
@@ -694,7 +694,7 @@ Fleet Hub uses **role-based access control**. Your administrator assigns you one
 A: The Admin section is only visible to users with the **Admin** role. Contact your organisation's administrator if you believe you should have access.
 
 **Q: The "Add to Cart" button is greyed out for a part I need.**
-A: This means the part is currently **Out of Stock**. Check back later or contact your Toromont representative for availability.
+A: This means the part is currently **Out of Stock**. Check back later or contact your Ironvale representative for availability.
 
 **Q: How often does the dashboard data update?**
 A: Dashboard KPIs and the telemetry charts refresh automatically every **60 seconds**. You do not need to reload the page.
@@ -715,4 +715,4 @@ A: On the Reports page, first generate a report by selecting a report type and c
 A: Fleet Hub works best in modern browsers such as Microsoft Edge, Google Chrome, Mozilla Firefox, and Safari. For the best experience, keep your browser up to date.
 
 **Q: Who do I contact for support?**
-A: Reach out to your organisation's Fleet Hub administrator or contact Toromont support for technical assistance.
+A: Reach out to your organisation's Fleet Hub administrator or contact Ironvale support for technical assistance.

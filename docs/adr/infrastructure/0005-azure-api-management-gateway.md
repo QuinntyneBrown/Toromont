@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** infrastructure
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-The Toromont Fleet Hub exposes a REST API consumed by the Angular frontend and potentially by third-party integrations. The API requires centralized management for rate limiting to prevent abuse and denial-of-service attacks, security header injection to comply with OWASP best practices, API documentation hosting for developer consumers, and request analytics for operational visibility. These cross-cutting concerns should be handled at the gateway level rather than within application code to ensure consistent enforcement and to decouple security policies from application deployments.
+The Ironvale Fleet Hub exposes a REST API consumed by the Angular frontend and potentially by third-party integrations. The API requires centralized management for rate limiting to prevent abuse and denial-of-service attacks, security header injection to comply with OWASP best practices, API documentation hosting for developer consumers, and request analytics for operational visibility. These cross-cutting concerns should be handled at the gateway level rather than within application code to ensure consistent enforcement and to decouple security policies from application deployments.
 
 ## Decision
 

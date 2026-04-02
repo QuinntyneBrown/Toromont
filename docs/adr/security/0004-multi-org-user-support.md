@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** security
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub operates as a multi-tenant system where each customer organization has isolated data. Design 01 Section 8 Decision 1 resolves the open question about whether users should be allowed to belong to multiple organizations: "Yes, allow it. Add a UserOrganization join table." This requirement arises because consultants and regional managers frequently need to access equipment, work orders, and reports across multiple customer organizations. Without multi-org support, these users would need separate accounts per organization, leading to credential sprawl and a poor user experience. The existing multi-tenant data isolation (ADR security/0003) uses EF Core global query filters scoped to an active OrganizationId, which must continue to function correctly with multi-org users.
+Ironvale Fleet Hub operates as a multi-tenant system where each customer organization has isolated data. Design 01 Section 8 Decision 1 resolves the open question about whether users should be allowed to belong to multiple organizations: "Yes, allow it. Add a UserOrganization join table." This requirement arises because consultants and regional managers frequently need to access equipment, work orders, and reports across multiple customer organizations. Without multi-org support, these users would need separate accounts per organization, leading to credential sprawl and a poor user experience. The existing multi-tenant data isolation (ADR security/0003) uses EF Core global query filters scoped to an active OrganizationId, which must continue to function correctly with multi-org users.
 
 ## Decision
 

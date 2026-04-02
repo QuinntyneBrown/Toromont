@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** backend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub processes equipment telemetry data at rates exceeding 100 events per second and must generate fleet utilization and maintenance cost reports within a 3-second response target. Entity Framework Core, while excellent for general CRUD operations (see ADR-0002), introduces unacceptable overhead for these specific workloads. Telemetry bulk inserts through EF Core's change tracker create significant memory pressure and latency. Complex reporting queries requiring SQL window functions, CTEs, and multi-table aggregations produce suboptimal SQL when expressed through LINQ.
+Ironvale Fleet Hub processes equipment telemetry data at rates exceeding 100 events per second and must generate fleet utilization and maintenance cost reports within a 3-second response target. Entity Framework Core, while excellent for general CRUD operations (see ADR-0002), introduces unacceptable overhead for these specific workloads. Telemetry bulk inserts through EF Core's change tracker create significant memory pressure and latency. Complex reporting queries requiring SQL window functions, CTEs, and multi-table aggregations produce suboptimal SQL when expressed through LINQ.
 
 ## Decision
 
@@ -54,7 +54,7 @@ Use Dapper alongside Entity Framework Core for telemetry ingestion (100+ events/
 - Use Dapper for fleet utilization reports with SQL window functions (`ROW_NUMBER`, `LAG`, `LEAD`, `SUM OVER`).
 - Use Dapper for maintenance cost reports requiring multi-table joins with aggregation and grouping.
 - Create a `DapperQueryService` or equivalent that accepts the current tenant context and automatically injects OrganizationId parameters.
-- Share the same connection string and database as EF Core; obtain `DbConnection` from `ToromontFleetHubDbContext` when needed.
+- Share the same connection string and database as EF Core; obtain `DbConnection` from `IronvaleFleetHubDbContext` when needed.
 - All Dapper SQL queries must be covered by integration tests that validate correct results and tenant isolation.
 
 ## References

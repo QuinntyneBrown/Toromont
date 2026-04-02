@@ -5,7 +5,7 @@ skinparam rectangle {
     shadowing false
 }
 
-title Toromont Fleet Hub - System Context (MediatR Refactor)
+title Ironvale Fleet Hub - System Context (MediatR Refactor)
 
 skinparam rectangle<<person>> {
     BackgroundColor #08427B
@@ -27,7 +27,7 @@ rectangle "Fleet Manager\n\n[Person]\nManages equipment,\nwork orders, parts" <<
 rectangle "Technician\n\n[Person]\nExecutes work orders,\nviews telemetry" <<person>> as technician
 rectangle "Admin\n\n[Person]\nManages users,\norganization settings" <<person>> as admin
 
-rectangle "Toromont Fleet Hub API\n\n[Software System]\nASP.NET Core 9 Web API\nwith MediatR CQRS pipeline" <<system>> as fleet_hub
+rectangle "Ironvale Fleet Hub API\n\n[Software System]\nASP.NET Core 9 Web API\nwith MediatR CQRS pipeline" <<system>> as fleet_hub
 
 rectangle "Angular SPA\n\n[External System]\nFleet management frontend" <<external>> as angular_spa
 rectangle "Microsoft Entra ID\n\n[External System]\nIdentity provider (OAuth2/OIDC)" <<external>> as entra_id

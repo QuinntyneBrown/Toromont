@@ -3,15 +3,15 @@
 **Date:** 2026-04-01
 **Category:** infrastructure
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-The Toromont Fleet Hub is an enterprise fleet management system that requires reliable cloud hosting with integrated services spanning compute, serverless processing, workflow automation, monitoring, and AI capabilities. The platform must support a .NET backend, Microsoft Entra ID authentication, and a broad suite of managed services including application hosting with auto-scaling, serverless functions, email and SMS communication, AI inference, and centralized API management. Toromont operates within the Microsoft ecosystem, making alignment with Microsoft tooling and identity infrastructure a significant consideration.
+The Ironvale Fleet Hub is an enterprise fleet management system that requires reliable cloud hosting with integrated services spanning compute, serverless processing, workflow automation, monitoring, and AI capabilities. The platform must support a .NET backend, Microsoft Entra ID authentication, and a broad suite of managed services including application hosting with auto-scaling, serverless functions, email and SMS communication, AI inference, and centralized API management. Ironvale operates within the Microsoft ecosystem, making alignment with Microsoft tooling and identity infrastructure a significant consideration.
 
 ## Decision
 
-Use Microsoft Azure as the cloud platform for the Toromont Fleet Hub. The deployment leverages the following Azure services:
+Use Microsoft Azure as the cloud platform for the Ironvale Fleet Hub. The deployment leverages the following Azure services:
 
 - **Azure App Services** for hosting the main ASP.NET Core API with managed auto-scaling
 - **Azure Functions** for serverless telemetry ingestion and scheduled AI workloads
@@ -26,12 +26,12 @@ Use Microsoft Azure as the cloud platform for the Toromont Fleet Hub. The deploy
 ### Option 1: Microsoft Azure (chosen)
 
 - **Pros:**
-  - Native integration with Microsoft Entra ID, which Toromont already uses for identity and access management
+  - Native integration with Microsoft Entra ID, which Ironvale already uses for identity and access management
   - First-class support for .NET and ASP.NET Core workloads on App Services
   - Integrated service suite (Functions, Logic Apps, Communication Services, OpenAI) reduces cross-vendor integration complexity
   - App Services provides managed hosting with built-in auto-scaling, deployment slots, and health checks
   - Single billing relationship and unified management portal for all services
-  - Enterprise support agreements and SLAs aligned with Toromont's existing Microsoft licensing
+  - Enterprise support agreements and SLAs aligned with Ironvale's existing Microsoft licensing
 
 - **Cons:**
   - Vendor lock-in to the Azure ecosystem
@@ -49,7 +49,7 @@ Use Microsoft Azure as the cloud platform for the Toromont Fleet Hub. The deploy
   - No native Microsoft Entra ID integration; would require federated identity configuration
   - .NET support is secondary to other runtimes in the AWS ecosystem
   - Additional integration effort to bridge AWS services with Microsoft tooling
-  - Toromont would need to manage a separate vendor relationship
+  - Ironvale would need to manage a separate vendor relationship
 
 ### Option 3: Google Cloud Platform
 

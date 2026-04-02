@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** security
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub serves multiple user types with distinct responsibilities and access needs within the fleet management domain. Administrators manage users and organizational settings. Fleet Managers oversee equipment inventories, work orders, and reporting. Technicians perform service tasks and order parts. Operators view dashboards and monitor equipment status. The authorization model must enforce these boundaries reliably, integrate cleanly with the JWT-based authentication established in ADR-0001, and avoid unnecessary complexity given the current set of well-defined roles.
+Ironvale Fleet Hub serves multiple user types with distinct responsibilities and access needs within the fleet management domain. Administrators manage users and organizational settings. Fleet Managers oversee equipment inventories, work orders, and reporting. Technicians perform service tasks and order parts. Operators view dashboards and monitor equipment status. The authorization model must enforce these boundaries reliably, integrate cleanly with the JWT-based authentication established in ADR-0001, and avoid unnecessary complexity given the current set of well-defined roles.
 
 ## Decision
 
@@ -18,7 +18,7 @@ Implement Role-Based Access Control (RBAC) using JWT claims issued by Microsoft 
 ### Option 1: JWT Claims-Based RBAC with Four Roles (chosen)
 
 - **Pros:**
-  - Simple role model maps directly to Toromont's organizational structure and job functions
+  - Simple role model maps directly to Ironvale's organizational structure and job functions
   - Role information travels inside the JWT, so authorization decisions require no additional database lookups at request time
   - ASP.NET Core provides first-class support via `[Authorize(Roles = "...")]` and policy-based authorization middleware
   - Entra ID app roles are manageable through the Azure portal and assignable to users and groups
@@ -49,7 +49,7 @@ Implement Role-Based Access Control (RBAC) using JWT claims issued by Microsoft 
 - **Cons:**
   - Requires a permission management subsystem and database tables for user-resource-permission mappings
   - Administrative overhead grows with the number of resources and users
-  - Not well-suited to the role-oriented organizational model at Toromont
+  - Not well-suited to the role-oriented organizational model at Ironvale
 
 ### Option 4: Policy-Based Authorization (standalone)
 

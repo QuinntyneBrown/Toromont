@@ -16,7 +16,7 @@ Per the UI design in `docs/ui-design.pen`, screen "09 - Reports" (frame `6w3G8`)
 
 ### 2.1 System Context
 
-The system context diagram shows how Fleet Managers and Technicians interact with the Toromont Fleet Hub for notifications and reporting, and how the system integrates with external services (Microsoft Entra ID for authentication, email/SMS providers via Azure Logic Apps).
+The system context diagram shows how Fleet Managers and Technicians interact with the Ironvale Fleet Hub for notifications and reporting, and how the system integrates with external services (Microsoft Entra ID for authentication, email/SMS providers via Azure Logic Apps).
 
 ![System Context](diagrams/c4_context.png)
 

@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** infrastructure
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Users of the Toromont Fleet Hub need immediate notification of critical events including equipment faults, work order status changes, parts order updates, and AI-detected anomalies. The target delivery latency is under 5 seconds from event occurrence to user notification. Users should receive these notifications without needing to refresh the page. The notification system must also support multiple delivery channels (in-app, email, SMS) with user-configurable preferences per notification type. The system must scale to support concurrent connections from multiple organizations while maintaining message isolation between tenants.
+Users of the Ironvale Fleet Hub need immediate notification of critical events including equipment faults, work order status changes, parts order updates, and AI-detected anomalies. The target delivery latency is under 5 seconds from event occurrence to user notification. Users should receive these notifications without needing to refresh the page. The notification system must also support multiple delivery channels (in-app, email, SMS) with user-configurable preferences per notification type. The system must scale to support concurrent connections from multiple organizations while maintaining message isolation between tenants.
 
 ## Decision
 

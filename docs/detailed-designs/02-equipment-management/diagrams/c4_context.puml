@@ -9,7 +9,7 @@ Person(operator, "Operator", "Views equipment details\nand status (read-only)")
 Person(admin, "Admin", "Full CRUD, manages\nlegacy imports")
 Person(technician, "Technician", "Views equipment specs\nand service history")
 
-System(fleetHub, "Toromont Fleet Hub", "Equipment fleet management\nand service portal\n(.NET 8+ / Angular / SQL Server 2022)")
+System(fleetHub, "Ironvale Fleet Hub", "Equipment fleet management\nand service portal\n(.NET 8+ / Angular / SQL Server 2022)")
 
 System_Ext(entraId, "Microsoft Entra ID", "Identity provider\n(OAuth2/OIDC)")
 System_Ext(legacyFeed, "Legacy XML Feed", "Existing equipment\nmanagement systems\nexporting XML data")

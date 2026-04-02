@@ -1,8 +1,8 @@
-# Toromont Coding Conventions
+# Ironvale Coding Conventions
 
-This document defines the coding conventions for the Toromont solution, with primary emphasis on:
+This document defines the coding conventions for the Ironvale solution, with primary emphasis on:
 
-- backend C# code in `src/backend/ToromontFleetHub.Api`
+- backend C# code in `src/backend/IronvaleFleetHub.Api`
 - frontend Angular code in `src/frontend/src`
 
 ## Scope

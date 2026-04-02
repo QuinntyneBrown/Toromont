@@ -4,7 +4,7 @@ skinparam classAttributeIconSize 0
 skinparam classFontSize 11
 skinparam linetype ortho
 
-title MediatR Type Hierarchy - Toromont Fleet Hub
+title MediatR Type Hierarchy - Ironvale Fleet Hub
 
 package "MediatR Interfaces" {
     interface "IRequest<TResponse>" as IRequest {

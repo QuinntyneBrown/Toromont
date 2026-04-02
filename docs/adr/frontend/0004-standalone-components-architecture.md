@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** frontend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Angular 17 introduced stable standalone APIs as the recommended approach for building Angular applications. Historically, Angular required NgModules to declare components, directives, and pipes, and to configure dependency injection. This module-based architecture added significant boilerplate, created indirection between component usage and declarations, and complicated lazy loading. With standalone components, each component self-declares its imports, making the dependency graph explicit and reducing the need for NgModule orchestration. The Toromont Fleet Hub project is a greenfield application, providing the opportunity to adopt standalone components from the start.
+Angular 17 introduced stable standalone APIs as the recommended approach for building Angular applications. Historically, Angular required NgModules to declare components, directives, and pipes, and to configure dependency injection. This module-based architecture added significant boilerplate, created indirection between component usage and declarations, and complicated lazy loading. With standalone components, each component self-declares its imports, making the dependency graph explicit and reducing the need for NgModule orchestration. The Ironvale Fleet Hub project is a greenfield application, providing the opportunity to adopt standalone components from the start.
 
 ## Decision
 

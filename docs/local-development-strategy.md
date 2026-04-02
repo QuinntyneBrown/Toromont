@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-This document defines the strategy for running the Toromont Fleet Hub application entirely on a developer's local machine **without requiring access to Azure cloud services**. The goal is to ensure every engineer can build, run, and test all application features using only local tools, emulators, and stubs.
+This document defines the strategy for running the Ironvale Fleet Hub application entirely on a developer's local machine **without requiring access to Azure cloud services**. The goal is to ensure every engineer can build, run, and test all application features using only local tools, emulators, and stubs.
 
 ### 1.1 Objectives
 
@@ -145,7 +145,7 @@ Update `appsettings.Development.json`:
 Then apply EF Core migrations:
 
 ```bash
-cd src/backend/ToromontFleetHub.Api
+cd src/backend/IronvaleFleetHub.Api
 dotnet ef database update
 ```
 
@@ -215,7 +215,7 @@ UseDevelopmentStorage=true
 For local development, .NET User Secrets replaces Azure Key Vault:
 
 ```bash
-cd src/backend/ToromontFleetHub.Api
+cd src/backend/IronvaleFleetHub.Api
 dotnet user-secrets init
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost,1433;..."
 ```
@@ -359,11 +359,11 @@ Total estimated effort for full local parity: **~2–4 days of engineering work*
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/QuinntyneBrown/Toromont.git
-cd Toromont
+git clone https://github.com/QuinntyneBrown/Ironvale.git
+cd Ironvale
 
 # 2. Start the backend (uses in-memory DB + dev auth)
-cd src/backend/ToromontFleetHub.Api
+cd src/backend/IronvaleFleetHub.Api
 dotnet run
 
 # 3. In a separate terminal, start the frontend

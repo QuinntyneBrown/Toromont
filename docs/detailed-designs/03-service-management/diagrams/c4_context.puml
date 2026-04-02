@@ -8,7 +8,7 @@ Person(fleetMgr, "Fleet Manager", "Creates work orders,\ncloses completed work,\
 Person(technician, "Technician", "Receives assignments,\nupdates work order status,\nlogs completion notes")
 Person(operator, "Operator", "Views work orders and\nservice calendar (read-only)")
 
-System(fleetHub, "Toromont Fleet Hub", "Equipment fleet management\nand service portal\n(.NET 8+ / Angular / SQL Server 2022)")
+System(fleetHub, "Ironvale Fleet Hub", "Equipment fleet management\nand service portal\n(.NET 8+ / Angular / SQL Server 2022)")
 
 System_Ext(entraId, "Microsoft Entra ID", "Identity provider\n(OAuth2/OIDC)")
 System_Ext(emailSvc, "Email Service", "SendGrid / SMTP\nemail delivery")

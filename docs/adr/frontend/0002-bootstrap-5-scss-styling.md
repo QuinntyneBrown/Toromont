@@ -3,15 +3,15 @@
 **Date:** 2026-04-01
 **Category:** frontend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub must provide a responsive user interface that works across desktop monitors in fleet operations centers, tablets used by field technicians, and mobile phones for on-the-go management. The styling system must support five breakpoints (XS <576px, S >=576px, M >=768px, L >=992px, XL >=1200px) and handle complex layouts including persistent sidebars, data-heavy dashboards, equipment grids, and work order calendars. The team needs a styling approach that is maintainable, customizable to Toromont branding, and accessible by default.
+Ironvale Fleet Hub must provide a responsive user interface that works across desktop monitors in fleet operations centers, tablets used by field technicians, and mobile phones for on-the-go management. The styling system must support five breakpoints (XS <576px, S >=576px, M >=768px, L >=992px, XL >=1200px) and handle complex layouts including persistent sidebars, data-heavy dashboards, equipment grids, and work order calendars. The team needs a styling approach that is maintainable, customizable to Ironvale branding, and accessible by default.
 
 ## Decision
 
-Use Bootstrap 5 with SCSS preprocessing and CSS custom properties using the oklch color space for theming and responsive layout. Bootstrap's grid system and utility classes provide the responsive foundation, while SCSS variables and mixins enable Toromont-specific customization.
+Use Bootstrap 5 with SCSS preprocessing and CSS custom properties using the oklch color space for theming and responsive layout. Bootstrap's grid system and utility classes provide the responsive foundation, while SCSS variables and mixins enable Ironvale-specific customization.
 
 ## Options Considered
 
@@ -29,7 +29,7 @@ Use Bootstrap 5 with SCSS preprocessing and CSS custom properties using the oklc
 
 - **Cons:**
   - Larger CSS bundle if not carefully tree-shaken (mitigated by importing only needed modules)
-  - Generic look-and-feel requires customization effort to match Toromont branding
+  - Generic look-and-feel requires customization effort to match Ironvale branding
   - Some Bootstrap components may overlap with Kendo UI components, requiring clear usage guidelines
 
 ### Option 2: Tailwind CSS
@@ -53,7 +53,7 @@ Use Bootstrap 5 with SCSS preprocessing and CSS custom properties using the oklc
   - Tight integration with Angular CDK
 
 - **Cons:**
-  - Material Design aesthetic may not align with Toromont branding requirements
+  - Material Design aesthetic may not align with Ironvale branding requirements
   - Customization beyond Material theming is complex
   - Overlap with Kendo UI components would create confusion about which library to use for which component
 
@@ -62,7 +62,7 @@ Use Bootstrap 5 with SCSS preprocessing and CSS custom properties using the oklc
 - **Pros:**
   - Complete control over every aspect of styling
   - No external dependencies
-  - Perfectly tailored to Toromont requirements
+  - Perfectly tailored to Ironvale requirements
 
 - **Cons:**
   - Significant upfront development effort to build grid system, components, and utilities
@@ -75,7 +75,7 @@ Use Bootstrap 5 with SCSS preprocessing and CSS custom properties using the oklc
 
 - Responsive layouts work across all five breakpoints with minimal custom CSS
 - Developers can leverage familiar Bootstrap classes for rapid UI development
-- SCSS variables centralize Toromont branding (colors, typography, spacing) for consistent theming
+- SCSS variables centralize Ironvale branding (colors, typography, spacing) for consistent theming
 - CSS custom properties with oklch enable perceptually uniform color scales and accessible contrast ratios
 - Bootstrap's responsive utilities simplify breakpoint-specific visibility and layout changes
 
@@ -93,7 +93,7 @@ Use Bootstrap 5 with SCSS preprocessing and CSS custom properties using the oklc
 ## Implementation Notes
 
 - Import Bootstrap SCSS source selectively in `styles.scss` (grid, utilities, reboot, forms, navbars, cards, modals) rather than the full bundle
-- Define Toromont brand colors as SCSS variables mapped to CSS custom properties using oklch:
+- Define Ironvale brand colors as SCSS variables mapped to CSS custom properties using oklch:
   - `--toro-primary`, `--toro-secondary`, `--toro-accent`, `--toro-danger`, `--toro-warning`, `--toro-success`
 - Responsive sidebar behavior:
   - **L and XL (>=992px):** Sidebar is persistent and fully expanded with text labels

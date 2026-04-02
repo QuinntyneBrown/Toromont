@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** integration
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub requires a notification delivery system capable of sending both email and SMS messages to fleet managers, technicians, and administrators. Notification types include service reminders, equipment fault alerts, work order updates, parts order status changes, and AI-generated insights. Design 07 Section 8 Decision 2 evaluates notification delivery providers and selects Azure Communication Services (ACS) as the unified platform for both email and SMS channels. The system must integrate with Azure Logic Apps for workflow-driven notification dispatch and respect per-user notification preferences that control which channels and event types each user receives.
+Ironvale Fleet Hub requires a notification delivery system capable of sending both email and SMS messages to fleet managers, technicians, and administrators. Notification types include service reminders, equipment fault alerts, work order updates, parts order status changes, and AI-generated insights. Design 07 Section 8 Decision 2 evaluates notification delivery providers and selects Azure Communication Services (ACS) as the unified platform for both email and SMS channels. The system must integrate with Azure Logic Apps for workflow-driven notification dispatch and respect per-user notification preferences that control which channels and event types each user receives.
 
 ## Decision
 

@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** general
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-The Toromont Fleet Hub platform has multiple asynchronous processing concerns that span different domains and operate at different scales. Telemetry ingestion must handle high-volume data streams from fleet equipment sensors. Service workflows require automated reminders and escalation logic that execute on schedules and in response to state changes. Real-time notifications must reach users within seconds of relevant events occurring. AI processing pipelines (predictive maintenance, anomaly detection) run as batch jobs that consume telemetry data and produce alerts. A synchronous request-response architecture cannot efficiently address these diverse requirements without creating tight coupling, bottlenecks, and poor user experience.
+The Ironvale Fleet Hub platform has multiple asynchronous processing concerns that span different domains and operate at different scales. Telemetry ingestion must handle high-volume data streams from fleet equipment sensors. Service workflows require automated reminders and escalation logic that execute on schedules and in response to state changes. Real-time notifications must reach users within seconds of relevant events occurring. AI processing pipelines (predictive maintenance, anomaly detection) run as batch jobs that consume telemetry data and produce alerts. A synchronous request-response architecture cannot efficiently address these diverse requirements without creating tight coupling, bottlenecks, and poor user experience.
 
 ## Decision
 

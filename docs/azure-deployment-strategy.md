@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-This document defines the recommended Azure deployment strategy for Toromont Fleet Hub across **dev**, **staging**, and **production**, with **GitHub Actions** as the CI/CD platform.
+This document defines the recommended Azure deployment strategy for Ironvale Fleet Hub across **dev**, **staging**, and **production**, with **GitHub Actions** as the CI/CD platform.
 
 ### 1.1 Recommended Strategy
 
@@ -147,7 +147,7 @@ The route order should remain:
 The CI workflow should:
 
 1. build Angular in `src/frontend`
-2. copy the Angular output into `src/backend/ToromontFleetHub.Api/wwwroot`
+2. copy the Angular output into `src/backend/IronvaleFleetHub.Api/wwwroot`
 3. run `dotnet publish` for the API
 4. zip the published output
 

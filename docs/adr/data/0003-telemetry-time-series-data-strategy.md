@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** data
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Equipment in the Toromont Fleet Hub sends telemetry data every 6 hours, reporting engine hours, fuel level, temperature, and GPS coordinates. The system must handle ingestion rates of 100+ events per second during peak periods (e.g., fleet-wide reporting cycles), store a rolling window of 30+ days of raw telemetry per equipment, and serve efficient time-range queries for dashboard charts with selectable windows (24h, 7d, 30d, 90d, custom). The TelemetryEvents table will grow to millions of rows and requires a data management strategy that balances write throughput, query performance, and data retention without introducing additional infrastructure beyond the primary SQL Server database established in ADR-0001.
+Equipment in the Ironvale Fleet Hub sends telemetry data every 6 hours, reporting engine hours, fuel level, temperature, and GPS coordinates. The system must handle ingestion rates of 100+ events per second during peak periods (e.g., fleet-wide reporting cycles), store a rolling window of 30+ days of raw telemetry per equipment, and serve efficient time-range queries for dashboard charts with selectable windows (24h, 7d, 30d, 90d, custom). The TelemetryEvents table will grow to millions of rows and requires a data management strategy that balances write throughput, query performance, and data retention without introducing additional infrastructure beyond the primary SQL Server database established in ADR-0001.
 
 ## Decision
 

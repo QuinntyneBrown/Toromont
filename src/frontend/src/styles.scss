@@ -4,7 +4,7 @@
 // Bootstrap 5
 @use "bootstrap/scss/bootstrap";
 
-// Toromont Fleet Hub custom variables (from .pen design system)
+// Ironvale Fleet Hub custom variables (from .pen design system)
 :root {
   --accent-primary: #FFCD11;
   --accent-primary-hover: #E6B800;
@@ -41,7 +41,7 @@ body {
   margin: 0;
 }
 
-// Override Kendo theme to match Toromont branding
+// Override Kendo theme to match Ironvale branding
 .k-grid {
   font-family: var(--font-body);
   border-color: var(--border-subtle);

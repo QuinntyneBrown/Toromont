@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** backend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub exposes APIs consumed by the Angular frontend application and potentially by third-party integrations in the future. The API surface covers equipment CRUD, work order management, telemetry ingestion, parts ordering, alert configuration, reporting, and AI predictions. The team needs a consistent API design strategy that supports evolution without breaking existing clients, provides clear documentation, and follows industry-standard conventions. A versioning strategy is required to allow non-breaking API evolution while maintaining backward compatibility during transition periods.
+Ironvale Fleet Hub exposes APIs consumed by the Angular frontend application and potentially by third-party integrations in the future. The API surface covers equipment CRUD, work order management, telemetry ingestion, parts ordering, alert configuration, reporting, and AI predictions. The team needs a consistent API design strategy that supports evolution without breaking existing clients, provides clear documentation, and follows industry-standard conventions. A versioning strategy is required to allow non-breaking API evolution while maintaining backward compatibility during transition periods.
 
 ## Decision
 

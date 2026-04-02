@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** security
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub is a multi-tenant application serving multiple organizations (Toromont customers) from a single deployed instance. Each organization's data -- equipment records, work orders, users, parts inventory, telemetry events, alerts, and more -- must be strictly isolated so that no organization can view, modify, or infer the existence of another organization's data. The isolation mechanism must be reliable, difficult to bypass accidentally, and operationally manageable as the number of tenants grows.
+Ironvale Fleet Hub is a multi-tenant application serving multiple organizations (Ironvale customers) from a single deployed instance. Each organization's data -- equipment records, work orders, users, parts inventory, telemetry events, alerts, and more -- must be strictly isolated so that no organization can view, modify, or infer the existence of another organization's data. The isolation mechanism must be reliable, difficult to bypass accidentally, and operationally manageable as the number of tenants grows.
 
 ## Decision
 
@@ -22,7 +22,7 @@ Use a single shared database with tenant isolation enforced through Entity Frame
   - Global query filters are applied automatically by EF Core, reducing the risk of developers accidentally writing unfiltered queries
   - Straightforward to add new tenants without provisioning infrastructure
   - Single database simplifies backup, restore, and disaster recovery procedures
-  - Cross-tenant reporting for Toromont internal use (e.g., aggregate fleet analytics) is possible with administrative bypass queries
+  - Cross-tenant reporting for Ironvale internal use (e.g., aggregate fleet analytics) is possible with administrative bypass queries
 
 - **Cons:**
   - A bug in the filter configuration or a raw SQL query that bypasses EF Core could leak data across tenants

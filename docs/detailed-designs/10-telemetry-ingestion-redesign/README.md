@@ -30,11 +30,11 @@ The Feature 05 detailed design specifies: (a) an Azure Function at `POST /api/te
 
 ### 3.1 New Project: Azure Functions Telemetry Ingestion
 
-Create a separate project `src/backend/ToromontFleetHub.Functions/` for the Azure Functions host:
+Create a separate project `src/backend/IronvaleFleetHub.Functions/` for the Azure Functions host:
 
 ```
-src/backend/ToromontFleetHub.Functions/
-├── ToromontFleetHub.Functions.csproj
+src/backend/IronvaleFleetHub.Functions/
+├── IronvaleFleetHub.Functions.csproj
 ├── host.json
 ├── local.settings.json
 ├── Functions/

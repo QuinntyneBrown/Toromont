@@ -2,7 +2,7 @@
 !theme plain
 !include <C4/C4_Component>
 
-title Toromont Fleet Hub API - Component Diagram (MediatR Architecture)
+title Ironvale Fleet Hub API - Component Diagram (MediatR Architecture)
 
 Container_Boundary(api, "Fleet Hub API Container") {
 

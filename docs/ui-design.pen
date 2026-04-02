@@ -934,7 +934,7 @@
                   "id": "PhWws",
                   "name": "loginLogoText",
                   "fill": "$accent-primary",
-                  "content": "TOROMONT",
+                  "content": "IRONVALE",
                   "fontFamily": "Inter",
                   "fontSize": 32,
                   "fontWeight": "800"
@@ -1106,7 +1106,7 @@
                   "id": "Z2x74",
                   "name": "loginFooter",
                   "fill": "$foreground-disabled",
-                  "content": "© 2026 Toromont Industries Ltd.",
+                  "content": "© 2026 Ironvale Industries Ltd.",
                   "fontFamily": "Inter",
                   "fontSize": 12,
                   "fontWeight": "normal"
@@ -10087,7 +10087,7 @@
                               "type": "text",
                               "id": "8N3ku",
                               "fill": "$foreground-secondary",
-                              "content": "j.davidson@toromont.com",
+                              "content": "j.davidson@ironvale.com",
                               "fontFamily": "Inter",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -10242,7 +10242,7 @@
                               "type": "text",
                               "id": "C7E6G",
                               "fill": "$foreground-secondary",
-                              "content": "s.chen@toromont.com",
+                              "content": "s.chen@ironvale.com",
                               "fontFamily": "Inter",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -10397,7 +10397,7 @@
                               "type": "text",
                               "id": "46rOE",
                               "fill": "$foreground-secondary",
-                              "content": "m.johnson@toromont.com",
+                              "content": "m.johnson@ironvale.com",
                               "fontFamily": "Inter",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -11173,7 +11173,7 @@
                   "id": "yPRiR",
                   "name": "logoTxt",
                   "fill": "$accent-primary",
-                  "content": "TOROMONT",
+                  "content": "IRONVALE",
                   "fontFamily": "Inter",
                   "fontSize": 22,
                   "fontWeight": "800"
@@ -11321,7 +11321,7 @@
               "id": "7vWpY",
               "name": "footer",
               "fill": "$foreground-disabled",
-              "content": "© 2026 Toromont Industries Ltd.",
+              "content": "© 2026 Ironvale Industries Ltd.",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -11394,7 +11394,7 @@
                   "id": "09Zca",
                   "name": "hLogoT",
                   "fill": "$foreground-primary",
-                  "content": "TOROMONT",
+                  "content": "IRONVALE",
                   "fontFamily": "Inter",
                   "fontSize": 14,
                   "fontWeight": "800"
@@ -12792,7 +12792,7 @@
                   "id": "z4Ud4",
                   "name": "hLogoT",
                   "fill": "$foreground-primary",
-                  "content": "TOROMONT",
+                  "content": "IRONVALE",
                   "fontFamily": "Inter",
                   "fontSize": 14,
                   "fontWeight": "800"
@@ -13455,7 +13455,7 @@
                   "id": "6axhZ",
                   "name": "hLogoT",
                   "fill": "$foreground-primary",
-                  "content": "TOROMONT",
+                  "content": "IRONVALE",
                   "fontFamily": "Inter",
                   "fontSize": 14,
                   "fontWeight": "800"
@@ -13953,7 +13953,7 @@
                   "id": "tXQt2",
                   "name": "hLogoT",
                   "fill": "$foreground-primary",
-                  "content": "TOROMONT",
+                  "content": "IRONVALE",
                   "fontFamily": "Inter",
                   "fontSize": 14,
                   "fontWeight": "800"
@@ -14761,7 +14761,7 @@
                   "id": "KBYgs",
                   "name": "hLogoT",
                   "fill": "$foreground-primary",
-                  "content": "TOROMONT",
+                  "content": "IRONVALE",
                   "fontFamily": "Inter",
                   "fontSize": 14,
                   "fontWeight": "800"
@@ -15426,7 +15426,7 @@
                   "id": "RRwgi",
                   "name": "hLogoT",
                   "fill": "$foreground-primary",
-                  "content": "TOROMONT",
+                  "content": "IRONVALE",
                   "fontFamily": "Inter",
                   "fontSize": 14,
                   "fontWeight": "800"
@@ -16046,7 +16046,7 @@
                   "id": "HAQ8z",
                   "name": "hLogoT",
                   "fill": "$foreground-primary",
-                  "content": "TOROMONT",
+                  "content": "IRONVALE",
                   "fontFamily": "Inter",
                   "fontSize": 14,
                   "fontWeight": "800"
@@ -16235,7 +16235,7 @@
                               "id": "4epur",
                               "name": "u1email",
                               "fill": "$foreground-secondary",
-                              "content": "john.doe@toromont.com",
+                              "content": "john.doe@ironvale.com",
                               "fontFamily": "Inter",
                               "fontSize": 12,
                               "fontWeight": "normal"
@@ -16375,7 +16375,7 @@
                               "id": "6LTYJ",
                               "name": "u2email",
                               "fill": "$foreground-secondary",
-                              "content": "sarah.miller@toromont.com",
+                              "content": "sarah.miller@ironvale.com",
                               "fontFamily": "Inter",
                               "fontSize": 12,
                               "fontWeight": "normal"
@@ -16515,7 +16515,7 @@
                               "id": "jG4RT",
                               "name": "u3email",
                               "fill": "$foreground-secondary",
-                              "content": "robert.j@toromont.com",
+                              "content": "robert.j@ironvale.com",
                               "fontFamily": "Inter",
                               "fontSize": 12,
                               "fontWeight": "normal"

@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-This feature provides the core equipment registry for Toromont Fleet Hub. Users can register, view, edit, and decommission heavy equipment assets. The system maintains complete records including specifications, GPS location, service history references, and telemetry summaries. Legacy XML data imports from existing systems are supported.
+This feature provides the core equipment registry for Ironvale Fleet Hub. Users can register, view, edit, and decommission heavy equipment assets. The system maintains complete records including specifications, GPS location, service history references, and telemetry summaries. Legacy XML data imports from existing systems are supported.
 
 Per the UI design in `docs/ui-design.pen`, screen **"03 - Equipment List"** (frame `8WCf1`) displays a sidebar with Equipment as the active nav item and a **Kendo UI Grid** with filters and search for browsing the equipment registry. Screen **"04 - Equipment Detail"** (frame `JIdQ4`) presents a tabbed detail view with specs, service history, and telemetry summary panels. The **"02 - Dashboard"** (frame `pmjuI`) includes KPI cards and alerts that surface equipment status at a glance.
 

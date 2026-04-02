@@ -26,7 +26,7 @@ test.describe('Authentication', () => {
     await expect(login.signInButton).toBeVisible();
     await expect(login.signInButton).toContainText('Sign in with Microsoft');
     await expect(login.entraIdBadge).toContainText('Secured by Microsoft Entra ID');
-    await expect(login.copyrightText).toContainText('2026 Toromont Industries');
+    await expect(login.copyrightText).toContainText('2026 Ironvale Industries');
   });
 
   // L2-023 AC5: Sign out clears session

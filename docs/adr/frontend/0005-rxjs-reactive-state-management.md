@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** frontend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub requires robust asynchronous data handling for several real-time and interactive features: telemetry dashboards that auto-refresh on a 60-second interval, SignalR-based push notifications for alerts and work order updates, HTTP API calls to the ASP.NET Core backend with MSAL token injection, and user interactions that trigger cascading data updates across components. The application needs a state management strategy that handles these async flows cleanly while remaining maintainable and testable. The current application complexity involves approximately 6-8 feature areas with moderate inter-feature communication needs.
+Ironvale Fleet Hub requires robust asynchronous data handling for several real-time and interactive features: telemetry dashboards that auto-refresh on a 60-second interval, SignalR-based push notifications for alerts and work order updates, HTTP API calls to the ASP.NET Core backend with MSAL token injection, and user interactions that trigger cascading data updates across components. The application needs a state management strategy that handles these async flows cleanly while remaining maintainable and testable. The current application complexity involves approximately 6-8 feature areas with moderate inter-feature communication needs.
 
 ## Decision
 

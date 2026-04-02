@@ -2,14 +2,14 @@
 !theme plain
 !include <C4/C4_Context>
 
-title Toromont Fleet Hub - System Context
+title Ironvale Fleet Hub - System Context
 
 Person(fleetMgr, "Fleet Manager", "Manages equipment fleet,\nwork orders, parts orders")
 Person(technician, "Technician", "Updates work order status,\nviews equipment telemetry")
 Person(operator, "Operator", "Views equipment and\ntelemetry (read-only)")
 Person(admin, "Admin", "Manages users, roles,\norganization settings")
 
-System(fleetHub, "Toromont Fleet Hub", "Equipment Fleet Management\n& Service Portal")
+System(fleetHub, "Ironvale Fleet Hub", "Equipment Fleet Management\n& Service Portal")
 
 System_Ext(entraId, "Microsoft Entra ID", "Identity provider\n(OAuth2/OIDC)")
 System_Ext(catTelematics, "CAT Product Link", "Equipment telemetry\ndata source")

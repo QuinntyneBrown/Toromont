@@ -3,7 +3,7 @@
 **Date:** 2026-04-01
 **Category:** frontend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 

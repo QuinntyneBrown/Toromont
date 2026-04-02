@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** security
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub is an enterprise fleet management system that requires secure, standards-based authentication capable of supporting Single Sign-On (SSO) across the organization. Toromont operates within the Microsoft ecosystem, and the system must accommodate four distinct user roles: Admin, Fleet Manager, Operator, and Technician. The authentication mechanism must protect against common web vulnerabilities, support silent token renewal for a seamless user experience, and enforce session timeout policies appropriate for an industrial fleet management context.
+Ironvale Fleet Hub is an enterprise fleet management system that requires secure, standards-based authentication capable of supporting Single Sign-On (SSO) across the organization. Ironvale operates within the Microsoft ecosystem, and the system must accommodate four distinct user roles: Admin, Fleet Manager, Operator, and Technician. The authentication mechanism must protect against common web vulnerabilities, support silent token renewal for a seamless user experience, and enforce session timeout policies appropriate for an industrial fleet management context.
 
 ## Decision
 
@@ -18,7 +18,7 @@ Use Microsoft Entra ID (formerly Azure AD) as the identity provider, implementin
 ### Option 1: Microsoft Entra ID with OAuth2 Authorization Code + PKCE (chosen)
 
 - **Pros:**
-  - Native integration with Azure services and the broader Microsoft ecosystem already in use at Toromont
+  - Native integration with Azure services and the broader Microsoft ecosystem already in use at Ironvale
   - Enterprise-grade SSO support with federated identity capabilities
   - PKCE extension prevents authorization code interception attacks, eliminating the need for a client secret in the SPA
   - Silent token renewal via hidden iframe provides seamless session continuity
@@ -49,7 +49,7 @@ Use Microsoft Entra ID (formerly Azure AD) as the identity provider, implementin
   - Integrates well with AWS-hosted backends
 
 - **Cons:**
-  - Misaligned with Toromont's Microsoft-centric infrastructure
+  - Misaligned with Ironvale's Microsoft-centric infrastructure
   - Weaker enterprise SSO and federation capabilities compared to Entra ID
   - Would require bridging between AWS and Azure identity layers
 
@@ -80,7 +80,7 @@ Use Microsoft Entra ID (formerly Azure AD) as the identity provider, implementin
 
 ### Positive
 
-- Users authenticate with their existing Toromont Microsoft credentials, reducing credential fatigue and onboarding friction
+- Users authenticate with their existing Ironvale Microsoft credentials, reducing credential fatigue and onboarding friction
 - PKCE-protected authorization code flow is the current best practice for SPAs, aligning with OAuth 2.1 recommendations
 - Memory-only token storage eliminates the XSS attack vector against persisted tokens
 - Silent token renewal provides uninterrupted sessions without forcing re-authentication during active use
@@ -100,7 +100,7 @@ Use Microsoft Entra ID (formerly Azure AD) as the identity provider, implementin
 
 ## Implementation Notes
 
-- Register the Toromont Fleet Hub as a Single Page Application in Microsoft Entra ID with the appropriate redirect URIs for each environment (development, staging, production)
+- Register the Ironvale Fleet Hub as a Single Page Application in Microsoft Entra ID with the appropriate redirect URIs for each environment (development, staging, production)
 - Configure `MsalGuard` on all authenticated Angular routes to enforce login before navigation
 - Configure `MsalInterceptor` to attach bearer tokens to all API calls matching the backend's base URL
 - Backend ASP.NET Core API validates JWT bearer tokens using `Microsoft.Identity.Web`, verifying issuer, audience, and RS256 signature against Entra ID's JWKS endpoint

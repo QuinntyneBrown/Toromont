@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** data
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-The Toromont Fleet Hub requires a repeatable, version-controlled approach to database schema management that aligns with domain model evolution. The system defines 13+ entity types (Equipment, MaintenanceRecord, TelemetryEvent, Alert, PartsOrder, User, etc.) with complex relationships and constraints. Schema changes must propagate reliably across local development, staging, and production environments as part of the CI/CD pipeline. The team works primarily in C# and needs a schema management strategy that fits naturally into the .NET development workflow.
+The Ironvale Fleet Hub requires a repeatable, version-controlled approach to database schema management that aligns with domain model evolution. The system defines 13+ entity types (Equipment, MaintenanceRecord, TelemetryEvent, Alert, PartsOrder, User, etc.) with complex relationships and constraints. Schema changes must propagate reliably across local development, staging, and production environments as part of the CI/CD pipeline. The team works primarily in C# and needs a schema management strategy that fits naturally into the .NET development workflow.
 
 ## Decision
 

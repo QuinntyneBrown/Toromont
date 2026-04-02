@@ -7,7 +7,7 @@ title Notifications & Reporting - System Context
 Person(fleetMgr, "Fleet Manager", "Receives alerts, generates reports")
 Person(tech, "Technician", "Receives work order notifications")
 
-System(fleetHub, "Toromont Fleet Hub", ".NET 8+ / Angular / SQL Server 2022")
+System(fleetHub, "Ironvale Fleet Hub", ".NET 8+ / Angular / SQL Server 2022")
 
 System_Ext(entraId, "Microsoft Entra ID", "Identity provider")
 System_Ext(email, "Email Service", "SMTP via Azure Logic Apps")

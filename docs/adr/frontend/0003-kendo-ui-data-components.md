@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** frontend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub requires rich data visualization and interaction components across several core features: equipment inventory grids with server-side pagination, sorting, and filtering; work order scheduling with day, week, and month calendar views; telemetry data presented as line charts, bar charts, and geographic maps; and KPI dashboards showing fleet utilization, uptime, and cost metrics. These components must handle large datasets efficiently, support accessibility standards, and maintain a consistent visual language across the application.
+Ironvale Fleet Hub requires rich data visualization and interaction components across several core features: equipment inventory grids with server-side pagination, sorting, and filtering; work order scheduling with day, week, and month calendar views; telemetry data presented as line charts, bar charts, and geographic maps; and KPI dashboards showing fleet utilization, uptime, and cost metrics. These components must handle large datasets efficiently, support accessibility standards, and maintain a consistent visual language across the application.
 
 ## Decision
 
@@ -111,7 +111,7 @@ Use Telerik Kendo UI for Angular as the primary component library for data grids
   - Telemetry line charts: time-series with zoom and pan for engine hours, fuel consumption, temperature
   - Bar charts: equipment utilization comparisons across fleet
   - KPI dashboard: gauge charts for uptime percentage, sparklines for trends
-- Apply Kendo theme customization via `@progress/kendo-theme-default` SCSS overrides to match Toromont branding
+- Apply Kendo theme customization via `@progress/kendo-theme-default` SCSS overrides to match Ironvale branding
 
 ## UI Design Mapping
 

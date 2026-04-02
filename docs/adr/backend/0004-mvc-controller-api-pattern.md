@@ -3,11 +3,11 @@
 **Date:** 2026-04-01
 **Category:** backend
 **Status:** Accepted
-**Deciders:** Toromont Fleet Hub Architecture Team
+**Deciders:** Ironvale Fleet Hub Architecture Team
 
 ## Context
 
-Toromont Fleet Hub exposes a RESTful API surface covering equipment management, work orders, telemetry, parts ordering, alerts, reporting, and AI predictions. The project targets .NET 8+, which provides two primary approaches for defining HTTP endpoints: traditional MVC controllers and the Minimal APIs pattern introduced in .NET 6. The team needs to select an API definition pattern that supports the CQRS architecture (via MediatR), attribute-based authorization, and a growing API surface with clear domain separation.
+Ironvale Fleet Hub exposes a RESTful API surface covering equipment management, work orders, telemetry, parts ordering, alerts, reporting, and AI predictions. The project targets .NET 8+, which provides two primary approaches for defining HTTP endpoints: traditional MVC controllers and the Minimal APIs pattern introduced in .NET 6. The team needs to select an API definition pattern that supports the CQRS architecture (via MediatR), attribute-based authorization, and a growing API surface with clear domain separation.
 
 ## Decision
 
