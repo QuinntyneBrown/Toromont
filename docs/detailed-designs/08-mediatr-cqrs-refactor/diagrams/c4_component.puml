@@ -1,0 +1,55 @@
+@startuml c4_component
+!theme plain
+!include <C4/C4_Component>
+
+title Toromont Fleet Hub API - Component Diagram (MediatR Architecture)
+
+Container_Boundary(api, "Fleet Hub API Container") {
+
+    Component(ctrl_equip, "EquipmentController", "ApiController", "Equipment CRUD endpoints")
+    Component(ctrl_wo, "WorkOrdersController", "ApiController", "Work order endpoints")
+    Component(ctrl_orders, "OrdersController", "ApiController", "Parts ordering endpoints")
+    Component(ctrl_other, "Other Controllers", "ApiController", "Dashboard, Telemetry, Alerts, etc.")
+
+    Component(mediator, "IMediator", "MediatR", "Request dispatcher")
+
+    Component(logging_beh, "LoggingBehavior", "IPipelineBehavior", "Logs request type and duration")
+    Component(valid_beh, "ValidationBehavior", "IPipelineBehavior", "Runs FluentValidation rules")
+
+    Component(cmd_handlers, "Command Handlers", "IRequestHandler", "Write operations: create, update, delete")
+    Component(qry_handlers, "Query Handlers", "IRequestHandler", "Read operations: list, get by ID, search")
+    Component(ntf_handlers, "Notification Handlers", "INotificationHandler", "Domain event side effects")
+
+    Component(validators, "FluentValidation", "AbstractValidator<T>", "Declarative validation rules per command")
+
+    Component(svc_wo_num, "IWorkOrderNumberGenerator", "Service", "Sequential WO number generation")
+    Component(svc_reports, "IReportGenerationService", "Service", "Report data aggregation")
+    Component(svc_export, "IExportService", "Service", "PDF/Excel/CSV export")
+    Component(svc_alerts, "IAlertEvaluatorService", "Service", "Telemetry threshold evaluation")
+
+    Component(db_context, "FleetHubDbContext", "EF Core", "Data access with tenant query filters")
+    Component(signalr_hub, "NotificationHub", "SignalR", "Real-time push to clients")
+}
+
+Rel(ctrl_equip, mediator, "Send()")
+Rel(ctrl_wo, mediator, "Send()")
+Rel(ctrl_orders, mediator, "Send()")
+Rel(ctrl_other, mediator, "Send()")
+
+Rel(mediator, logging_beh, "Pipeline step 1")
+Rel(logging_beh, valid_beh, "Pipeline step 2")
+Rel(valid_beh, cmd_handlers, "Dispatches commands")
+Rel(valid_beh, qry_handlers, "Dispatches queries")
+Rel(valid_beh, validators, "Validates request")
+
+Rel(cmd_handlers, db_context, "Reads/Writes")
+Rel(cmd_handlers, svc_wo_num, "Generates WO#")
+Rel(cmd_handlers, svc_alerts, "Evaluates thresholds")
+Rel(cmd_handlers, mediator, "Publish() notifications")
+Rel(qry_handlers, db_context, "Reads")
+Rel(ntf_handlers, db_context, "Writes")
+Rel(ntf_handlers, signalr_hub, "Push events")
+Rel(cmd_handlers, svc_reports, "Generates reports")
+Rel(cmd_handlers, svc_export, "Exports files")
+
+@enduml

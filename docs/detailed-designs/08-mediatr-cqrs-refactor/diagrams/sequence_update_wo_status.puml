@@ -1,0 +1,64 @@
+@startuml sequence_update_wo_status
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Update Work Order Status - Command with State Machine
+
+actor "Angular SPA" as SPA
+participant "WorkOrdersController" as Ctrl
+participant "IMediator" as Med
+participant "ValidationBehavior" as Val
+participant "UpdateWorkOrderStatusCommandHandler" as Handler
+database "FleetHubDbContext" as DB
+participant "WorkOrderStatusChangedNotificationHandler" as NtfHandler
+participant "NotificationHub" as Hub
+
+SPA -> Ctrl: PUT /api/v1/work-orders/{id}/status\n{status: "InProgress", notes: "Starting work"}
+activate Ctrl
+
+Ctrl -> Med: Send(UpdateWorkOrderStatusCommand, ct)
+activate Med
+
+Med -> Val: Handle(request, next, ct)
+activate Val
+Val -> Handler: next() [validation passes]
+activate Handler
+
+Handler -> DB: FindAsync(workOrderId)
+DB --> Handler: WorkOrder (status="Open")
+
+Handler -> Handler: Check allowed transitions\nOpen -> [InProgress, Cancelled]\nRole: Technician -> [InProgress]
+
+alt Transition allowed
+    Handler -> DB: Update status = "InProgress"
+    Handler -> DB: Add WorkOrderHistory record
+    Handler -> DB: SaveChangesAsync()
+
+    Handler -> Med: Publish(WorkOrderStatusChangedNotification)
+    activate NtfHandler
+    NtfHandler -> DB: Add Notification
+    NtfHandler -> Hub: Push to relevant users
+    deactivate NtfHandler
+
+    Handler --> Val: Result<WorkOrder>.Success(updated)
+else Transition NOT allowed
+    Handler --> Val: Result<WorkOrder>.Failure(\n"Cannot transition from Open\nto Completed with role Technician")
+end
+
+deactivate Handler
+
+Val --> Med: Result<WorkOrder>
+deactivate Val
+
+Med --> Ctrl: Result<WorkOrder>
+deactivate Med
+
+alt Success
+    Ctrl --> SPA: 200 OK {workOrder}
+else Failure
+    Ctrl --> SPA: 400 Bad Request {error}
+end
+
+deactivate Ctrl
+
+@enduml

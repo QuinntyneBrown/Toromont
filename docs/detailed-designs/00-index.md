@@ -11,3 +11,4 @@
 | 05 | [Telemetry & Monitoring](05-telemetry-monitoring/README.md) | Draft | Event ingestion, real-time charts, Azure Functions processing |
 | 06 | [AI Insights](06-ai-insights/README.md) | Draft | Predictive maintenance, anomaly detection, ML pipeline |
 | 07 | [Notifications & Reporting](07-notifications-reporting/README.md) | Draft | SignalR in-app, email/SMS via Logic Apps, fleet reports, exports |
+| 08 | [MediatR CQRS Refactor](08-mediatr-cqrs-refactor/README.md) | Draft | Move controller logic into MediatR request handlers with pipeline behaviors |

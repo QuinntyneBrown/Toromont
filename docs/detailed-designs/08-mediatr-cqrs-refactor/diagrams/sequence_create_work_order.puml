@@ -1,0 +1,57 @@
+@startuml sequence_create_work_order
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Create Work Order - Command with Domain Event
+
+actor "Angular SPA" as SPA
+participant "WorkOrdersController" as Ctrl
+participant "IMediator" as Med
+participant "ValidationBehavior" as Val
+participant "CreateWorkOrderCommandHandler" as Handler
+participant "IWorkOrderNumberGenerator" as WOGen
+database "FleetHubDbContext" as DB
+participant "WorkOrderCreatedNotificationHandler" as NtfHandler
+participant "NotificationHub" as Hub
+
+SPA -> Ctrl: POST /api/v1/work-orders\n{equipmentId, serviceType, ...}
+activate Ctrl
+
+Ctrl -> Med: Send(CreateWorkOrderCommand, ct)
+activate Med
+
+Med -> Val: Handle(request, next, ct)
+activate Val
+Val -> Val: Validate (equipment exists, fields)
+Val -> Handler: next()
+activate Handler
+
+Handler -> WOGen: GenerateAsync(ct)
+WOGen --> Handler: "WO-2026-042"
+
+Handler -> DB: Add(workOrder + history)
+Handler -> DB: SaveChangesAsync()
+DB --> Handler: saved
+
+Handler -> Med: Publish(WorkOrderCreatedNotification)
+activate NtfHandler
+
+NtfHandler -> DB: Add(Notification record)
+NtfHandler -> DB: SaveChangesAsync()
+NtfHandler -> Hub: SendAsync("NotificationReceived",\nnotification, userId)
+Hub --> NtfHandler: delivered
+deactivate NtfHandler
+
+Handler --> Val: Result<WorkOrder>.Success(wo)
+deactivate Handler
+
+Val --> Med: Result<WorkOrder>
+deactivate Val
+
+Med --> Ctrl: Result<WorkOrder>
+deactivate Med
+
+Ctrl --> SPA: 201 Created
+deactivate Ctrl
+
+@enduml

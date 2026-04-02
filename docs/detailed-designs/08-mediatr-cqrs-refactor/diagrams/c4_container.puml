@@ -1,0 +1,56 @@
+@startuml c4_container
+!theme plain
+skinparam rectangle {
+    StereotypeFontSize 10
+    shadowing false
+}
+
+title Toromont Fleet Hub - Container Diagram (MediatR Pipeline)
+
+skinparam rectangle<<person>> {
+    BackgroundColor #08427B
+    FontColor White
+    BorderColor #073B6F
+}
+skinparam rectangle<<container>> {
+    BackgroundColor #438DD5
+    FontColor White
+    BorderColor #3C7FC0
+}
+skinparam rectangle<<database>> {
+    BackgroundColor #438DD5
+    FontColor White
+    BorderColor #3C7FC0
+}
+skinparam rectangle<<external>> {
+    BackgroundColor #999999
+    FontColor White
+    BorderColor #888888
+}
+
+rectangle "API Consumer\n\n[Person]\nAngular SPA or IoT device" <<person>> as user
+
+package "Toromont Fleet Hub" {
+    rectangle "Controllers\n\n[ASP.NET Core]\nThin HTTP adapters:\nroute, auth, dispatch" <<container>> as controllers
+    rectangle "MediatR Pipeline\n\n[MediatR 12.x]\nPipeline behaviors:\nlogging, validation" <<container>> as pipeline
+    rectangle "Request Handlers\n\n[C# Classes]\nBusiness logic:\ncommands and queries" <<container>> as handlers
+    rectangle "Notification Handlers\n\n[MediatR INotification]\nDomain event side effects" <<container>> as notifications
+    rectangle "Domain Services\n\n[C# Interfaces]\nWO numbers, reports,\nexports, alerts" <<container>> as services
+    database "SQL Server\n\n[EF Core 9]\nFleet data, work orders,\nparts, telemetry" <<database>> as db
+    rectangle "SignalR Hub\n\n[ASP.NET Core]\nReal-time push\nnotifications" <<container>> as signalr
+}
+
+rectangle "Entra ID\n\n[External System]\nOAuth2 token validation" <<external>> as entra
+
+user --> controllers : HTTP requests [JSON/HTTPS]
+controllers --> pipeline : IMediator.Send()
+pipeline --> handlers : Dispatches to handler
+handlers --> notifications : IMediator.Publish()
+handlers --> services : Calls
+handlers --> db : Reads/Writes [EF Core]
+notifications --> db : Writes [EF Core]
+notifications --> signalr : Pushes events
+controllers --> entra : Validates JWT [HTTPS]
+signalr --> user : Real-time events [WebSocket]
+
+@enduml

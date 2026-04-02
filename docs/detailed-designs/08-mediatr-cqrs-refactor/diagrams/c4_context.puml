@@ -1,0 +1,45 @@
+@startuml c4_context
+!theme plain
+skinparam rectangle {
+    StereotypeFontSize 10
+    shadowing false
+}
+
+title Toromont Fleet Hub - System Context (MediatR Refactor)
+
+skinparam rectangle<<person>> {
+    BackgroundColor #08427B
+    FontColor White
+    BorderColor #073B6F
+}
+skinparam rectangle<<system>> {
+    BackgroundColor #1168BD
+    FontColor White
+    BorderColor #0E5CA6
+}
+skinparam rectangle<<external>> {
+    BackgroundColor #999999
+    FontColor White
+    BorderColor #888888
+}
+
+rectangle "Fleet Manager\n\n[Person]\nManages equipment,\nwork orders, parts" <<person>> as fleet_mgr
+rectangle "Technician\n\n[Person]\nExecutes work orders,\nviews telemetry" <<person>> as technician
+rectangle "Admin\n\n[Person]\nManages users,\norganization settings" <<person>> as admin
+
+rectangle "Toromont Fleet Hub API\n\n[Software System]\nASP.NET Core 9 Web API\nwith MediatR CQRS pipeline" <<system>> as fleet_hub
+
+rectangle "Angular SPA\n\n[External System]\nFleet management frontend" <<external>> as angular_spa
+rectangle "Microsoft Entra ID\n\n[External System]\nIdentity provider (OAuth2/OIDC)" <<external>> as entra_id
+rectangle "Azure SQL Database\n\n[External System]\nPersistent data store" <<external>> as sql_server
+rectangle "IoT/GPS Devices\n\n[External System]\nEquipment telemetry sources" <<external>> as iot_devices
+
+fleet_mgr --> angular_spa : Uses [HTTPS]
+technician --> angular_spa : Uses [HTTPS]
+admin --> angular_spa : Uses [HTTPS]
+angular_spa --> fleet_hub : REST API calls [JSON/HTTPS]
+iot_devices --> fleet_hub : Sends telemetry [JSON/HTTPS]
+fleet_hub --> entra_id : Validates tokens [OAuth2]
+fleet_hub --> sql_server : Reads/Writes [EF Core / SQL]
+
+@enduml

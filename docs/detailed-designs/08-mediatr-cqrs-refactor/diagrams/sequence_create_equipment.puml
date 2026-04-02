@@ -1,0 +1,61 @@
+@startuml sequence_create_equipment
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Create Equipment - Command Flow
+
+actor "Angular SPA" as SPA
+participant "EquipmentController" as Ctrl
+participant "IMediator" as Med
+participant "LoggingBehavior" as Log
+participant "ValidationBehavior" as Val
+participant "CreateEquipmentCommandValidator" as Validator
+participant "CreateEquipmentCommandHandler" as Handler
+database "FleetHubDbContext" as DB
+
+SPA -> Ctrl: POST /api/v1/equipment\n{name, make, model, ...}
+activate Ctrl
+
+Ctrl -> Med: Send(CreateEquipmentCommand, ct)
+activate Med
+
+Med -> Log: Handle(request, next, ct)
+activate Log
+Log -> Log: Log "Handling CreateEquipmentCommand"
+Log -> Log: Start stopwatch
+
+Log -> Val: next()
+activate Val
+
+Val -> Validator: ValidateAsync(command)
+activate Validator
+Validator --> Val: ValidationResult (pass)
+deactivate Validator
+
+Val -> Handler: next()
+activate Handler
+
+Handler -> DB: AnyAsync(serial exists?)
+DB --> Handler: false
+
+Handler -> DB: Add(equipment)
+Handler -> DB: SaveChangesAsync()
+DB --> Handler: saved
+
+Handler --> Val: Result<Equipment>.Success(equipment)
+deactivate Handler
+
+Val --> Log: Result<Equipment>
+deactivate Val
+
+Log -> Log: Log "Handled in {ms}ms"
+Log --> Med: Result<Equipment>
+deactivate Log
+
+Med --> Ctrl: Result<Equipment>
+deactivate Med
+
+Ctrl --> SPA: 201 Created\n+ Location header
+deactivate Ctrl
+
+@enduml

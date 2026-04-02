@@ -1,0 +1,47 @@
+@startuml sequence_get_equipment_list
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Get Equipment List - Query Flow
+
+actor "Angular SPA" as SPA
+participant "EquipmentController" as Ctrl
+participant "IMediator" as Med
+participant "LoggingBehavior" as Log
+participant "GetEquipmentListQueryHandler" as Handler
+database "FleetHubDbContext" as DB
+
+SPA -> Ctrl: GET /api/v1/equipment\n?skip=0&take=20&status=Active
+activate Ctrl
+
+Ctrl -> Ctrl: Map query params\nto GetEquipmentListQuery
+Ctrl -> Med: Send(GetEquipmentListQuery, ct)
+activate Med
+
+Med -> Log: Handle(request, next, ct)
+activate Log
+
+note right of Log: No ValidationBehavior runs\n(no validators registered\nfor query types)
+
+Log -> Handler: next()
+activate Handler
+
+Handler -> DB: CountAsync(filtered query)
+DB --> Handler: totalCount
+
+Handler -> DB: Skip/Take/ToListAsync()
+DB --> Handler: List<Equipment>
+
+Handler --> Log: PaginatedResponse<Equipment>
+deactivate Handler
+
+Log --> Med: PaginatedResponse<Equipment>
+deactivate Log
+
+Med --> Ctrl: PaginatedResponse<Equipment>
+deactivate Med
+
+Ctrl --> SPA: 200 OK\n{items, pagination}
+deactivate Ctrl
+
+@enduml

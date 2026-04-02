@@ -1,0 +1,84 @@
+@startuml class_diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam linetype ortho
+
+title MediatR Type Hierarchy - Toromont Fleet Hub
+
+package "MediatR Interfaces" {
+    interface "IRequest<TResponse>" as IRequest {
+    }
+    interface "IRequestHandler<TRequest, TResponse>" as IRequestHandler {
+        +Handle(request: TRequest, ct: CancellationToken): Task<TResponse>
+    }
+    interface "IPipelineBehavior<TRequest, TResponse>" as IPipelineBehavior {
+        +Handle(request: TRequest, next: RequestHandlerDelegate, ct: CancellationToken): Task<TResponse>
+    }
+    interface "INotification" as INotification {
+    }
+    interface "INotificationHandler<TNotification>" as INotificationHandler {
+        +Handle(notification: TNotification, ct: CancellationToken): Task
+    }
+}
+
+package "Pipeline Behaviors" {
+    class LoggingBehavior<TReq, TRes> {
+        -_logger: ILogger
+        +Handle(): Task<TRes>
+    }
+    class ValidationBehavior<TReq, TRes> {
+        -_validators: IEnumerable<IValidator<TReq>>
+        +Handle(): Task<TRes>
+    }
+}
+
+package "Application Types" {
+    class "Result<T>" as Result {
+        +Value: T?
+        +IsSuccess: bool
+        +Error: string?
+        +{static} Success(value: T): Result<T>
+        +{static} Failure(error: string): Result<T>
+    }
+}
+
+package "Equipment Feature (Example)" {
+    class CreateEquipmentCommand {
+        +Name: string
+        +Make: string
+        +Model: string
+        +Year: int
+        +SerialNumber: string
+        +Category: string
+    }
+    class CreateEquipmentCommandHandler {
+        -_db: FleetHubDbContext
+        -_tenant: ITenantContext
+        +Handle(): Task<Result<Equipment>>
+    }
+    class CreateEquipmentCommandValidator {
+        +CreateEquipmentCommandValidator()
+    }
+    class GetEquipmentListQuery {
+        +Skip: int
+        +Take: int
+        +Status: string?
+        +Search: string?
+    }
+    class GetEquipmentListQueryHandler {
+        -_db: FleetHubDbContext
+        -_tenant: ITenantContext
+        +Handle(): Task<PaginatedResponse<Equipment>>
+    }
+}
+
+LoggingBehavior ..|> IPipelineBehavior
+ValidationBehavior ..|> IPipelineBehavior
+CreateEquipmentCommand ..|> IRequest
+CreateEquipmentCommandHandler ..|> IRequestHandler
+GetEquipmentListQuery ..|> IRequest
+GetEquipmentListQueryHandler ..|> IRequestHandler
+CreateEquipmentCommandHandler --> Result : returns
+
+@enduml
