@@ -149,7 +149,6 @@ public class WorkOrdersController : ControllerBase
     public async Task<ActionResult<WorkOrder>> UpdateStatus(Guid id, [FromBody] StatusUpdateRequest request, CancellationToken ct)
     {
         var wo = await _db.WorkOrders
-            .Include(w => w.History)
             .FirstOrDefaultAsync(w => w.Id == id && w.OrganizationId == _tenant.OrganizationId, ct);
 
         if (wo is null)
@@ -165,7 +164,9 @@ public class WorkOrdersController : ControllerBase
         if (request.Status == "Completed")
             wo.CompletedDate = DateTime.UtcNow;
 
-        wo.History.Add(new WorkOrderHistory
+        await _db.SaveChangesAsync(ct);
+
+        _db.WorkOrderHistories.Add(new WorkOrderHistory
         {
             Id = Guid.NewGuid(),
             WorkOrderId = wo.Id,
