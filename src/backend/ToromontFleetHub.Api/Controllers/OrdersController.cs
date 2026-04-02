@@ -91,6 +91,7 @@ public class OrdersController : ControllerBase
         CancellationToken ct = default)
     {
         var query = _db.PartsOrders
+            .Include(o => o.LineItems)
             .Where(o => o.UserId == _tenant.UserId && o.OrganizationId == _tenant.OrganizationId)
             .OrderByDescending(o => o.CreatedAt)
             .AsNoTracking();
