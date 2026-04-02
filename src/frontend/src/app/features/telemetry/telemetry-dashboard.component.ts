@@ -29,13 +29,14 @@ interface GpsPoint {
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0 fw-bold">Telemetry &amp; Health</h2>
-        <span class="text-muted" style="font-size: 13px;">Last updated: {{ lastUpdated | date:'medium' }}</span>
+        <span class="text-muted" style="font-size: 13px;">Last updated: {{ lastUpdated | date:'medium' }} <span data-testid="auto-refresh-indicator">(auto-refresh every 60s)</span></span>
       </div>
 
       <!-- Controls Row -->
       <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
         <div style="min-width: 260px;">
           <kendo-dropdownlist
+            data-testid="equipment-selector"
             [data]="equipmentList"
             [textField]="'displayName'"
             [valueField]="'id'"
@@ -45,6 +46,9 @@ interface GpsPoint {
             [filterable]="true"
             (filterChange)="onFilterChange($event)"
             placeholder="Select Equipment">
+            <ng-template kendoDropDownListItemTemplate let-dataItem>
+              <span [attr.data-testid]="dataItem.id === 'empty' ? 'equipment-option-empty' : null">{{ dataItem.displayName }}</span>
+            </ng-template>
           </kendo-dropdownlist>
         </div>
         <div class="btn-group">
@@ -52,6 +56,8 @@ interface GpsPoint {
                   class="btn btn-sm"
                   [class.btn-primary]="selectedRange === range.value"
                   [class.btn-outline-secondary]="selectedRange !== range.value"
+                  [class.active]="selectedRange === range.value"
+                  [attr.data-testid]="'time-range-' + range.value"
                   (click)="onRangeChange(range.value)">
             {{ range.label }}
           </button>
@@ -62,7 +68,7 @@ interface GpsPoint {
       <div class="row g-4">
         <!-- Engine Hours -->
         <div class="col-12 col-lg-6">
-          <div class="chart-card">
+          <div class="chart-card" data-testid="chart-engine-hours">
             <div class="chart-header">
               <h6 class="mb-0 fw-semibold">Engine Hours</h6>
             </div>
@@ -88,7 +94,7 @@ interface GpsPoint {
                 </kendo-chart-value-axis>
                 <kendo-chart-tooltip [shared]="true"></kendo-chart-tooltip>
               </kendo-chart>
-              <div *ngIf="metrics.length === 0" class="text-center text-muted py-5">
+              <div *ngIf="metrics.length === 0" class="text-center text-muted py-5" data-testid="no-data-message">
                 Select equipment to view telemetry data
               </div>
             </div>
@@ -97,7 +103,7 @@ interface GpsPoint {
 
         <!-- Fuel Consumption -->
         <div class="col-12 col-lg-6">
-          <div class="chart-card">
+          <div class="chart-card" data-testid="chart-fuel-consumption">
             <div class="chart-header">
               <h6 class="mb-0 fw-semibold">Fuel Consumption</h6>
             </div>
@@ -122,7 +128,7 @@ interface GpsPoint {
                 </kendo-chart-value-axis>
                 <kendo-chart-tooltip [shared]="true"></kendo-chart-tooltip>
               </kendo-chart>
-              <div *ngIf="metrics.length === 0" class="text-center text-muted py-5">
+              <div *ngIf="metrics.length === 0" class="text-center text-muted py-5" data-testid="no-data-message">
                 Select equipment to view telemetry data
               </div>
             </div>
@@ -131,7 +137,7 @@ interface GpsPoint {
 
         <!-- Temperature -->
         <div class="col-12 col-lg-6">
-          <div class="chart-card">
+          <div class="chart-card" data-testid="chart-temperature">
             <div class="chart-header">
               <h6 class="mb-0 fw-semibold">Temperature</h6>
             </div>
@@ -157,7 +163,7 @@ interface GpsPoint {
                 </kendo-chart-value-axis>
                 <kendo-chart-tooltip [shared]="true"></kendo-chart-tooltip>
               </kendo-chart>
-              <div *ngIf="metrics.length === 0" class="text-center text-muted py-5">
+              <div *ngIf="metrics.length === 0" class="text-center text-muted py-5" data-testid="no-data-message">
                 Select equipment to view telemetry data
               </div>
             </div>
@@ -166,7 +172,7 @@ interface GpsPoint {
 
         <!-- GPS Trail -->
         <div class="col-12 col-lg-6">
-          <div class="chart-card">
+          <div class="chart-card" data-testid="chart-gps-trail">
             <div class="chart-header">
               <h6 class="mb-0 fw-semibold">GPS Trail</h6>
             </div>

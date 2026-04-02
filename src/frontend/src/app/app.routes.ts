@@ -58,6 +58,10 @@ export const routes: Routes = [
         data: { roles: ['Admin'] }
       },
       {
+        path: 'settings/notifications',
+        loadComponent: () => import('./features/settings/notification-preferences.component')
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'

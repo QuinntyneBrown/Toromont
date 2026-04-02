@@ -77,13 +77,18 @@ export interface Alert {
 
 export interface AIPrediction {
   id: string;
+  organizationId?: string;
   equipmentId: string;
-  predictionType: string;
-  confidence: number;
-  predictedDate?: string;
-  description: string;
-  recommendedAction?: string;
-  createdAt: string;
+  component: string;
+  confidenceScore: number;
+  confidence?: number;
+  recommendedAction: string;
+  timeframe: string;
+  priority: string;
+  isDismissed?: boolean;
+  generatedAt: string;
+  createdAt?: string;
+  equipment?: { id: string; name: string; make: string; model: string };
 }
 
 export interface AnomalyDetection {

@@ -134,7 +134,7 @@ interface PredictionRow extends AIPrediction {
         </div>
 
         <!-- Anomaly Alerts Panel -->
-        <div class="col-12 col-xl-auto" style="width: 380px;">
+        <div class="col-12 col-xl-auto" style="width: 380px;" data-testid="anomaly-alerts">
           <div class="card h-100">
             <div class="card-header bg-white">
               <h5 class="mb-0 fw-semibold">Anomaly Alerts</h5>
@@ -143,9 +143,9 @@ interface PredictionRow extends AIPrediction {
               <div *ngIf="anomalies.length === 0" class="text-center text-muted py-4">
                 No anomalies detected
               </div>
-              <div *ngFor="let anomaly of anomalies" class="anomaly-item px-3 py-3 border-bottom">
+              <div *ngFor="let anomaly of anomalies" class="anomaly-item px-3 py-3 border-bottom" data-testid="anomaly-alert">
                 <div class="d-flex align-items-start gap-3">
-                  <div class="anomaly-icon" [ngClass]="'icon-' + anomaly.severity.toLowerCase()">
+                  <div class="anomaly-icon" [ngClass]="'icon-' + anomaly.severity.toLowerCase()" data-testid="anomaly-severity">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                       <line x1="12" y1="9" x2="12" y2="13"/>
@@ -153,7 +153,7 @@ interface PredictionRow extends AIPrediction {
                     </svg>
                   </div>
                   <div class="flex-grow-1">
-                    <div class="fw-semibold" style="font-size: 13px;">{{ anomaly.metricName }} — {{ anomaly.equipment?.name || 'Equipment' }}</div>
+                    <div class="fw-semibold" style="font-size: 13px;"><span data-testid="anomaly-type">{{ anomaly.metricName }}</span> — <span data-testid="anomaly-equipment">{{ anomaly.equipment?.name || 'Equipment' }}</span></div>
                     <div class="text-muted" style="font-size: 12px;">
                       Expected: {{ anomaly.expectedValue | number:'1.1-1' }} |
                       Actual: {{ anomaly.actualValue | number:'1.1-1' }}
@@ -219,6 +219,30 @@ interface PredictionRow extends AIPrediction {
       border-radius: var(--radius-sm);
       background: var(--border-subtle);
     }
+
+    .table th {
+      background: var(--surface-primary, #f8f9fa);
+      border-bottom: 2px solid var(--border-subtle, #dee2e6);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--foreground-secondary, #6c757d);
+      padding: 10px 12px;
+      white-space: nowrap;
+    }
+    .table td {
+      padding: 10px 12px;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border-subtle, #dee2e6);
+    }
+    .sortable-header {
+      cursor: pointer;
+      user-select: none;
+    }
+    .sortable-header:hover {
+      background: var(--border-subtle, #e9ecef);
+    }
   `]
 })
 export default class AiInsightsComponent implements OnInit, OnDestroy {
@@ -234,6 +258,41 @@ export default class AiInsightsComponent implements OnInit, OnDestroy {
 
   predictions: PredictionRow[] = [];
   anomalies: AnomalyDetection[] = [];
+
+  // Sorting & pagination state
+  sortField = '';
+  sortDir: 'asc' | 'desc' = 'asc';
+  pageSize = 10;
+  currentPage = 1;
+
+  get totalPages(): number {
+    return Math.ceil(this.predictions.length / this.pageSize);
+  }
+
+  get pagedPredictions(): PredictionRow[] {
+    let data = [...this.predictions];
+    if (this.sortField) {
+      data.sort((a: any, b: any) => {
+        const valA = a[this.sortField] ?? '';
+        const valB = b[this.sortField] ?? '';
+        if (valA < valB) return this.sortDir === 'asc' ? -1 : 1;
+        if (valA > valB) return this.sortDir === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+    const start = (this.currentPage - 1) * this.pageSize;
+    return data.slice(start, start + this.pageSize);
+  }
+
+  sortBy(field: string): void {
+    if (this.sortField === field) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDir = 'asc';
+    }
+    this.currentPage = 1;
+  }
 
   ngOnInit(): void {
     this.loadData();

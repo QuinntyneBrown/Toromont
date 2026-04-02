@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { GridModule, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { InputsModule } from '@progress/kendo-angular-inputs';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
@@ -28,26 +27,38 @@ interface Part {
   standalone: true,
   imports: [
     CommonModule, FormsModule, RouterModule,
-    GridModule, DropDownsModule, InputsModule, ButtonsModule,
+    DropDownsModule, InputsModule, ButtonsModule,
     BadgeComponent
   ],
   template: `
     <div class="container-fluid py-3">
-      <h2 class="fw-bold mb-3">Parts Catalog</h2>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold mb-0">Parts Catalog</h2>
+        <a routerLink="/parts/cart" data-testid="cart-icon" class="btn btn-outline-secondary position-relative">
+          &#128722; Cart
+          <span data-testid="cart-badge"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">
+            {{ cartCount }}
+          </span>
+        </a>
+      </div>
 
       <div class="row">
         <!-- Filter Sidebar (desktop) -->
-        <div class="col-lg-3 d-none d-lg-block">
+        <div class="col-lg-3 d-none d-lg-block" data-testid="filter-sidebar">
           <div class="card">
             <div class="card-body">
               <h6 class="fw-bold mb-3">Filters</h6>
 
               <div class="mb-3">
                 <label class="form-label fw-semibold small text-uppercase">Category</label>
-                <div *ngFor="let cat of partCategories" class="form-check">
+                <div *ngFor="let cat of partCategories" class="form-check"
+                     data-testid="category-filter-item"
+                     [attr.data-testid-extra]="'category-' + cat">
                   <input class="form-check-input" type="checkbox" [id]="'cat-' + cat"
                          [checked]="selectedCategories.has(cat)"
-                         (change)="toggleCategory(cat)">
+                         (change)="toggleCategory(cat)"
+                         [attr.data-testid]="'category-' + cat">
                   <label class="form-check-label" [for]="'cat-' + cat">{{ cat }}</label>
                 </div>
               </div>
@@ -55,6 +66,7 @@ interface Part {
               <div class="mb-3">
                 <label class="form-label fw-semibold small text-uppercase">Availability</label>
                 <kendo-dropdownlist
+                  data-testid="compatibility-filter"
                   [data]="availabilityOptions"
                   [value]="selectedAvailability"
                   (valueChange)="onAvailabilityChange($event)"
@@ -71,23 +83,27 @@ interface Part {
 
         <!-- Mobile Filter Toggle -->
         <div class="col-12 d-lg-none mb-3">
-          <button class="btn btn-outline-secondary w-100" (click)="showMobileFilters = !showMobileFilters">
+          <button class="btn btn-outline-secondary w-100" data-testid="filter-toggle" (click)="showMobileFilters = !showMobileFilters">
             {{ showMobileFilters ? 'Hide Filters' : 'Show Filters' }}
           </button>
           <div *ngIf="showMobileFilters" class="card mt-2">
             <div class="card-body">
               <div class="mb-3">
                 <label class="form-label fw-semibold small text-uppercase">Category</label>
-                <div *ngFor="let cat of partCategories" class="form-check">
+                <div *ngFor="let cat of partCategories" class="form-check"
+                     data-testid="category-filter-item"
+                     [attr.data-testid-extra]="'category-' + cat">
                   <input class="form-check-input" type="checkbox" [id]="'mcat-' + cat"
                          [checked]="selectedCategories.has(cat)"
-                         (change)="toggleCategory(cat)">
+                         (change)="toggleCategory(cat)"
+                         [attr.data-testid]="'category-' + cat">
                   <label class="form-check-label" [for]="'mcat-' + cat">{{ cat }}</label>
                 </div>
               </div>
               <div class="mb-3">
                 <label class="form-label fw-semibold small text-uppercase">Availability</label>
                 <kendo-dropdownlist
+                  data-testid="compatibility-filter"
                   [data]="availabilityOptions"
                   [value]="selectedAvailability"
                   (valueChange)="onAvailabilityChange($event)"
@@ -110,6 +126,7 @@ interface Part {
               </svg>
             </span>
             <input type="text" class="form-control" placeholder="Search parts in plain English..."
+                   data-testid="ai-search"
                    [(ngModel)]="aiSearchQuery" (keyup.enter)="onAISearch()">
             <button class="btn btn-warning" (click)="onAISearch()">Search</button>
           </div>
@@ -124,47 +141,59 @@ interface Part {
             </kendo-textbox>
           </div>
 
-          <!-- Grid -->
-          <kendo-grid
-            [data]="gridData"
-            [pageSize]="pageSize"
-            [skip]="skip"
-            [pageable]="true"
-            [sortable]="true"
-            (pageChange)="onPageChange($event)"
-            [style.width]="'100%'">
-            <kendo-grid-column field="partNumber" title="Part #" [width]="120"></kendo-grid-column>
-            <kendo-grid-column field="name" title="Name" [width]="180"></kendo-grid-column>
-            <kendo-grid-column field="description" title="Description" [width]="220">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                {{ dataItem.description | slice:0:60 }}{{ dataItem.description?.length > 60 ? '...' : '' }}
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="price" title="Price" [width]="100">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                {{ dataItem.price | currency:'USD':'symbol':'1.2-2' }}
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="availability" title="Availability" [width]="120">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <app-badge [text]="getAvailabilityLabel(dataItem.availability)" [variant]="getAvailabilityVariant(dataItem.availability)"></app-badge>
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="compatibleModels" title="Compatible Models" [width]="160">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                {{ dataItem.compatibleModels || 'Universal' }}
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column title="" [width]="130">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <button class="btn btn-sm btn-warning fw-semibold"
-                        [disabled]="dataItem.availability === 'OutOfStock'"
-                        (click)="addToCart(dataItem, $event)">
-                  Add to Cart
-                </button>
-              </ng-template>
-            </kendo-grid-column>
-          </kendo-grid>
+          <!-- Parts Table -->
+          <div data-testid="parts-grid">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width:120px">Part #</th>
+                    <th style="width:180px">Name</th>
+                    <th style="width:220px">Description</th>
+                    <th style="width:100px">Price</th>
+                    <th style="width:120px">Availability</th>
+                    <th style="width:160px">Compatible Models</th>
+                    <th style="width:130px"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let dataItem of pagedData" data-testid="part-row">
+                    <td data-testid="part-number">{{ dataItem.partNumber }}</td>
+                    <td data-testid="part-name">{{ dataItem.name }}</td>
+                    <td>{{ dataItem.description | slice:0:60 }}{{ dataItem.description?.length > 60 ? '...' : '' }}</td>
+                    <td data-testid="part-price">{{ dataItem.price | currency:'USD':'symbol':'1.2-2' }}</td>
+                    <td data-testid="part-availability">
+                      <app-badge [text]="getAvailabilityLabel(dataItem.availability)" [variant]="getAvailabilityVariant(dataItem.availability)"></app-badge>
+                    </td>
+                    <td data-testid="part-compatible">{{ dataItem.compatibleModels || 'Universal' }}</td>
+                    <td>
+                      <button class="btn btn-sm btn-warning fw-semibold"
+                              data-testid="add-to-cart-btn"
+                              [disabled]="dataItem.availability === 'OutOfStock'"
+                              (click)="addToCart(dataItem, $event)">
+                        {{ dataItem.availability === 'OutOfStock' ? 'Unavailable' : 'Add to Cart' }}
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Pagination -->
+            <nav *ngIf="gridData.total > pageSize" class="mt-3 d-flex justify-content-between align-items-center">
+              <span class="text-muted small">Showing {{ skip + 1 }}&ndash;{{ math_min(skip + pageSize, gridData.total) }} of {{ gridData.total }}</span>
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item" [class.disabled]="skip === 0">
+                  <button class="page-link" (click)="goToPage(skip - pageSize)" [disabled]="skip === 0">&laquo; Prev</button>
+                </li>
+                <li class="page-item" *ngFor="let p of pageNumbers" [class.active]="p === currentPage">
+                  <button class="page-link" (click)="goToPage((p - 1) * pageSize)">{{ p }}</button>
+                </li>
+                <li class="page-item" [class.disabled]="skip + pageSize >= gridData.total">
+                  <button class="page-link" (click)="goToPage(skip + pageSize)" [disabled]="skip + pageSize >= gridData.total">Next &raquo;</button>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
       </div>
     </div>
@@ -217,6 +246,7 @@ export default class PartsCatalogComponent implements OnInit {
   searchText = '';
   aiSearchQuery = '';
   showMobileFilters = false;
+  cartCount = 0;
 
   partCategories = ['Filters', 'Hydraulics', 'Electrical', 'Engine', 'Transmission', 'Undercarriage', 'Cab', 'Other'];
   selectedCategories = new Set<string>();
@@ -241,6 +271,36 @@ export default class PartsCatalogComponent implements OnInit {
       this.skip = 0;
       this.loadData();
     });
+    this.loadData();
+  }
+
+  get pagedData(): Part[] {
+    return this.gridData.data;
+  }
+
+  get currentPage(): number {
+    return Math.floor(this.skip / this.pageSize) + 1;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.gridData.total / this.pageSize);
+  }
+
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  math_min(a: number, b: number): number {
+    return Math.min(a, b);
+  }
+
+  goToPage(newSkip: number): void {
+    if (newSkip < 0 || newSkip >= this.gridData.total) return;
+    this.skip = newSkip;
     this.loadData();
   }
 
@@ -270,11 +330,6 @@ export default class PartsCatalogComponent implements OnInit {
         this.gridData = { data: [], total: 0 };
       }
     });
-  }
-
-  onPageChange(event: PageChangeEvent): void {
-    this.skip = event.skip;
-    this.loadData();
   }
 
   onSearchInput(value: string): void {
@@ -333,7 +388,7 @@ export default class PartsCatalogComponent implements OnInit {
       unitPrice: part.price
     }).subscribe({
       next: () => {
-        // Could show a toast notification here
+        this.cartCount++;
         console.log('Added to cart:', part.partNumber);
       },
       error: (err) => {

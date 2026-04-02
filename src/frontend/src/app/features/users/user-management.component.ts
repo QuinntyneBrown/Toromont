@@ -1,11 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GridModule } from '@progress/kendo-angular-grid';
-import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
-import { ButtonsModule } from '@progress/kendo-angular-buttons';
-import { DialogsModule } from '@progress/kendo-angular-dialog';
-import { InputsModule } from '@progress/kendo-angular-inputs';
 import { BadgeComponent } from '../../shared/components/badge/badge.component';
 import { ApiService } from '../../core/services/api.service';
 import { User } from '../../core/models';
@@ -16,13 +11,13 @@ type UserRole = 'Admin' | 'FleetManager' | 'Technician' | 'Operator';
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, GridModule, DropDownsModule, ButtonsModule, DialogsModule, InputsModule, BadgeComponent],
+  imports: [CommonModule, FormsModule, BadgeComponent],
   template: `
     <div class="container-fluid p-4">
       <!-- Title Row -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0 fw-bold">User Management</h2>
-        <button kendoButton [themeColor]="'primary'" (click)="openInviteDialog()">
+        <button class="btn btn-primary" data-testid="invite-user-btn" (click)="openInviteDialog()">
           + Invite User
         </button>
       </div>
@@ -30,80 +25,108 @@ type UserRole = 'Admin' | 'FleetManager' | 'Technician' | 'Operator';
       <!-- Users Grid -->
       <div class="card">
         <div class="card-body p-0">
-          <kendo-grid [data]="users" [pageable]="true" [pageSize]="15" [sortable]="true" [style.font-size.px]="13">
-            <kendo-grid-column field="name" title="Name" [width]="200">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <div class="d-flex align-items-center gap-2">
-                  <div class="user-avatar">{{ getInitials(dataItem) }}</div>
-                  <div>
-                    <div class="fw-semibold">{{ dataItem.displayName }}</div>
+          <table class="table table-hover mb-0" data-testid="users-grid">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users" data-testid="user-row">
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="user-avatar">{{ getInitials(user) }}</div>
+                    <div class="fw-semibold">{{ user.displayName }}</div>
                   </div>
-                </div>
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="email" title="Email" [width]="240">
-            </kendo-grid-column>
-            <kendo-grid-column field="role" title="Role" [width]="180">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <kendo-dropdownlist
-                  [data]="roles"
-                  [value]="dataItem.role"
-                  [valuePrimitive]="true"
-                  (valueChange)="onRoleChange(dataItem, $event)"
-                  [style.width.px]="160"
-                  [popupSettings]="{ width: 180 }">
-                </kendo-dropdownlist>
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="isActive" title="Status" [width]="120">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <app-badge
-                  [text]="dataItem.isActive ? 'Active' : 'Inactive'"
-                  [variant]="dataItem.isActive ? 'success' : 'error'">
-                </app-badge>
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="lastLoginAt" title="Last Login" [width]="160">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                {{ dataItem.lastLoginAt ? (dataItem.lastLoginAt | date:'medium') : 'Never' }}
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column title="Actions" [width]="140">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <button class="btn btn-sm"
-                        [class.btn-outline-danger]="dataItem.isActive"
-                        [class.btn-outline-success]="!dataItem.isActive"
-                        (click)="toggleUserStatus(dataItem)">
-                  {{ dataItem.isActive ? 'Deactivate' : 'Activate' }}
-                </button>
-              </ng-template>
-            </kendo-grid-column>
-          </kendo-grid>
+                </td>
+                <td data-testid="user-email">{{ user.email }}</td>
+                <td>
+                  <span *ngIf="editingUserId !== user.id" data-testid="user-role">{{ user.role }}</span>
+                  <select *ngIf="editingUserId === user.id"
+                          class="form-select form-select-sm"
+                          data-testid="edit-role"
+                          [(ngModel)]="editRoleValue">
+                    <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+                  </select>
+                </td>
+                <td>
+                  <app-badge
+                    [text]="user.isActive ? 'Active' : 'Inactive'"
+                    [variant]="user.isActive ? 'success' : 'error'">
+                  </app-badge>
+                </td>
+                <td>{{ user.lastLoginAt ? (user.lastLoginAt | date:'medium') : 'Never' }}</td>
+                <td>
+                  <button *ngIf="editingUserId !== user.id"
+                          class="btn btn-sm btn-outline-secondary me-1"
+                          data-testid="edit-user-btn"
+                          (click)="startEdit(user)">
+                    Edit
+                  </button>
+                  <button *ngIf="editingUserId === user.id"
+                          class="btn btn-sm btn-primary me-1"
+                          data-testid="save-role-btn"
+                          (click)="saveRole(user)">
+                    Save
+                  </button>
+                  <button class="btn btn-sm"
+                          [class.btn-outline-danger]="user.isActive"
+                          [class.btn-outline-success]="!user.isActive"
+                          (click)="toggleUserStatus(user)">
+                    {{ user.isActive ? 'Deactivate' : 'Activate' }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <!-- Invite User Dialog -->
-      <kendo-dialog *ngIf="showInviteDialog" title="Invite User" (close)="closeInviteDialog()" [width]="440">
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Email Address</label>
-          <input kendoTextBox [(ngModel)]="inviteEmail" placeholder="user@company.com" class="w-100" />
+      <div *ngIf="showInviteDialog" class="modal-backdrop fade show"></div>
+      <div *ngIf="showInviteDialog" class="modal d-block" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Invite User</h5>
+              <button type="button" class="btn-close" (click)="closeInviteDialog()"></button>
+            </div>
+            <div class="modal-body">
+              <div *ngIf="inviteSuccess" class="alert alert-success" data-testid="invite-success">
+                Invitation sent successfully!
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Email Address</label>
+                <input type="email"
+                       class="form-control"
+                       data-testid="invite-email"
+                       [(ngModel)]="inviteEmail"
+                       placeholder="user@company.com" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Role</label>
+                <select class="form-select" data-testid="invite-role" [(ngModel)]="inviteRole">
+                  <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" (click)="closeInviteDialog()">Cancel</button>
+              <button class="btn btn-primary"
+                      data-testid="invite-submit"
+                      (click)="submitInvite()"
+                      [disabled]="!inviteEmail">
+                Send Invite
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Role</label>
-          <kendo-dropdownlist
-            [data]="roles"
-            [(value)]="inviteRole"
-            [valuePrimitive]="true"
-            class="w-100">
-          </kendo-dropdownlist>
-        </div>
-        <kendo-dialog-actions>
-          <button kendoButton (click)="closeInviteDialog()">Cancel</button>
-          <button kendoButton [themeColor]="'primary'" (click)="submitInvite()" [disabled]="!inviteEmail">
-            Send Invite
-          </button>
-        </kendo-dialog-actions>
-      </kendo-dialog>
+      </div>
     </div>
   `,
   styles: [`
@@ -125,6 +148,15 @@ type UserRole = 'Admin' | 'FleetManager' | 'Technician' | 'Operator';
       justify-content: center;
       flex-shrink: 0;
     }
+    .table th {
+      font-size: 13px;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border-subtle);
+    }
+    .table td {
+      font-size: 13px;
+      vertical-align: middle;
+    }
   `]
 })
 export default class UserManagementComponent implements OnInit, OnDestroy {
@@ -137,6 +169,10 @@ export default class UserManagementComponent implements OnInit, OnDestroy {
   showInviteDialog = false;
   inviteEmail = '';
   inviteRole: UserRole = 'Operator';
+  inviteSuccess = false;
+
+  editingUserId: string | null = null;
+  editRoleValue: UserRole = 'Operator';
 
   ngOnInit(): void {
     this.loadUsers();
@@ -162,12 +198,19 @@ export default class UserManagementComponent implements OnInit, OnDestroy {
     return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
   }
 
-  onRoleChange(user: User, newRole: UserRole): void {
+  startEdit(user: User): void {
+    this.editingUserId = user.id;
+    this.editRoleValue = user.role as UserRole;
+  }
+
+  saveRole(user: User): void {
+    const newRole = this.editRoleValue;
     this.api.put(`/users/${user.id}/role`, { role: newRole })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           user.role = newRole;
+          this.editingUserId = null;
         },
         error: (err) => console.error('Failed to update role', err)
       });
@@ -189,11 +232,13 @@ export default class UserManagementComponent implements OnInit, OnDestroy {
   openInviteDialog(): void {
     this.inviteEmail = '';
     this.inviteRole = 'Operator';
+    this.inviteSuccess = false;
     this.showInviteDialog = true;
   }
 
   closeInviteDialog(): void {
     this.showInviteDialog = false;
+    this.inviteSuccess = false;
   }
 
   submitInvite(): void {
@@ -203,7 +248,7 @@ export default class UserManagementComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.closeInviteDialog();
+          this.inviteSuccess = true;
           this.loadUsers();
         },
         error: (err) => console.error('Failed to invite user', err)
