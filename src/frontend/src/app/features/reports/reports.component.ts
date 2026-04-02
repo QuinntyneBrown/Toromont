@@ -267,12 +267,19 @@ export default class ReportsComponent implements OnInit, OnDestroy {
       body['equipmentId'] = this.selectedEquipment.id;
     }
 
-    this.api.post<{ barChart: ChartDataItem[]; pieChart: ChartDataItem[] }>(reportType.endpoint, body)
+    this.api.post<any>(reportType.endpoint, body)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.barChartData = data.barChart || [];
-          this.pieChartData = data.pieChart || [];
+          const dataPoints: ChartDataItem[] = data.dataPoints || [];
+          this.barChartData = dataPoints;
+          // Group dataPoints by category for pie chart
+          const categoryMap = new Map<string, number>();
+          for (const dp of dataPoints) {
+            const cat = dp.category || 'Other';
+            categoryMap.set(cat, (categoryMap.get(cat) || 0) + dp.value);
+          }
+          this.pieChartData = Array.from(categoryMap.entries()).map(([label, value]) => ({ label, value }));
 
           if (this.selectedReport === 'fleet-utilization') {
             this.barChartTitle = 'Utilization by Equipment';
