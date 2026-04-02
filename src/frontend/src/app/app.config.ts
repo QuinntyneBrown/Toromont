@@ -19,14 +19,23 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { tenantInterceptor } from './core/interceptors/tenant.interceptor';
 
 export function msalInstanceFactory() {
+  // In dev mode with placeholder credentials, create a minimal config
+  // that won't attempt to contact Azure AD
+  const clientId = 'YOUR_CLIENT_ID';
   return new PublicClientApplication({
     auth: {
-      clientId: 'YOUR_CLIENT_ID',
-      authority: 'https://login.microsoftonline.com/YOUR_TENANT_ID',
+      clientId,
+      authority: `https://login.microsoftonline.com/common`,
       redirectUri: window.location.origin
     },
     cache: {
       cacheLocation: BrowserCacheLocation.LocalStorage
+    },
+    system: {
+      allowNativeBroker: false,
+      loggerOptions: {
+        logLevel: 0 // Error only
+      }
     }
   });
 }
