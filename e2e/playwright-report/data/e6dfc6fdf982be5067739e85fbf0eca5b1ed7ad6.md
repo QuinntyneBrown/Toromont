@@ -6,15 +6,25 @@
 
 # Test info
 
-- Name: parts-catalog.spec.ts >> Shopping Cart & Order >> changing quantity updates totals
-- Location: tests\parts-catalog.spec.ts:96:7
+- Name: parts-catalog.spec.ts >> Shopping Cart & Order >> submitting order shows confirmation with order number
+- Location: tests\parts-catalog.spec.ts:126:7
 
 # Error details
 
 ```
-Error: expect(received).not.toBe(expected) // Object.is equality
+Error: expect(locator).toContainText(expected) failed
 
-Expected: not "$2,600.00"
+Locator: locator('[data-testid="order-number"]')
+Expected pattern: /PO-/
+Received string:  "ORD-20260402-002"
+Timeout: 5000ms
+
+Call log:
+  - Expect "toContainText" with timeout 5000ms
+  - waiting for locator('[data-testid="order-number"]')
+    8 × locator resolved to <p class="fw-semibold" data-testid="order-number" _ngcontent-ng-c3327147992="">ORD-20260402-002</p>
+      - unexpected value "ORD-20260402-002"
+
 ```
 
 # Page snapshot
@@ -63,68 +73,27 @@ Expected: not "$2,600.00"
           - heading "Shopping Cart" [level=2] [ref=e64]
           - link "← Continue Shopping" [ref=e65] [cursor=pointer]:
             - /url: /parts
-        - generic [ref=e66]:
-          - table [ref=e69]:
-            - rowgroup [ref=e70]:
-              - row "Part Unit Price Quantity Line Total" [ref=e71]:
-                - columnheader "Part" [ref=e72]
-                - columnheader "Unit Price" [ref=e73]
-                - columnheader "Quantity" [ref=e74]
-                - columnheader "Line Total" [ref=e75]
-                - columnheader [ref=e76]
-            - rowgroup [ref=e77]:
-              - row "Alternator 24V ELC-ALT-001 $520.00 $2,600.00 ×" [ref=e78]:
-                - cell "Alternator 24V ELC-ALT-001" [ref=e79]:
-                  - generic [ref=e80]: Alternator 24V
-                  - generic [ref=e81]: ELC-ALT-001
-                - cell "$520.00" [ref=e82]
-                - cell [ref=e83]:
-                  - spinbutton [ref=e84]: "5"
-                - cell "$2,600.00" [ref=e85]
-                - cell "×" [ref=e86]:
-                  - button "×" [active] [ref=e87] [cursor=pointer]
-          - generic [ref=e91]:
-            - generic [ref=e92]:
-              - generic [ref=e93]: Subtotal (5 items)
-              - generic [ref=e94]: $2,600.00
-            - separator [ref=e95]
-            - generic [ref=e96]:
-              - generic [ref=e97]: Total
-              - generic [ref=e98]: $2,600.00
-            - button "Submit Order" [ref=e99] [cursor=pointer]
+        - generic [ref=e67]:
+          - generic [ref=e68]: 🛒
+          - heading "Your cart is empty" [level=5] [ref=e69]
+          - paragraph [ref=e70]: Browse the parts catalog to add items to your cart.
+          - link "Browse Parts" [ref=e71] [cursor=pointer]:
+            - /url: /parts
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - heading "Order Submitted" [level=5] [ref=e75]
+            - button [ref=e76] [cursor=pointer]
+          - generic [ref=e77]:
+            - generic [ref=e78]: ✓
+            - heading "Order Submitted Successfully" [level=5] [ref=e79]
+            - paragraph [ref=e80]: Your order has been placed and is being processed.
+            - paragraph [ref=e81]: ORD-20260402-002
+          - button "OK" [ref=e83] [cursor=pointer]
 ```
 
 # Test source
 
 ```ts
-  7   | 
-  8   | test.describe('Parts Catalog', () => {
-  9   |   let catalog: PartsCatalogPage;
-  10  | 
-  11  |   test.beforeEach(async ({ page }) => {
-  12  |     catalog = new PartsCatalogPage(page);
-  13  |     await catalog.goto();
-  14  |   });
-  15  | 
-  16  |   // L2-010 AC1: Parts grid displays with required columns
-  17  |   test('displays parts catalog with correct columns', async () => {
-  18  |     await expect(catalog.partsGrid).toBeVisible();
-  19  |     const rowCount = await catalog.partRows.count();
-  20  |     expect(rowCount).toBeGreaterThan(0);
-  21  |   });
-  22  | 
-  23  |   // L2-010 AC2: Category filter narrows results
-  24  |   test('filters by category', async () => {
-  25  |     await catalog.selectCategory('Hydraulic');
-  26  | 
-  27  |     const rowCount = await catalog.partRows.count();
-  28  |     expect(rowCount).toBeGreaterThan(0);
-  29  |   });
-  30  | 
-  31  |   // L2-010 AC4-5: Availability badges shown correctly
-  32  |   test('shows availability badges for in-stock and out-of-stock parts', async () => {
-  33  |     const rowCount = await catalog.partRows.count();
-  34  |     for (let i = 0; i < Math.min(rowCount, 5); i++) {
   35  |       const availability = await catalog.getPartAvailability(i);
   36  |       expect(availability).toMatch(/In Stock|Out of Stock|Low Stock/);
   37  |     }
@@ -197,8 +166,7 @@ Expected: not "$2,600.00"
   104 |     await page.locator('[data-testid="quantity-input"]').first().press('Tab');
   105 | 
   106 |     const updatedTotal = await page.locator('[data-testid="cart-subtotal"]').textContent();
-> 107 |     expect(updatedTotal).not.toBe(initialTotal);
-      |                              ^ Error: expect(received).not.toBe(expected) // Object.is equality
+  107 |     expect(updatedTotal).not.toBe(initialTotal);
   108 |   });
   109 | 
   110 |   // L2-011 AC4: Remove item from cart
@@ -226,7 +194,8 @@ Expected: not "$2,600.00"
   132 |     await page.locator('[data-testid="submit-order-btn"]').click();
   133 | 
   134 |     await expect(page.locator('[data-testid="order-confirmation"]')).toBeVisible();
-  135 |     await expect(page.locator('[data-testid="order-number"]')).toContainText(/PO-/);
+> 135 |     await expect(page.locator('[data-testid="order-number"]')).toContainText(/PO-/);
+      |                                                                ^ Error: expect(locator).toContainText(expected) failed
   136 |   });
   137 | });
   138 | 

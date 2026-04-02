@@ -1,0 +1,357 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: work-orders.spec.ts >> Work Orders List >> opens create work order form with required fields
+- Location: tests\work-orders.spec.ts:21:7
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: locator('[data-testid="wo-service-type"]')
+Expected: visible
+Error: strict mode violation: locator('[data-testid="wo-service-type"]') resolved to 7 elements:
+    1) <td _ngcontent-ng-c3180904151="" data-testid="wo-service-type">Preventive</td> aka getByRole('row', { name: 'WO-2026-007 CAT 320 Excavator' }).getByTestId('wo-service-type')
+    2) <td _ngcontent-ng-c3180904151="" data-testid="wo-service-type">Preventive</td> aka getByRole('row', { name: 'WO-2026-006 CAT 320 Excavator' }).getByTestId('wo-service-type')
+    3) <td _ngcontent-ng-c3180904151="" data-testid="wo-service-type">Corrective</td> aka getByRole('cell', { name: 'Corrective' })
+    4) <td _ngcontent-ng-c3180904151="" data-testid="wo-service-type">Preventive</td> aka getByRole('row', { name: 'WO-2026-002 CAT 320 Excavator' }).getByTestId('wo-service-type')
+    5) <td _ngcontent-ng-c3180904151="" data-testid="wo-service-type">Emergency</td> aka getByRole('cell', { name: 'Emergency' })
+    6) <td _ngcontent-ng-c3180904151="" data-testid="wo-service-type">Preventive</td> aka getByRole('row', { name: 'WO-2026-004 CAT D6 Dozer' }).getByTestId('wo-service-type')
+    7) <select _ngcontent-ng-c3180904151="" data-testid="wo-service-type" class="form-select ng-untouched ng-pristine ng-valid">…</select> aka getByRole('combobox').first()
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for locator('[data-testid="wo-service-type"]')
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e6]
+      - generic [ref=e11]: FLEET HUB
+    - navigation [ref=e12]:
+      - link "Dashboard" [ref=e14] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=e16]: Dashboard
+      - link "Equipment" [ref=e18] [cursor=pointer]:
+        - /url: /equipment
+        - generic [ref=e20]: Equipment
+      - link "Service" [ref=e22] [cursor=pointer]:
+        - /url: /service
+        - generic [ref=e24]: Service
+      - link "Parts" [ref=e26] [cursor=pointer]:
+        - /url: /parts
+        - generic [ref=e28]: Parts
+      - link "Telemetry" [ref=e30] [cursor=pointer]:
+        - /url: /telemetry
+        - generic [ref=e32]: Telemetry
+      - link "AI Insights" [ref=e34] [cursor=pointer]:
+        - /url: /ai-insights
+        - generic [ref=e36]: AI Insights
+      - link "Reports" [ref=e38] [cursor=pointer]:
+        - /url: /reports
+        - generic [ref=e40]: Reports
+      - link "Admin" [ref=e42] [cursor=pointer]:
+        - /url: /admin/users
+        - generic [ref=e44]: Admin
+  - generic [ref=e45]:
+    - banner [ref=e47]:
+      - generic [ref=e49]:
+        - img [ref=e50]
+        - textbox "Search equipment, orders, alerts..." [ref=e53]
+      - button [ref=e56] [cursor=pointer]:
+        - img [ref=e57]
+    - main [ref=e60]:
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - heading "Service Management" [level=2] [ref=e64]
+          - button "+ Create Work Order" [active] [ref=e65] [cursor=pointer]
+        - list [ref=e66]:
+          - listitem [ref=e67]:
+            - button "All 6" [ref=e68] [cursor=pointer]:
+              - text: All
+              - generic [ref=e69]: "6"
+          - listitem [ref=e70]:
+            - button "Open 2" [ref=e71] [cursor=pointer]:
+              - text: Open
+              - generic [ref=e72]: "2"
+          - listitem [ref=e73]:
+            - button "In Progress 2" [ref=e74] [cursor=pointer]:
+              - text: In Progress
+              - generic [ref=e75]: "2"
+          - listitem [ref=e76]:
+            - button "On Hold" [ref=e77] [cursor=pointer]
+          - listitem [ref=e78]:
+            - button "Completed 1" [ref=e79] [cursor=pointer]:
+              - text: Completed
+              - generic [ref=e80]: "1"
+          - listitem [ref=e81]:
+            - button "Closed 1" [ref=e82] [cursor=pointer]:
+              - text: Closed
+              - generic [ref=e83]: "1"
+        - table [ref=e85]:
+          - rowgroup [ref=e86]:
+            - 'row "WO # Equipment Service Type Description Priority Status Due Date Assigned To" [ref=e87]':
+              - 'columnheader "WO #" [ref=e88]'
+              - columnheader "Equipment" [ref=e89]
+              - columnheader "Service Type" [ref=e90]
+              - columnheader "Description" [ref=e91]
+              - columnheader "Priority" [ref=e92]
+              - columnheader "Status" [ref=e93]
+              - columnheader "Due Date" [ref=e94]
+              - columnheader "Assigned To" [ref=e95]
+          - rowgroup [ref=e96]:
+            - 'row "WO-2026-007 CAT 320 Excavator #1 Preventive Skip test Low InProgress May 1, 2026 Unassigned" [ref=e97] [cursor=pointer]':
+              - cell "WO-2026-007" [ref=e98]
+              - 'cell "CAT 320 Excavator #1" [ref=e99]':
+                - 'link "CAT 320 Excavator #1" [ref=e100]':
+                  - /url: /equipment/c1b2c3d4-0001-0000-0000-000000000001
+              - cell "Preventive" [ref=e101]
+              - cell "Skip test" [ref=e102]
+              - cell "Low" [ref=e103]:
+                - generic [ref=e105]: Low
+              - cell "InProgress" [ref=e106]:
+                - generic [ref=e108]: InProgress
+              - cell "May 1, 2026" [ref=e109]
+              - cell "Unassigned" [ref=e110]
+            - 'row "WO-2026-006 CAT 320 Excavator #1 Preventive Transition test Low Closed Apr 30, 2026 Unassigned" [ref=e111] [cursor=pointer]':
+              - cell "WO-2026-006" [ref=e112]
+              - 'cell "CAT 320 Excavator #1" [ref=e113]':
+                - 'link "CAT 320 Excavator #1" [ref=e114]':
+                  - /url: /equipment/c1b2c3d4-0001-0000-0000-000000000001
+              - cell "Preventive" [ref=e115]
+              - cell "Transition test" [ref=e116]
+              - cell "Low" [ref=e117]:
+                - generic [ref=e119]: Low
+              - cell "Closed" [ref=e120]:
+                - generic [ref=e122]: Closed
+              - cell "Apr 30, 2026" [ref=e123]
+              - cell "Unassigned" [ref=e124]
+            - row "WO-2026-001 Komatsu PC210 Excavator Corrective Hydraulic leak detected on boom cylinder High Open Mar 30, 2026 James Wilson" [ref=e125] [cursor=pointer]:
+              - cell "WO-2026-001" [ref=e126]
+              - cell "Komatsu PC210 Excavator" [ref=e127]:
+                - link "Komatsu PC210 Excavator" [ref=e128]:
+                  - /url: /equipment/c1b2c3d4-0002-0000-0000-000000000001
+              - cell "Corrective" [ref=e129]
+              - cell "Hydraulic leak detected on boom cylinder" [ref=e130]
+              - cell "High" [ref=e131]:
+                - generic [ref=e133]: High
+              - cell "Open" [ref=e134]:
+                - generic [ref=e136]: Open
+              - cell "Mar 30, 2026" [ref=e137]
+              - cell "James Wilson" [ref=e138]
+            - 'row "WO-2026-002 CAT 320 Excavator #1 Preventive 500-hour scheduled maintenance Medium InProgress Mar 27, 2026 James Wilson" [ref=e139] [cursor=pointer]':
+              - cell "WO-2026-002" [ref=e140]
+              - 'cell "CAT 320 Excavator #1" [ref=e141]':
+                - 'link "CAT 320 Excavator #1" [ref=e142]':
+                  - /url: /equipment/c1b2c3d4-0001-0000-0000-000000000001
+              - cell "Preventive" [ref=e143]
+              - cell "500-hour scheduled maintenance" [ref=e144]
+              - cell "Medium" [ref=e145]:
+                - generic [ref=e147]: Medium
+              - cell "InProgress" [ref=e148]:
+                - generic [ref=e150]: InProgress
+              - cell "Mar 27, 2026" [ref=e151]
+              - cell "James Wilson" [ref=e152]
+            - row "WO-2026-003 Deere 410L Backhoe Emergency Engine failure - unit non-operational Critical Open Mar 31, 2026 Unassigned" [ref=e153] [cursor=pointer]:
+              - cell "WO-2026-003" [ref=e154]
+              - cell "Deere 410L Backhoe" [ref=e155]:
+                - link "Deere 410L Backhoe" [ref=e156]:
+                  - /url: /equipment/c1b2c3d4-0005-0000-0000-000000000001
+              - cell "Emergency" [ref=e157]
+              - cell "Engine failure - unit non-operational" [ref=e158]
+              - cell "Critical" [ref=e159]:
+                - generic [ref=e161]: Critical
+              - cell "Open" [ref=e162]:
+                - generic [ref=e164]: Open
+              - cell "Mar 31, 2026" [ref=e165]
+              - cell "Unassigned" [ref=e166]
+            - row "WO-2026-004 CAT D6 Dozer Preventive Track tension adjustment and undercarriage inspect... Low Completed Mar 18, 2026 James Wilson" [ref=e167] [cursor=pointer]:
+              - cell "WO-2026-004" [ref=e168]
+              - cell "CAT D6 Dozer" [ref=e169]:
+                - link "CAT D6 Dozer" [ref=e170]:
+                  - /url: /equipment/c1b2c3d4-0004-0000-0000-000000000001
+              - cell "Preventive" [ref=e171]
+              - cell "Track tension adjustment and undercarriage inspect..." [ref=e172]
+              - cell "Low" [ref=e173]:
+                - generic [ref=e175]: Low
+              - cell "Completed" [ref=e176]:
+                - generic [ref=e178]: Completed
+              - cell "Mar 18, 2026" [ref=e179]
+              - cell "James Wilson" [ref=e180]
+        - generic [ref=e182]:
+          - generic [ref=e183]:
+            - heading "Create Work Order" [level=5] [ref=e184]
+            - button [ref=e185] [cursor=pointer]
+          - generic [ref=e186]:
+            - generic [ref=e187]:
+              - generic [ref=e188]: Equipment
+              - button "Select equipment..." [ref=e190] [cursor=pointer]
+            - generic [ref=e191]:
+              - generic [ref=e192]: Service Type
+              - combobox [ref=e193]:
+                - option "Preventive" [selected]
+                - option "Corrective"
+                - option "Emergency"
+            - generic [ref=e194]:
+              - generic [ref=e195]: Description
+              - textbox [ref=e196]
+            - generic [ref=e197]:
+              - generic [ref=e198]:
+                - generic [ref=e199]: Priority
+                - combobox [ref=e200]:
+                  - option "Low"
+                  - option "Medium" [selected]
+                  - option "High"
+                  - option "Critical"
+              - generic [ref=e201]:
+                - generic [ref=e202]: Scheduled Date
+                - textbox [ref=e203]
+            - generic [ref=e204]:
+              - generic [ref=e205]: Assigned Technician
+              - button "Select technician..." [ref=e207] [cursor=pointer]
+          - generic [ref=e208]:
+            - button "Cancel" [ref=e209] [cursor=pointer]
+            - button "Create" [ref=e210] [cursor=pointer]
+```
+
+# Test source
+
+```ts
+  1   | // Acceptance Test
+  2   | // Traces to: L2-007, L2-008, L2-009
+  3   | // Description: Verify work order creation, lifecycle tracking, and service calendar
+  4   | 
+  5   | import { test, expect } from '@playwright/test';
+  6   | import { WorkOrdersPage } from '../pages/work-orders.page';
+  7   | 
+  8   | test.describe('Work Orders List', () => {
+  9   |   let workOrders: WorkOrdersPage;
+  10  | 
+  11  |   test.beforeEach(async ({ page }) => {
+  12  |     workOrders = new WorkOrdersPage(page);
+  13  |     await workOrders.goto();
+  14  |   });
+  15  | 
+  16  |   // L2-007 AC1: Create Work Order form with all required fields
+  17  |   test('Create Work Order button is visible for Fleet Manager', async () => {
+  18  |     await expect(workOrders.createWorkOrderButton).toBeVisible();
+  19  |   });
+  20  | 
+  21  |   test('opens create work order form with required fields', async ({ page }) => {
+  22  |     await workOrders.clickCreateWorkOrder();
+  23  | 
+  24  |     await expect(page.locator('[data-testid="wo-equipment-select"]')).toBeVisible();
+> 25  |     await expect(page.locator('[data-testid="wo-service-type"]')).toBeVisible();
+      |                                                                   ^ Error: expect(locator).toBeVisible() failed
+  26  |     await expect(page.locator('[data-testid="wo-priority"]')).toBeVisible();
+  27  |     await expect(page.locator('[data-testid="wo-description"]')).toBeVisible();
+  28  |     await expect(page.locator('[data-testid="wo-requested-date"]')).toBeVisible();
+  29  |     await expect(page.locator('[data-testid="wo-assignee"]')).toBeVisible();
+  30  |   });
+  31  | 
+  32  |   // L2-007 AC2: Submitting creates WO with Open status and unique number
+  33  |   test('creates work order with Open status', async ({ page }) => {
+  34  |     await workOrders.clickCreateWorkOrder();
+  35  | 
+  36  |     await page.locator('[data-testid="wo-equipment-select"]').click();
+  37  |     await page.locator('[data-testid="equipment-option"]').first().click();
+  38  |     await page.locator('[data-testid="wo-service-type"]').selectOption('Corrective');
+  39  |     await page.locator('[data-testid="wo-priority"]').selectOption('High');
+  40  |     await page.locator('[data-testid="wo-description"]').fill('Test work order');
+  41  |     await page.locator('[data-testid="wo-requested-date"]').fill('2026-04-10');
+  42  |     await page.locator('[data-testid="wo-assignee"]').click();
+  43  |     await page.locator('[data-testid="assignee-option"]').first().click();
+  44  |     await page.locator('[data-testid="wo-submit"]').click();
+  45  | 
+  46  |     // Should show success and WO number
+  47  |     await expect(page.locator('[data-testid="wo-number"]')).toContainText(/WO-/);
+  48  |     await expect(page.locator('[data-testid="wo-status"]')).toContainText('Open');
+  49  |   });
+  50  | 
+  51  |   // L2-008: Status filter tabs work correctly
+  52  |   test('status tabs filter work orders', async () => {
+  53  |     await expect(workOrders.statusTabs).toBeVisible();
+  54  |     await expect(workOrders.tabAll).toBeVisible();
+  55  |     await expect(workOrders.tabOpen).toBeVisible();
+  56  |     await expect(workOrders.tabInProgress).toBeVisible();
+  57  | 
+  58  |     await workOrders.selectTab('open');
+  59  |     const rowCount = await workOrders.getRowCount();
+  60  |     expect(rowCount).toBeGreaterThan(0);
+  61  | 
+  62  |     for (let i = 0; i < rowCount; i++) {
+  63  |       const status = await workOrders.getRowStatus(i);
+  64  |       expect(status).toBe('Open');
+  65  |     }
+  66  |   });
+  67  | 
+  68  |   // L2-008 AC1-4: Work order status transitions
+  69  |   test('work order can transition through statuses', async ({ page }) => {
+  70  |     await workOrders.selectTab('open');
+  71  |     await workOrders.clickRow(0);
+  72  | 
+  73  |     // Open -> In Progress
+  74  |     await page.locator('[data-testid="action-start-work"]').click();
+  75  |     await expect(page.locator('[data-testid="wo-status"]')).toContainText('In Progress');
+  76  | 
+  77  |     // In Progress -> Completed
+  78  |     await page.locator('[data-testid="action-complete"]').click();
+  79  |     await page.locator('[data-testid="completion-notes"]').fill('Repair completed successfully');
+  80  |     await page.locator('[data-testid="confirm-complete"]').click();
+  81  |     await expect(page.locator('[data-testid="wo-status"]')).toContainText('Completed');
+  82  |   });
+  83  | 
+  84  |   // L2-008 AC5: Status history records transitions
+  85  |   test('work order history shows status transitions', async ({ page }) => {
+  86  |     await workOrders.clickRow(0);
+  87  | 
+  88  |     const historyItems = page.locator('[data-testid="wo-history-item"]');
+  89  |     const count = await historyItems.count();
+  90  |     expect(count).toBeGreaterThan(0);
+  91  | 
+  92  |     // Each history item should show status, user, and timestamp
+  93  |     const firstItem = historyItems.first();
+  94  |     await expect(firstItem.locator('[data-testid="history-status"]')).toBeVisible();
+  95  |     await expect(firstItem.locator('[data-testid="history-user"]')).toBeVisible();
+  96  |     await expect(firstItem.locator('[data-testid="history-timestamp"]')).toBeVisible();
+  97  |   });
+  98  | });
+  99  | 
+  100 | // Mobile Work Orders
+  101 | test.describe('Work Orders - Mobile', () => {
+  102 |   test('switches to card layout on mobile', async ({ page }) => {
+  103 |     await page.setViewportSize({ width: 375, height: 812 });
+  104 |     const workOrders = new WorkOrdersPage(page);
+  105 |     await workOrders.goto();
+  106 | 
+  107 |     // Grid should not be visible, cards should be
+  108 |     await expect(workOrders.dataGrid).not.toBeVisible();
+  109 |     await expect(workOrders.mobileCards.first()).toBeVisible();
+  110 | 
+  111 |     // Each card shows WO number, status badge, description, priority, and due date
+  112 |     const firstCard = workOrders.mobileCards.first();
+  113 |     await expect(firstCard.locator('[data-testid="wo-number"]')).toBeVisible();
+  114 |     await expect(firstCard.locator('[data-testid="wo-status"]')).toBeVisible();
+  115 |     await expect(firstCard.locator('[data-testid="wo-description"]')).toBeVisible();
+  116 |     await expect(firstCard.locator('[data-testid="wo-priority"]')).toBeVisible();
+  117 |   });
+  118 | 
+  119 |   test('mobile shows create button with condensed label', async ({ page }) => {
+  120 |     await page.setViewportSize({ width: 375, height: 812 });
+  121 |     const workOrders = new WorkOrdersPage(page);
+  122 |     await workOrders.goto();
+  123 | 
+  124 |     await expect(workOrders.createWorkOrderButton).toBeVisible();
+  125 |   });
+```
