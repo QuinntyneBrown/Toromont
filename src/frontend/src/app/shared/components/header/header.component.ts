@@ -31,6 +31,9 @@ export class HeaderComponent implements OnInit {
   toggleNotifications(): void {
     this.notificationDropdownOpen = !this.notificationDropdownOpen;
     this.userMenuOpen = false;
+    if (this.notificationDropdownOpen) {
+      this.notificationService.loadRecentNotifications();
+    }
   }
 
   toggleUserMenu(): void {
@@ -39,12 +42,7 @@ export class HeaderComponent implements OnInit {
   }
 
   markAllAsRead(): void {
-    const notifications = this.notificationService.notifications$.value;
-    notifications.forEach(n => {
-      if (!n.isRead) {
-        this.notificationService.markAsRead(n.id);
-      }
-    });
+    this.notificationService.markAllAsRead();
   }
 
   onNotificationClick(notification: Notification): void {
@@ -67,9 +65,9 @@ export class HeaderComponent implements OnInit {
   private getRouteForEntity(entityType: string, entityId: string): string[] | null {
     switch (entityType.toLowerCase()) {
       case 'equipment': return ['/equipment', entityId];
-      case 'workorder': return ['/service', entityId];
-      case 'partsorder': return ['/parts', entityId];
-      default: return null;
+      case 'workorder': return ['/service'];
+      case 'alert': return ['/telemetry'];
+      default: return ['/dashboard'];
     }
   }
 }
