@@ -1,0 +1,59 @@
+@startuml sequence_service_data_flow
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Service Management — Data Flow (Grid, Calendar, History)
+
+actor User
+participant "WorkOrdersComponent" as WO
+participant "Kendo Grid" as Grid
+participant "Kendo Scheduler" as Sched
+participant "REST API" as API
+database "SQL Server" as DB
+
+== List View — Server-Side Grid ==
+User -> WO: Navigate to /service
+WO -> Grid: Initialize with pageSize=20
+Grid -> API: GET /work-orders?skip=0&take=20
+API -> DB: SELECT TOP 20\nWHERE OrgId = @OrgId
+DB --> API: workOrders[], totalCount
+API --> Grid: { data, total }
+Grid --> User: Render paginated grid
+
+User -> Grid: Click column header (sort)
+Grid -> API: GET /work-orders?skip=0&take=20&sort=priority-desc
+API --> Grid: sorted results
+
+User -> Grid: Click next page
+Grid -> API: GET /work-orders?skip=20&take=20
+API --> Grid: page 2 results
+
+== Calendar View — Kendo Scheduler ==
+User -> WO: Switch to calendar tab
+WO -> Sched: Initialize with selectedDate
+Sched -> API: GET /work-orders/calendar\n?start=2026-04-01&end=2026-04-30
+API -> DB: SELECT WHERE RequestedDate\nBETWEEN @start AND @end
+DB --> API: calendarEvents[]
+API --> Sched: [{id, title, start, end, color}]
+Sched --> User: Render month view
+
+== Work Order Detail + History ==
+User -> Grid: Click row
+WO -> API: GET /work-orders/{id}
+API -> DB: SELECT w.*, h.*\nFROM WorkOrders w\nLEFT JOIN History h\n(via EF Include)
+DB --> API: workOrder + history[]
+API --> WO: { ...workOrder, history: [...] }
+WO --> User: Show detail panel\nwith real history
+
+== Status Change — No Optimistic Update ==
+User -> WO: Click "Start Work"
+WO -> API: PUT /work-orders/{id}/status\n{ status: "InProgress" }
+alt API Success
+    API --> WO: updated workOrder
+    WO --> User: Update UI with new status
+else API Failure (422)
+    API --> WO: { Error: "Transition not allowed" }
+    WO --> User: Show error toast\nUI stays unchanged
+end
+
+@enduml

@@ -1,0 +1,43 @@
+@startuml c4_component
+!theme plain
+skinparam componentStyle rectangle
+skinparam component {
+    BackgroundColor #438DD5
+    FontColor white
+    BorderColor #2C6BA0
+}
+skinparam package {
+    BackgroundColor #EEEEEE
+    BorderColor #CCCCCC
+}
+skinparam database {
+    BackgroundColor #438DD5
+    FontColor white
+    BorderColor #2C6BA0
+}
+
+title Notification Wiring — Component Diagram
+
+package "Angular Frontend" {
+    component "HeaderComponent" as Header <<UI>> #85BBF0
+    component "NotificationService" as NS <<Service>> #85BBF0
+    component "NotificationPreferencesComponent" as Prefs <<UI>> #85BBF0
+    component "AppComponent" as App <<Bootstrap>> #85BBF0
+}
+
+package "ASP.NET Backend" {
+    component "NotificationsController" as NC <<REST API>> #438DD5
+    component "SignalR NotificationHub" as Hub <<WebSocket>> #438DD5
+}
+
+database "SQL Server" as DB
+
+App --> NS : startConnection()\non init
+Header --> NS : loadRecent()\nmarkAsRead()\nmarkAllAsRead()
+Prefs --> NS : getPreferences()\nsavePreferences()
+NS --> NC : REST API calls\n(GET/PUT)
+NS <-- Hub : Real-time push\n(ReceiveNotification)
+NC --> DB : Read/Write\nNotifications
+Hub --> DB : Read\nOrg membership
+
+@enduml

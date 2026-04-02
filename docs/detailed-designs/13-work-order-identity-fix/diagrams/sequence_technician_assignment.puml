@@ -1,0 +1,44 @@
+@startuml sequence_technician_assignment
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Work Order Technician Assignment — Identity Fix
+
+actor User
+participant "WorkOrdersComponent" as WO
+participant "REST API" as API
+database "SQL Server" as DB
+
+== Load Technicians (ngOnInit) ==
+User -> WO: Open create work order
+WO -> API: GET /users
+API -> DB: SELECT Id, DisplayName, Role, IsActive\nFROM Users\nWHERE OrgId = @OrgId
+DB --> API: users[]
+API --> WO: users[]
+WO -> WO: Filter: isActive &&\nrole in ['Technician','FleetManager']
+WO -> WO: Map to { id: GUID, displayName }
+
+== Select Technician ==
+User -> WO: Click assignee dropdown
+WO --> User: Show filtered technicians\n(real names from API)
+User -> WO: Select technician
+WO -> WO: newWorkOrder.assignedTo =\n{ id: "3fa85f64-...", displayName: "Alex Chen" }
+
+== Create Work Order ==
+User -> WO: Click Submit
+WO -> API: POST /work-orders\n{\n  equipmentId: "...",\n  serviceType: "Corrective",\n  priority: "High",\n  description: "...",\n  assignedToUserId: "3fa85f64-..."\n}
+note right of API: assignedToUserId is a\nvalid user GUID, NOT\na string name like\n"John Smith"
+API -> DB: INSERT WorkOrder\nSET AssignedToUserId = @UserId
+DB --> API: created workOrder
+API --> WO: workOrder (with AssignedTo nav property)
+WO --> User: Show in list with\ntechnician display name
+
+== Unassigned Case ==
+User -> WO: Submit without selecting technician
+WO -> API: POST /work-orders\n{ ..., assignedToUserId: null }
+API -> DB: INSERT WorkOrder\nSET AssignedToUserId = NULL
+DB --> API: created workOrder
+API --> WO: workOrder
+WO --> User: Shows "Unassigned"
+
+@enduml

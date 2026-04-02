@@ -1,0 +1,55 @@
+@startuml sequence_notification_flow
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Notification Data Flow — Load, Mark-Read, Real-Time Push
+
+actor User
+participant "HeaderComponent" as Header
+participant "NotificationService" as NS
+participant "REST API" as API
+participant "SignalR Hub" as Hub
+database "SQL Server" as DB
+
+== App Initialization ==
+User -> Header: App loads (ngOnInit)
+Header -> NS: startConnection(token)
+NS -> Hub: negotiate + connect
+Hub --> NS: connected
+
+== Bell Dropdown Opened ==
+User -> Header: Click bell icon
+Header -> NS: loadRecentNotifications()
+NS -> API: GET /notifications?page=1&pageSize=20
+API -> DB: SELECT TOP 20\nWHERE OrgId = @OrgId\nORDER BY CreatedAt DESC
+DB --> API: notifications[]
+API --> NS: { items, totalCount }
+NS --> Header: notifications$.next(items)
+Header --> User: Render dropdown with items
+
+== Mark Single as Read ==
+User -> Header: Click notification item
+Header -> NS: markAsRead(notificationId)
+NS -> API: PUT /notifications/{id}/read
+API -> DB: UPDATE SET IsRead = true
+DB --> API: ok
+API --> NS: 200 OK
+NS --> Header: Update notifications$ + unreadCount$
+Header -> User: Navigate to entity route
+
+== Mark All as Read ==
+User -> Header: Click "Mark all as read"
+Header -> NS: markAllAsRead()
+NS -> API: PUT /notifications/mark-all-read
+API -> DB: UPDATE SET IsRead = true\nWHERE UserId = @UserId AND IsRead = false
+DB --> API: ok
+API --> NS: 200 OK
+NS --> Header: unreadCount$.next(0)
+Header --> User: Badge hidden
+
+== Real-Time Push ==
+Hub -> NS: ReceiveNotification(notification)
+NS --> Header: Prepend to notifications$\nIncrement unreadCount$
+Header --> User: Badge count updated
+
+@enduml

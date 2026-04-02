@@ -1,0 +1,45 @@
+@startuml c4_component
+!theme plain
+skinparam componentStyle rectangle
+skinparam component {
+    BackgroundColor #438DD5
+    FontColor white
+    BorderColor #2C6BA0
+}
+skinparam package {
+    BackgroundColor #EEEEEE
+    BorderColor #CCCCCC
+}
+skinparam database {
+    BackgroundColor #438DD5
+    FontColor white
+    BorderColor #2C6BA0
+}
+
+title Service Management Redesign — Component Diagram
+
+package "Angular Frontend" {
+    component "WorkOrdersComponent" as WO <<Page>> #85BBF0
+    component "Kendo Grid" as Grid <<UI Control>> #85BBF0
+    component "Kendo Scheduler" as Sched <<UI Control>> #85BBF0
+    component "WO Detail Panel" as Detail <<UI Panel>> #85BBF0
+}
+
+package "ASP.NET Backend" {
+    component "WorkOrdersController" as WOC <<REST API>> #438DD5
+}
+
+database "SQL Server" as DB
+
+WO --> Grid : List view\n(server-side page/sort/filter)
+WO --> Sched : Calendar view\n(day/week/month)
+WO --> Detail : Row click\n→ load detail + history
+
+Grid --> WOC : GET /work-orders\n?skip=&take=&sort=&filter=
+Sched --> WOC : GET /work-orders/calendar\n?start=&end=
+Detail --> WOC : GET /work-orders/{id}\n(includes history via Include)
+Detail --> WOC : PUT /work-orders/{id}/status
+
+WOC --> DB : EF Core queries\nwith tenant filter
+
+@enduml

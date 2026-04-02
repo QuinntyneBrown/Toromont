@@ -14,3 +14,6 @@
 | 08 | [MediatR CQRS Refactor](08-mediatr-cqrs-refactor/README.md) | Draft | Move controller logic into MediatR request handlers with pipeline behaviors |
 | 09 | [Tenant & Identity Hardening](09-tenant-identity-hardening/README.md) | Draft | Multi-org membership, tenant enforcement, deactivation blacklist, accept-invite (Audit #2, #4, #11) |
 | 10 | [Telemetry Ingestion Redesign](10-telemetry-ingestion-redesign/README.md) | Draft | Azure Function ingestion, Dapper bulk inserts, retry/dead-letter, alert pagination/thresholds (Audit #3, #10) |
+| 11 | [Notification Wiring](11-notification-wiring/README.md) | Draft | Wire notification bell/dropdown, REST mark-as-read, SignalR init, preferences API, deep-link fixes (Frontend Audit #1) |
+| 12 | [Service Management Redesign](12-service-management-redesign/README.md) | Draft | Kendo Grid with server-side ops, Kendo Scheduler calendar, history from detail endpoint, no optimistic updates (Frontend Audit #2) |
+| 13 | [Work Order Identity Fix](13-work-order-identity-fix/README.md) | Draft | Replace hardcoded technician list with API user lookup, send valid GUID as assignedToUserId (Frontend Audit #3) |
