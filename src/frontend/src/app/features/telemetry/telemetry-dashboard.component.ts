@@ -188,9 +188,9 @@ interface GpsPoint {
   `,
   styles: [`
     .chart-card {
-      background: #fff;
+      background: var(--surface-secondary);
       border: 1px solid var(--border-subtle);
-      border-radius: 12px;
+      border-radius: var(--radius-lg);
       overflow: hidden;
     }
     .chart-header {
@@ -201,7 +201,7 @@ interface GpsPoint {
       padding: 16px;
     }
     .btn-group .btn {
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
     }
     .btn-group .btn + .btn {
       margin-left: -1px;

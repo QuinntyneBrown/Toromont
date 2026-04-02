@@ -163,7 +163,7 @@ interface PredictionRow extends AIPrediction {
   styles: [`
     .card {
       border: 1px solid var(--border-subtle);
-      border-radius: 12px;
+      border-radius: var(--radius-lg);
       overflow: hidden;
     }
     .card-header {
@@ -171,7 +171,7 @@ interface PredictionRow extends AIPrediction {
       border-bottom: 1px solid var(--border-subtle);
     }
     .kpi-highlight {
-      border-radius: 12px;
+      border-radius: var(--radius-lg);
     }
     .kpi-red :host ::ng-deep .kpi-value,
     .kpi-red .kpi-value { color: var(--status-error); }
@@ -183,7 +183,7 @@ interface PredictionRow extends AIPrediction {
     .anomaly-icon {
       width: 36px;
       height: 36px;
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -202,7 +202,7 @@ interface PredictionRow extends AIPrediction {
     }
 
     .progress {
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       background: var(--border-subtle);
     }
   `]

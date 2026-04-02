@@ -109,7 +109,7 @@ type UserRole = 'Admin' | 'FleetManager' | 'Technician' | 'PartsSpecialist' | 'R
   styles: [`
     .card {
       border: 1px solid var(--border-subtle);
-      border-radius: 12px;
+      border-radius: var(--radius-lg);
       overflow: hidden;
     }
     .user-avatar {

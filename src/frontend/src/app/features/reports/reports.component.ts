@@ -154,9 +154,9 @@ interface ChartDataItem {
   `,
   styles: [`
     .report-type-card {
-      background: #fff;
+      background: var(--surface-secondary);
       border: 2px solid var(--border-subtle);
-      border-radius: 12px;
+      border-radius: var(--radius-lg);
       padding: 20px;
       cursor: pointer;
       display: flex;
@@ -165,34 +165,34 @@ interface ChartDataItem {
       transition: all 0.15s;
     }
     .report-type-card:hover {
-      border-color: #3b82f6;
+      border-color: var(--accent-primary);
     }
     .report-type-card.selected {
       border-color: var(--accent-primary);
-      background: #fffef5;
+      background: var(--surface-secondary);
     }
     .report-icon {
       width: 48px;
       height: 48px;
-      border-radius: 10px;
-      background: #f3f4f6;
+      border-radius: var(--radius-md);
+      background: var(--surface-primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #374151;
+      color: var(--foreground-secondary);
     }
     .selected .report-icon {
       background: var(--accent-primary);
-      color: #1a1a2e;
+      color: var(--surface-inverse);
     }
     .report-label {
       font-weight: 600;
       font-size: 15px;
     }
     .chart-card {
-      background: #fff;
+      background: var(--surface-secondary);
       border: 1px solid var(--border-subtle);
-      border-radius: 12px;
+      border-radius: var(--radius-lg);
       overflow: hidden;
     }
     .chart-header {

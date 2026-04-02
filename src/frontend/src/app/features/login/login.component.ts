@@ -33,20 +33,18 @@ import { AuthService } from '../../core/services/auth.service';
           <h2 class="sign-in-title">Welcome Back</h2>
           <p class="sign-in-subtitle">Sign in to access your fleet dashboard</p>
 
-          <button kendoButton
-                  [themeColor]="'primary'"
-                  class="ms-login-btn"
-                  (click)="onLogin()">
-            <svg width="20" height="20" viewBox="0 0 21 21" class="me-2">
-              <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
-              <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
-              <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
-              <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+          <button class="ms-login-btn" (click)="onLogin()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--status-info)" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
-            Sign in with Microsoft
+            <span>Sign in with Microsoft</span>
           </button>
 
-          <p class="secured-text">Secured by Microsoft Entra ID</p>
+          <div class="divider-row">
+            <span class="divider-line"></span>
+            <span class="divider-text">Secured by Microsoft Entra ID</span>
+            <span class="divider-line"></span>
+          </div>
           <p class="copyright-text">&copy; {{ currentYear }} Toromont Industries Ltd.</p>
         </div>
       </div>
@@ -126,39 +124,69 @@ import { AuthService } from '../../core/services/auth.service';
       text-align: center;
     }
 
+    .login-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
     .sign-in-title {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 700;
-      margin: 0 0 8px;
+      margin: 0;
       color: var(--foreground-primary);
     }
 
     .sign-in-subtitle {
       font-size: 14px;
       color: var(--foreground-secondary);
-      margin: 0 0 32px;
+      margin: 0;
+      text-align: center;
     }
 
     .ms-login-btn {
-      width: 100%;
-      padding: 12px 24px;
-      font-size: 15px;
-      font-weight: 600;
+      width: 320px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      border-radius: 8px;
+      gap: 12px;
+      background: var(--surface-secondary);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--foreground-primary);
+      font-family: var(--font-body);
     }
 
-    .secured-text {
-      margin-top: 24px;
-      font-size: 12px;
-      color: var(--foreground-secondary);
+    .ms-login-btn:hover {
+      background: var(--surface-hover);
+    }
+
+    .divider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 320px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border-subtle);
+    }
+
+    .divider-text {
+      font-size: 11px;
+      color: var(--foreground-disabled);
+      white-space: nowrap;
     }
 
     .copyright-text {
-      margin-top: 16px;
+      margin: 0;
       font-size: 12px;
       color: var(--foreground-disabled);
     }

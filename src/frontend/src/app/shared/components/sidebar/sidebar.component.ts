@@ -83,7 +83,7 @@ interface NavItem {
     }
     .nav-item:hover {
       background-color: rgba(255,255,255,0.08);
-      color: #fff;
+      color: var(--foreground-inverse);
     }
     .nav-item.active {
       background-color: rgba(255,205,17,0.1);

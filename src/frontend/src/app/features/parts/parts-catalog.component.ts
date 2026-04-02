@@ -172,6 +172,42 @@ interface Part {
   styles: [`
     :host { display: block; }
     .form-check { margin-bottom: 6px; }
+    .parts-layout { display: flex; }
+    .filter-panel {
+      width: 260px;
+      flex-shrink: 0;
+      background: var(--surface-secondary);
+      border-right: 1px solid var(--border-subtle);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .filter-title { font-size: 16px; font-weight: 600; color: var(--foreground-primary); margin: 0; }
+    .main-content { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    .ai-search {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 48px;
+      background: var(--surface-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0 16px;
+    }
+    .ai-search input {
+      border: none;
+      background: none;
+      outline: none;
+      flex: 1;
+      font-size: 14px;
+      color: var(--foreground-primary);
+    }
+    .ai-search input::placeholder { color: var(--foreground-disabled); }
+    @media (max-width: 992px) {
+      .filter-panel { display: none; }
+      .main-content { padding: 16px; }
+    }
   `]
 })
 export default class PartsCatalogComponent implements OnInit {

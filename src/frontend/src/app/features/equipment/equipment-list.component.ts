@@ -153,7 +153,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   styles: [`
     :host { display: block; }
     .cursor-pointer { cursor: pointer; }
-    .card:hover { border-color: var(--brand-primary, #f59e0b); }
+    .card:hover { border-color: var(--accent-primary); }
   `]
 })
 export default class EquipmentListComponent implements OnInit {

@@ -111,3 +111,38 @@ body {
 
 // Google Fonts import
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+// Consistent page title per .pen design (22px, 700)
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--foreground-primary);
+  font-family: var(--font-heading);
+}
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--foreground-primary);
+  font-family: var(--font-heading);
+  margin: 0;
+}
+
+// Content padding per .pen design (24px)
+.page-content {
+  padding: 24px;
+}
+
+// Card per .pen design
+.fleet-card {
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+// Active nav tab per .pen design
+.nav-tabs .nav-link.active {
+  color: var(--accent-primary) !important;
+  border-bottom: 2px solid var(--accent-primary) !important;
+  background: none !important;
+}

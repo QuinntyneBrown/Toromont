@@ -30,7 +30,7 @@ interface StatusTab {
     <div class="container-fluid py-3">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="fw-bold mb-0">Service Management</h2>
+        <h2 class="fw-bold mb-0" style="font-size:22px;">Service Management</h2>
         <button class="btn btn-warning fw-semibold" (click)="showCreateDialog = true">+ Create Work Order</button>
       </div>
 
@@ -142,8 +142,23 @@ interface StatusTab {
   `,
   styles: [`
     :host { display: block; }
-    .nav-link { cursor: pointer; }
-    .nav-link.active { font-weight: 600; }
+    .nav-tabs { border-bottom-color: var(--border-subtle); }
+    .nav-link {
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--foreground-secondary);
+      border: none;
+      padding: 10px 20px;
+    }
+    .nav-link:hover { color: var(--foreground-primary); background: none; border: none; }
+    .nav-link.active {
+      font-weight: 600;
+      color: var(--accent-primary);
+      background: none;
+      border: none;
+      border-bottom: 2px solid var(--accent-primary);
+    }
+    .nav-link .badge { font-size: 11px; }
   `]
 })
 export default class WorkOrdersComponent implements OnInit {
@@ -157,8 +172,9 @@ export default class WorkOrdersComponent implements OnInit {
     { label: 'All', value: '', count: 0 },
     { label: 'Open', value: 'Open', count: 0 },
     { label: 'In Progress', value: 'InProgress', count: 0 },
+    { label: 'On Hold', value: 'OnHold', count: 0 },
     { label: 'Completed', value: 'Completed', count: 0 },
-    { label: 'Cancelled', value: 'Cancelled', count: 0 }
+    { label: 'Closed', value: 'Closed', count: 0 }
   ];
 
   priorities = ['Low', 'Medium', 'High', 'Critical'];

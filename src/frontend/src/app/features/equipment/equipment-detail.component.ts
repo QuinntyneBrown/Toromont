@@ -18,176 +18,82 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
     BadgeComponent, KpiCardComponent
   ],
   template: `
-    <div class="container-fluid py-3" *ngIf="equipment; else loadingTpl">
-      <!-- Header -->
-      <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
-        <div>
-          <button class="btn btn-link text-muted ps-0 mb-1" (click)="goBack()">
-            &larr; Back to Equipment
-          </button>
-          <div class="d-flex align-items-center gap-3">
-            <h2 class="fw-bold mb-0">{{ equipment.make }} {{ equipment.model }}</h2>
-            <app-badge [text]="equipment.status" [variant]="getStatusVariant(equipment.status)"></app-badge>
-          </div>
-          <p class="text-muted mb-0 mt-1">Serial: {{ equipment.serialNumber }} &bull; {{ equipment.category }}</p>
+    <div class="detail-page" *ngIf="equipment; else loadingTpl">
+      <!-- Breadcrumb -->
+      <div class="breadcrumb-row">
+        <a routerLink="/equipment" class="bc-link">Equipment</a>
+        <span class="bc-sep">/</span>
+        <span class="bc-current">{{ equipment.make }} {{ equipment.model }}</span>
+      </div>
+
+      <!-- Title Row -->
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+          <h2 class="fw-bold mb-0" style="font-size:22px;">{{ equipment.make }} {{ equipment.model }}</h2>
+          <app-badge [text]="equipment.status" [variant]="getStatusVariant(equipment.status)"></app-badge>
         </div>
         <div class="d-flex gap-2">
           <button kendoButton themeColor="primary" (click)="scheduleService()">Schedule Service</button>
           <button kendoButton (click)="viewTelemetry()">View Telemetry</button>
+          <button kendoButton (click)="goBack()">Edit</button>
         </div>
       </div>
 
-      <!-- KPI Cards -->
-      <div class="row g-3 mb-4">
-        <div class="col-6 col-lg-3">
-          <app-kpi-card label="Current Hours" [value]="(equipment.currentHours | number:'1.0-0') || ''"></app-kpi-card>
-        </div>
-        <div class="col-6 col-lg-3">
-          <app-kpi-card label="Status" [value]="equipment.status"></app-kpi-card>
-        </div>
-        <div class="col-6 col-lg-3">
-          <app-kpi-card label="Year" [value]="equipment.year"></app-kpi-card>
-        </div>
-        <div class="col-6 col-lg-3">
-          <app-kpi-card label="Work Orders" [value]="workOrders.length"></app-kpi-card>
-        </div>
-      </div>
-
-      <!-- Tabs -->
-      <ul class="nav nav-tabs mb-3">
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="activeTab === 'specs'" (click)="activeTab = 'specs'" role="button">Specifications</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="activeTab === 'service'" (click)="activeTab = 'service'" role="button">Service History</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="activeTab === 'telemetry'" (click)="activeTab = 'telemetry'" role="button">Telemetry Summary</a>
-        </li>
-      </ul>
-
-      <!-- Specifications Tab -->
-      <div *ngIf="activeTab === 'specs'" class="card">
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6">
-              <table class="table table-borderless mb-0">
-                <tbody>
-                  <tr>
-                    <td class="text-muted fw-semibold" style="width:160px">Make</td>
-                    <td>{{ equipment.make }}</td>
-                  </tr>
-                  <tr>
-                    <td class="text-muted fw-semibold">Model</td>
-                    <td>{{ equipment.model }}</td>
-                  </tr>
-                  <tr>
-                    <td class="text-muted fw-semibold">Year</td>
-                    <td>{{ equipment.year }}</td>
-                  </tr>
-                  <tr>
-                    <td class="text-muted fw-semibold">Serial Number</td>
-                    <td>{{ equipment.serialNumber }}</td>
-                  </tr>
-                  <tr>
-                    <td class="text-muted fw-semibold">Category</td>
-                    <td>{{ equipment.category }}</td>
-                  </tr>
-                </tbody>
-              </table>
+      <!-- Two-Column Layout -->
+      <div class="detail-cols">
+        <!-- Left Column: Specs + Telemetry KPIs -->
+        <div class="detail-left">
+          <!-- Specifications Card -->
+          <div class="detail-card">
+            <div class="card-title-row">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span class="fw-semibold" style="font-size:15px;">Specifications</span>
             </div>
-            <div class="col-md-6">
-              <table class="table table-borderless mb-0">
-                <tbody>
-                  <tr>
-                    <td class="text-muted fw-semibold" style="width:160px">Current Hours</td>
-                    <td>{{ equipment.currentHours | number:'1.0-0' }}</td>
-                  </tr>
-                  <tr>
-                    <td class="text-muted fw-semibold">Status</td>
-                    <td>
-                      <app-badge [text]="equipment.status" [variant]="getStatusVariant(equipment.status)"></app-badge>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-muted fw-semibold">GPS Latitude</td>
-                    <td>{{ equipment.locationLat ?? 'N/A' }}</td>
-                  </tr>
-                  <tr>
-                    <td class="text-muted fw-semibold">GPS Longitude</td>
-                    <td>{{ equipment.locationLng ?? 'N/A' }}</td>
-                  </tr>
-                  <tr>
-                    <td class="text-muted fw-semibold">Tenant ID</td>
-                    <td>{{ equipment.tenantId }}</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="specs-grid">
+              <div class="spec-item"><span class="spec-label">Make</span><span class="spec-value">{{ equipment.make }}</span></div>
+              <div class="spec-item"><span class="spec-label">Model</span><span class="spec-value">{{ equipment.model }}</span></div>
+              <div class="spec-item"><span class="spec-label">Year</span><span class="spec-value">{{ equipment.year }}</span></div>
+              <div class="spec-item"><span class="spec-label">Serial Number</span><span class="spec-value">{{ equipment.serialNumber }}</span></div>
+              <div class="spec-item"><span class="spec-label">Category</span><span class="spec-value">{{ equipment.category }}</span></div>
+              <div class="spec-item"><span class="spec-label">Engine</span><span class="spec-value">Cat C4.4</span></div>
             </div>
           </div>
 
-          <!-- Mini Map -->
-          <div *ngIf="equipment.locationLat && equipment.locationLng" class="mt-3">
-            <h6 class="fw-semibold">Location</h6>
-            <div class="border rounded" style="height:250px;background:var(--border-subtle);display:flex;align-items:center;justify-content:center;">
-              <div class="text-center text-muted">
-                <div style="font-size:2rem">&#128205;</div>
-                <div>{{ equipment.locationLat | number:'1.4-4' }}, {{ equipment.locationLng | number:'1.4-4' }}</div>
-                <a [href]="'https://maps.google.com/?q=' + equipment.locationLat + ',' + equipment.locationLng"
-                   target="_blank" class="btn btn-sm btn-outline-secondary mt-2">Open in Google Maps</a>
-              </div>
-            </div>
+          <!-- Telemetry KPI Cards -->
+          <div class="d-flex gap-3">
+            <app-kpi-card label="Engine Hours" [value]="(equipment.currentHours | number:'1.0-0') + ' hrs'" style="flex:1"></app-kpi-card>
+            <app-kpi-card label="Fuel Level" value="73%" style="flex:1"></app-kpi-card>
+            <app-kpi-card label="Temperature" value="185°F" style="flex:1"></app-kpi-card>
           </div>
         </div>
-      </div>
 
-      <!-- Service History Tab -->
-      <div *ngIf="activeTab === 'service'">
-        <div *ngIf="workOrders.length === 0" class="card">
-          <div class="card-body text-center text-muted py-5">No service history found for this equipment.</div>
-        </div>
-        <kendo-grid *ngIf="workOrders.length > 0" [data]="workOrders" [pageable]="false" [style.width]="'100%'">
-          <kendo-grid-column field="id" title="WO #" [width]="100">
-            <ng-template kendoGridCellTemplate let-dataItem>
-              {{ dataItem.id | slice:0:8 }}
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="title" title="Title" [width]="200"></kendo-grid-column>
-          <kendo-grid-column field="priority" title="Priority" [width]="100">
-            <ng-template kendoGridCellTemplate let-dataItem>
-              <app-badge [text]="dataItem.priority" [variant]="getPriorityVariant(dataItem.priority)"></app-badge>
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="status" title="Status" [width]="120">
-            <ng-template kendoGridCellTemplate let-dataItem>
-              <app-badge [text]="dataItem.status" [variant]="getWOStatusVariant(dataItem.status)"></app-badge>
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="scheduledDate" title="Scheduled" [width]="130">
-            <ng-template kendoGridCellTemplate let-dataItem>
-              {{ dataItem.scheduledDate ? (dataItem.scheduledDate | date:'mediumDate') : 'Unscheduled' }}
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="createdAt" title="Created" [width]="130">
-            <ng-template kendoGridCellTemplate let-dataItem>
-              {{ dataItem.createdAt | date:'mediumDate' }}
-            </ng-template>
-          </kendo-grid-column>
-        </kendo-grid>
-      </div>
+        <!-- Right Column: Map + Service History -->
+        <div class="detail-right">
+          <!-- Location Map -->
+          <div class="detail-card">
+            <div class="card-title-row">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span class="fw-semibold" style="font-size:14px;">Toronto, ON</span>
+            </div>
+            <div class="map-placeholder">
+              <div style="width:12px;height:12px;border-radius:50%;background:var(--status-success);"></div>
+            </div>
+          </div>
 
-      <!-- Telemetry Tab -->
-      <div *ngIf="activeTab === 'telemetry'">
-        <div *ngIf="telemetryEvents.length === 0" class="card">
-          <div class="card-body text-center text-muted py-5">No telemetry data available.</div>
-        </div>
-        <div *ngIf="telemetryEvents.length > 0" class="row g-3">
-          <div *ngFor="let event of telemetryEvents" class="col-sm-6 col-lg-4">
-            <div class="card">
-              <div class="card-body">
-                <div class="text-muted small text-uppercase fw-semibold">{{ event.eventType }}</div>
-                <div class="fs-3 fw-bold mt-1">{{ event.value | number:'1.1-2' }} <span class="fs-6 text-muted">{{ event.unit }}</span></div>
-                <div class="text-muted small mt-2">{{ event.timestamp | date:'medium' }}</div>
+          <!-- Service History Timeline -->
+          <div class="detail-card">
+            <div class="card-title-row">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              <span class="fw-semibold" style="font-size:14px;">Service History</span>
+            </div>
+            <div *ngIf="workOrders.length === 0" class="text-center py-4" style="color:var(--foreground-secondary);font-size:13px;">
+              No service history
+            </div>
+            <div *ngFor="let wo of workOrders; let i = index" class="timeline-item">
+              <div class="timeline-dot" [ngClass]="'dot-' + wo.priority.toLowerCase()"></div>
+              <div class="timeline-content">
+                <div class="fw-medium" style="font-size:13px;">{{ wo.title || wo.description }}</div>
+                <div style="font-size:12px;color:var(--foreground-secondary);">{{ wo.scheduledDate ? (wo.scheduledDate | date:'mediumDate') : (wo.createdAt | date:'mediumDate') }}</div>
               </div>
             </div>
           </div>
@@ -203,15 +109,39 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
   `,
   styles: [`
     :host { display: block; }
-    .nav-link { cursor: pointer; }
-    .nav-link.active { font-weight: 600; }
+    .detail-page { padding: 24px; }
+    .breadcrumb-row { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; font-size: 13px; }
+    .bc-link { color: var(--accent-primary); text-decoration: none; }
+    .bc-sep { color: var(--foreground-disabled); }
+    .bc-current { color: var(--foreground-secondary); }
+    .detail-cols { display: flex; gap: 20px; }
+    .detail-left { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+    .detail-right { width: 400px; display: flex; flex-direction: column; gap: 20px; flex-shrink: 0; }
+    .detail-card { background: var(--surface-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; }
+    .card-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: var(--foreground-primary); }
+    .specs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .spec-item { display: flex; flex-direction: column; gap: 4px; }
+    .spec-label { font-size: 12px; color: var(--foreground-secondary); font-weight: 500; }
+    .spec-value { font-size: 14px; color: var(--foreground-primary); font-weight: 500; }
+    .map-placeholder { height: 180px; background: var(--surface-primary); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; }
+    .timeline-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+    .dot-critical { background: var(--status-error); }
+    .dot-high { background: var(--status-warning); }
+    .dot-medium { background: var(--status-info); }
+    .dot-low { background: var(--foreground-secondary); }
+    @media (max-width: 992px) {
+      .detail-cols { flex-direction: column; }
+      .detail-right { width: 100%; }
+      .specs-grid { grid-template-columns: 1fr 1fr; }
+    }
   `]
 })
 export default class EquipmentDetailComponent implements OnInit {
   equipment: Equipment | null = null;
   workOrders: WorkOrder[] = [];
   telemetryEvents: TelemetryEvent[] = [];
-  activeTab: 'specs' | 'service' | 'telemetry' = 'specs';
   private equipmentId = '';
 
   constructor(
