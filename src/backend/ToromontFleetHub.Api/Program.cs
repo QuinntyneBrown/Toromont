@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Sinks.ApplicationInsights.TelemetryConverters;
+using ToromontFleetHub.Api.Authentication;
 using ToromontFleetHub.Api.Data;
 using ToromontFleetHub.Api.Hubs;
 using ToromontFleetHub.Api.Middleware;
@@ -199,29 +200,3 @@ app.Run();
 
 // Make Program class accessible for integration tests
 public partial class Program { }
-
-// Dev authentication handler that always succeeds
-public class DevAuthHandler : Microsoft.AspNetCore.Authentication.AuthenticationHandler<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions>
-{
-    public DevAuthHandler(
-        Microsoft.Extensions.Options.IOptionsMonitor<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions> options,
-        Microsoft.Extensions.Logging.ILoggerFactory logger,
-        System.Text.Encodings.Web.UrlEncoder encoder)
-        : base(options, logger, encoder) { }
-
-    protected override Task<Microsoft.AspNetCore.Authentication.AuthenticateResult> HandleAuthenticateAsync()
-    {
-        var claims = new[]
-        {
-            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, "dev-user-1"),
-            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Email, "admin@toromont.com"),
-            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, "Dev Admin"),
-            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, "Admin"),
-            new System.Security.Claims.Claim("organizationId", "a1b2c3d4-0001-0000-0000-000000000001"),
-        };
-        var identity = new System.Security.Claims.ClaimsIdentity(claims, Scheme.Name);
-        var principal = new System.Security.Claims.ClaimsPrincipal(identity);
-        var ticket = new Microsoft.AspNetCore.Authentication.AuthenticationTicket(principal, Scheme.Name);
-        return Task.FromResult(Microsoft.AspNetCore.Authentication.AuthenticateResult.Success(ticket));
-    }
-}
