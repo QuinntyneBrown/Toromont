@@ -1,7 +1,8 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToromontFleetHub.Api.DTOs;
-using ToromontFleetHub.Api.Services;
+using ToromontFleetHub.Api.Features.Reports.Commands;
 
 namespace ToromontFleetHub.Api.Controllers;
 
@@ -10,30 +11,17 @@ namespace ToromontFleetHub.Api.Controllers;
 [Authorize]
 public class ReportsController : ControllerBase
 {
-    private readonly IReportGenerationService _reportService;
-    private readonly IExportService _exportService;
-    private readonly ITenantContext _tenant;
-    private readonly ILogger<ReportsController> _logger;
+    private readonly IMediator _mediator;
 
-    public ReportsController(
-        IReportGenerationService reportService,
-        IExportService exportService,
-        ITenantContext tenant,
-        ILogger<ReportsController> logger)
-    {
-        _reportService = reportService;
-        _exportService = exportService;
-        _tenant = tenant;
-        _logger = logger;
-    }
+    public ReportsController(IMediator mediator) => _mediator = mediator;
 
     [HttpPost("fleet-utilization")]
     public async Task<ActionResult<ReportResponse>> FleetUtilization(
         [FromBody] ReportRequest request,
         CancellationToken ct)
     {
-        var report = await _reportService.GenerateFleetUtilizationAsync(request, _tenant.OrganizationId, ct);
-        return Ok(report);
+        var result = await _mediator.Send(new GenerateFleetUtilizationReportCommand(request), ct);
+        return Ok(result);
     }
 
     [HttpPost("maintenance-costs")]
@@ -41,8 +29,8 @@ public class ReportsController : ControllerBase
         [FromBody] ReportRequest request,
         CancellationToken ct)
     {
-        var report = await _reportService.GenerateMaintenanceCostsAsync(request, _tenant.OrganizationId, ct);
-        return Ok(report);
+        var result = await _mediator.Send(new GenerateMaintenanceCostsReportCommand(request), ct);
+        return Ok(result);
     }
 
     [HttpPost("{type}/export")]
@@ -52,46 +40,8 @@ public class ReportsController : ControllerBase
         [FromQuery] string format = "pdf",
         CancellationToken ct = default)
     {
-        ReportResponse report;
-
-        switch (type.ToLowerInvariant())
-        {
-            case "fleet-utilization":
-                report = await _reportService.GenerateFleetUtilizationAsync(request, _tenant.OrganizationId, ct);
-                break;
-            case "maintenance-costs":
-                report = await _reportService.GenerateMaintenanceCostsAsync(request, _tenant.OrganizationId, ct);
-                break;
-            default:
-                return BadRequest(new { Error = $"Unknown report type: {type}" });
-        }
-
-        byte[] fileBytes;
-        string contentType;
-        string fileName;
-
-        switch (format.ToLowerInvariant())
-        {
-            case "excel":
-            case "xlsx":
-                fileBytes = await _exportService.ExportToExcelAsync(report, ct);
-                contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                fileName = $"{type}-report.xlsx";
-                break;
-            case "csv":
-                fileBytes = await _exportService.ExportToCsvAsync(report, ct);
-                contentType = "text/csv";
-                fileName = $"{type}-report.csv";
-                break;
-            case "pdf":
-            default:
-                fileBytes = await _exportService.ExportToPdfAsync(report, ct);
-                contentType = "application/pdf";
-                fileName = $"{type}-report.pdf";
-                break;
-        }
-
-        _logger.LogInformation("Report {Type} exported as {Format} by user {UserId}", type, format, _tenant.UserId);
-        return File(fileBytes, contentType, fileName);
+        var result = await _mediator.Send(new ExportReportCommand(type, request, format), ct);
+        if (!result.IsSuccess) return BadRequest(new { Error = result.Error });
+        return File(result.Value!.FileBytes, result.Value.ContentType, result.Value.FileName);
     }
 }

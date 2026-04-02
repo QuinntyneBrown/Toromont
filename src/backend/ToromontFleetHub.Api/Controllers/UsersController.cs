@@ -1,10 +1,10 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ToromontFleetHub.Api.Data;
 using ToromontFleetHub.Api.DTOs;
+using ToromontFleetHub.Api.Features.Users.Commands;
+using ToromontFleetHub.Api.Features.Users.Queries;
 using ToromontFleetHub.Api.Models;
-using ToromontFleetHub.Api.Services;
 
 namespace ToromontFleetHub.Api.Controllers;
 
@@ -13,27 +13,15 @@ namespace ToromontFleetHub.Api.Controllers;
 [Authorize(Policy = "RequireAdmin")]
 public class UsersController : ControllerBase
 {
-    private readonly FleetHubDbContext _db;
-    private readonly ITenantContext _tenant;
-    private readonly ILogger<UsersController> _logger;
+    private readonly IMediator _mediator;
 
-    public UsersController(FleetHubDbContext db, ITenantContext tenant, ILogger<UsersController> logger)
-    {
-        _db = db;
-        _tenant = tenant;
-        _logger = logger;
-    }
+    public UsersController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet]
     public async Task<ActionResult<List<User>>> GetAll(CancellationToken ct)
     {
-        var users = await _db.Users
-            .Where(u => u.OrganizationId == _tenant.OrganizationId)
-            .OrderBy(u => u.DisplayName)
-            .AsNoTracking()
-            .ToListAsync(ct);
-
-        return Ok(users);
+        var result = await _mediator.Send(new GetUsersListQuery(), ct);
+        return Ok(result);
     }
 
     [HttpPost("invite")]
@@ -41,43 +29,9 @@ public class UsersController : ControllerBase
         [FromBody] InviteUserRequest request,
         CancellationToken ct)
     {
-        var validRoles = new[] { "Admin", "FleetManager", "Technician", "Operator" };
-        if (string.IsNullOrWhiteSpace(request.Email))
-            return BadRequest(new { Error = "Email is required." });
-        if (!validRoles.Contains(request.Role))
-            return BadRequest(new { Error = $"Invalid role. Must be one of: {string.Join(", ", validRoles)}" });
-
-        var existingUser = await _db.Users
-            .AnyAsync(u => u.Email == request.Email && u.OrganizationId == _tenant.OrganizationId, ct);
-
-        if (existingUser)
-            return BadRequest(new { Error = "A user with this email already exists in this organization." });
-
-        var existingInvite = await _db.UserInvitations
-            .AnyAsync(i => i.Email == request.Email
-                && i.OrganizationId == _tenant.OrganizationId
-                && !i.IsUsed, ct);
-
-        if (existingInvite)
-            return BadRequest(new { Error = "A pending invitation already exists for this email." });
-
-        var invitation = new UserInvitation
-        {
-            Id = Guid.NewGuid(),
-            Email = request.Email,
-            Role = request.Role,
-            OrganizationId = _tenant.OrganizationId,
-            Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray().Concat(Guid.NewGuid().ToByteArray()).ToArray()),
-            IsUsed = false,
-            InvitedByUserId = _tenant.UserId,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _db.UserInvitations.Add(invitation);
-        await _db.SaveChangesAsync(ct);
-
-        _logger.LogInformation("User invitation sent to {Email} by {UserId}", request.Email, _tenant.UserId);
-        return CreatedAtAction(nameof(GetAll), invitation);
+        var result = await _mediator.Send(new InviteUserCommand(request.Email, request.Role), ct);
+        if (!result.IsSuccess) return BadRequest(new { Error = result.Error });
+        return CreatedAtAction(nameof(GetAll), result.Value);
     }
 
     [HttpPut("{id:guid}/role")]
@@ -86,58 +40,24 @@ public class UsersController : ControllerBase
         [FromBody] UpdateRoleRequest request,
         CancellationToken ct)
     {
-        var user = await _db.Users
-            .FirstOrDefaultAsync(u => u.Id == id && u.OrganizationId == _tenant.OrganizationId, ct);
-
-        if (user is null)
-            return NotFound();
-
-        if (user.Id == _tenant.UserId)
-            return BadRequest(new { Error = "Cannot change your own role." });
-
-        var validRoles = new[] { "Admin", "FleetManager", "Technician", "Operator" };
-        if (!validRoles.Contains(request.Role))
-            return BadRequest(new { Error = $"Invalid role. Valid roles: {string.Join(", ", validRoles)}" });
-
-        user.Role = request.Role;
-        await _db.SaveChangesAsync(ct);
-
-        _logger.LogInformation("User {TargetUserId} role changed to {Role} by {UserId}", id, request.Role, _tenant.UserId);
-        return Ok(user);
+        var result = await _mediator.Send(new ChangeUserRoleCommand(id, request.Role), ct);
+        if (!result.IsSuccess) return result.Error == "Not found." ? NotFound() : BadRequest(new { Error = result.Error });
+        return Ok(result.Value);
     }
 
     [HttpPut("{id:guid}/deactivate")]
     public async Task<ActionResult<User>> Deactivate(Guid id, CancellationToken ct)
     {
-        var user = await _db.Users
-            .FirstOrDefaultAsync(u => u.Id == id && u.OrganizationId == _tenant.OrganizationId, ct);
-
-        if (user is null)
-            return NotFound();
-
-        if (user.Id == _tenant.UserId)
-            return BadRequest(new { Error = "Cannot deactivate your own account." });
-
-        user.IsActive = false;
-        await _db.SaveChangesAsync(ct);
-
-        _logger.LogInformation("User {TargetUserId} deactivated by {UserId}", id, _tenant.UserId);
-        return Ok(user);
+        var result = await _mediator.Send(new DeactivateUserCommand(id), ct);
+        if (!result.IsSuccess) return result.Error == "Not found." ? NotFound() : BadRequest(new { Error = result.Error });
+        return Ok(result.Value);
     }
 
     [HttpPut("{id:guid}/activate")]
     public async Task<ActionResult<User>> Activate(Guid id, CancellationToken ct)
     {
-        var user = await _db.Users
-            .FirstOrDefaultAsync(u => u.Id == id && u.OrganizationId == _tenant.OrganizationId, ct);
-
-        if (user is null)
-            return NotFound();
-
-        user.IsActive = true;
-        await _db.SaveChangesAsync(ct);
-
-        _logger.LogInformation("User {TargetUserId} activated by {UserId}", id, _tenant.UserId);
-        return Ok(user);
+        var result = await _mediator.Send(new ActivateUserCommand(id), ct);
+        if (!result.IsSuccess) return NotFound();
+        return Ok(result.Value);
     }
 }
