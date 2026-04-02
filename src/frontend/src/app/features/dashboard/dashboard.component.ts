@@ -76,7 +76,7 @@ interface DashboardKpis {
               <div *ngFor="let alert of alerts" class="alert-row d-flex align-items-center px-3 py-3" style="border-bottom: 1px solid var(--border-subtle);">
                 <span class="severity-dot me-3" [ngClass]="'dot-' + alert.severity.toLowerCase()"></span>
                 <div class="flex-grow-1">
-                  <div class="fw-medium" style="font-size: 13px;">{{ alert.equipmentName || 'Equipment' }} - {{ alert.message }}</div>
+                  <div class="fw-medium" style="font-size: 13px;">{{ alert.equipment?.name || 'Equipment' }} - {{ alert.message }}</div>
                   <div style="font-size: 12px; color: var(--foreground-secondary);">{{ getTimeAgo(alert.createdAt) }}</div>
                 </div>
                 <app-badge [text]="alert.severity" [variant]="getSeverityVariant(alert.severity)"></app-badge>

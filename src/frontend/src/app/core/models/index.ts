@@ -56,6 +56,7 @@ export interface Alert {
   isAcknowledged: boolean;
   createdAt: string;
   acknowledgedAt?: string;
+  equipment?: { id: string; name: string };
 }
 
 export interface AIPrediction {
