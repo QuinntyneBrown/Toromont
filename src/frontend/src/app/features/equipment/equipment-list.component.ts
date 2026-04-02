@@ -48,34 +48,38 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
       <!-- Mobile Status Chips -->
       <div class="d-md-none mb-3">
         <div class="d-flex gap-2 flex-wrap">
-          <button
-            data-testid="status-chip"
-            [attr.data-testid]="'status-chip-all'"
-            class="btn btn-sm"
-            [class.btn-warning]="mobileStatusFilter === ''"
-            [class.btn-outline-secondary]="mobileStatusFilter !== ''"
-            (click)="onMobileStatusChip('')">All</button>
-          <button
-            data-testid="status-chip"
-            [attr.data-testid]="'status-chip-active'"
-            class="btn btn-sm"
-            [class.btn-success]="mobileStatusFilter === 'Operational'"
-            [class.btn-outline-secondary]="mobileStatusFilter !== 'Operational'"
-            (click)="onMobileStatusChip('Operational')">Active</button>
-          <button
-            data-testid="status-chip"
-            [attr.data-testid]="'status-chip-maintenance'"
-            class="btn btn-sm"
-            [class.btn-warning]="mobileStatusFilter === 'NeedsService'"
-            [class.btn-outline-secondary]="mobileStatusFilter !== 'NeedsService'"
-            (click)="onMobileStatusChip('NeedsService')">Maintenance</button>
-          <button
-            data-testid="status-chip"
-            [attr.data-testid]="'status-chip-idle'"
-            class="btn btn-sm"
-            [class.btn-info]="mobileStatusFilter === 'Idle'"
-            [class.btn-outline-secondary]="mobileStatusFilter !== 'Idle'"
-            (click)="onMobileStatusChip('Idle')">Idle</button>
+          <span data-testid="status-chip">
+            <button
+              data-testid="status-chip-all"
+              class="btn btn-sm"
+              [class.btn-warning]="mobileStatusFilter === ''"
+              [class.btn-outline-secondary]="mobileStatusFilter !== ''"
+              (click)="onMobileStatusChip('')">All</button>
+          </span>
+          <span data-testid="status-chip">
+            <button
+              data-testid="status-chip-active"
+              class="btn btn-sm"
+              [class.btn-success]="mobileStatusFilter === 'Operational'"
+              [class.btn-outline-secondary]="mobileStatusFilter !== 'Operational'"
+              (click)="onMobileStatusChip('Operational')">Active</button>
+          </span>
+          <span data-testid="status-chip">
+            <button
+              data-testid="status-chip-maintenance"
+              class="btn btn-sm"
+              [class.btn-warning]="mobileStatusFilter === 'NeedsService'"
+              [class.btn-outline-secondary]="mobileStatusFilter !== 'NeedsService'"
+              (click)="onMobileStatusChip('NeedsService')">Maintenance</button>
+          </span>
+          <span data-testid="status-chip">
+            <button
+              data-testid="status-chip-idle"
+              class="btn btn-sm"
+              [class.btn-info]="mobileStatusFilter === 'Idle'"
+              [class.btn-outline-secondary]="mobileStatusFilter !== 'Idle'"
+              (click)="onMobileStatusChip('Idle')">Idle</button>
+          </span>
         </div>
       </div>
 

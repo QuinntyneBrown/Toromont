@@ -49,7 +49,7 @@ export interface WorkOrder {
   requestedDate?: string;
   scheduledDate?: string;
   completedDate?: string;
-  assignedTo?: string | { displayName: string; role: string };
+  assignedTo?: any;
   assignedToUserId?: string;
   equipment?: { name: string; make: string; model: string };
   history?: Array<{ previousStatus: string; newStatus: string; notes?: string; changedAt: string }>;

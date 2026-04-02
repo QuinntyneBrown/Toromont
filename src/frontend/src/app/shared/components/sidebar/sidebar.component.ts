@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 interface NavItem {
   label: string;
@@ -251,7 +251,6 @@ interface NavItem {
     @media (max-width: 768px) {
       .sidebar { display: none; }
       .hamburger-btn { display: block; }
-      .mobile-nav-overlay { display: flex; }
       .bottom-nav { display: flex; }
     }
     @media (min-width: 769px) {
