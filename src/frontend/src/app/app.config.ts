@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
@@ -70,6 +70,12 @@ export const appConfig: ApplicationConfig = {
     },
     MsalService,
     MsalGuard,
-    MsalBroadcastService
+    MsalBroadcastService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (msalService: MsalService) => () => msalService.initialize(),
+      deps: [MsalService],
+      multi: true
+    }
   ]
 };
