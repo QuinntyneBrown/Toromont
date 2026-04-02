@@ -10,11 +10,18 @@ import { ApiResponse, OrderLineItem } from '../../core/models';
 
 interface CartItem {
   id: string;
-  partNumber: string;
-  description: string;
+  partId: string;
   quantity: number;
-  unitPrice: number;
-  totalPrice: number;
+  addedAt: string;
+  part: {
+    id: string;
+    partNumber: string;
+    name: string;
+    description: string;
+    price: number;
+    category: string;
+    availability: string;
+  };
 }
 
 @Component({
@@ -58,10 +65,10 @@ interface CartItem {
               <tbody>
                 <tr *ngFor="let item of cartItems">
                   <td>
-                    <div class="fw-semibold">{{ item.description }}</div>
-                    <div class="text-muted small">{{ item.partNumber }}</div>
+                    <div class="fw-semibold">{{ item.part?.name }}</div>
+                    <div class="text-muted small">{{ item.part?.partNumber }}</div>
                   </td>
-                  <td>{{ item.unitPrice | currency:'USD':'symbol':'1.2-2' }}</td>
+                  <td>{{ item.part?.price | currency:'USD':'symbol':'1.2-2' }}</td>
                   <td>
                     <kendo-numerictextbox
                       [(value)]="item.quantity"
@@ -73,7 +80,7 @@ interface CartItem {
                       (valueChange)="onQuantityChange(item)">
                     </kendo-numerictextbox>
                   </td>
-                  <td class="text-end fw-semibold">{{ (item.unitPrice * item.quantity) | currency:'USD':'symbol':'1.2-2' }}</td>
+                  <td class="text-end fw-semibold">{{ ((item.part?.price || 0) * item.quantity) | currency:'USD':'symbol':'1.2-2' }}</td>
                   <td class="text-center">
                     <button class="btn btn-sm btn-outline-danger" (click)="removeItem(item)" title="Remove">
                       &times;
@@ -140,7 +147,7 @@ export default class CartComponent implements OnInit {
   }
 
   get subtotal(): number {
-    return this.cartItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+    return this.cartItems.reduce((sum, item) => sum + (item.part?.price || 0) * item.quantity, 0);
   }
 
   get totalItems(): number {
