@@ -41,6 +41,18 @@ public static class DataSeeder
         };
         db.Users.AddRange(users);
 
+        // --- UserOrganizations ---
+        var userOrgs = new List<UserOrganization>
+        {
+            new() { Id = Guid.NewGuid(), UserId = User1Id, OrganizationId = Org1Id, IsActive = true, IsDefault = true, JoinedAt = now },
+            new() { Id = Guid.NewGuid(), UserId = User2Id, OrganizationId = Org1Id, IsActive = true, IsDefault = true, JoinedAt = now },
+            new() { Id = Guid.NewGuid(), UserId = User3Id, OrganizationId = Org1Id, IsActive = true, IsDefault = true, JoinedAt = now },
+            new() { Id = Guid.NewGuid(), UserId = User4Id, OrganizationId = Org1Id, IsActive = true, IsDefault = true, JoinedAt = now },
+            new() { Id = Guid.NewGuid(), UserId = User5Id, OrganizationId = Org2Id, IsActive = true, IsDefault = true, JoinedAt = now },
+            new() { Id = Guid.NewGuid(), UserId = User6Id, OrganizationId = Org2Id, IsActive = true, IsDefault = true, JoinedAt = now },
+        };
+        db.UserOrganizations.AddRange(userOrgs);
+
         // --- Equipment ---
         var equipmentIds = Enumerable.Range(1, 10).Select(i => Guid.Parse($"c1b2c3d4-{i:D4}-0000-0000-000000000001")).ToArray();
         var equipment = new List<Equipment>

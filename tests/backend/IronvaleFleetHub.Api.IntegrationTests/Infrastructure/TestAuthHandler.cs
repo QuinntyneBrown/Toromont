@@ -12,6 +12,7 @@ internal sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSche
     public const string ObjectIdHeaderName = "X-Test-ObjectId";
     public const string RoleHeaderName = "X-Test-Role";
     public const string EmailHeaderName = "X-Test-Email";
+    public const string SkipAuthHeaderName = "X-Test-SkipAuth";
 
     public TestAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -23,6 +24,12 @@ internal sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSche
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        var skipAuth = Request.Headers[SkipAuthHeaderName].FirstOrDefault();
+        if (skipAuth == "true")
+        {
+            return Task.FromResult(AuthenticateResult.NoResult());
+        }
+
         var objectId = Request.Headers[ObjectIdHeaderName].FirstOrDefault() ?? TestSeedData.AdminObjectId;
         var role = Request.Headers[RoleHeaderName].FirstOrDefault() ?? "Admin";
         var email = Request.Headers[EmailHeaderName].FirstOrDefault() ?? "integration@test.local";

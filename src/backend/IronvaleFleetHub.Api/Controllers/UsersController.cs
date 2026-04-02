@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,25 @@ public class UsersController : ControllerBase
         var result = await _mediator.Send(new InviteUserCommand(request.Email, request.Role), ct);
         if (!result.IsSuccess) return BadRequest(new { Error = result.Error });
         return CreatedAtAction(nameof(GetAll), result.Value);
+    }
+
+    [HttpPost("accept-invite")]
+    [AllowAnonymous]
+    public async Task<ActionResult<User>> AcceptInvite(
+        [FromBody] AcceptInviteRequest request,
+        CancellationToken ct)
+    {
+        var entraObjectId = User.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier")
+                            ?? User.FindFirstValue("oid")
+                            ?? string.Empty;
+        var email = User.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
+        var displayName = User.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
+
+        var result = await _mediator.Send(
+            new AcceptInviteCommand(request.Token, entraObjectId, email, displayName), ct);
+
+        if (!result.IsSuccess) return BadRequest(new { Error = result.Error });
+        return Ok(result.Value);
     }
 
     [HttpPut("{id:guid}/role")]

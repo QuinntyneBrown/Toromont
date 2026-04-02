@@ -13,14 +13,17 @@ public class DeactivateUserCommandHandler : IRequestHandler<DeactivateUserComman
 {
     private readonly FleetHubDbContext _db;
     private readonly ITenantContext _tenant;
+    private readonly IUserBlacklist _blacklist;
     private readonly ILogger<DeactivateUserCommandHandler> _logger;
 
     public DeactivateUserCommandHandler(
         FleetHubDbContext db, ITenantContext tenant,
+        IUserBlacklist blacklist,
         ILogger<DeactivateUserCommandHandler> logger)
     {
         _db = db;
         _tenant = tenant;
+        _blacklist = blacklist;
         _logger = logger;
     }
 
@@ -37,6 +40,8 @@ public class DeactivateUserCommandHandler : IRequestHandler<DeactivateUserComman
 
         user.IsActive = false;
         await _db.SaveChangesAsync(ct);
+
+        _blacklist.Add(user.Id);
 
         _logger.LogInformation("User {TargetUserId} deactivated by {UserId}", request.UserId, _tenant.UserId);
         return Result<User>.Success(user);

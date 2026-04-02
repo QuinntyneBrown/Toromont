@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using IronvaleFleetHub.Api.Data;
+using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.IntegrationTests.Infrastructure;
 
@@ -50,10 +51,34 @@ internal sealed class ApiWebApplicationFactory : WebApplicationFactory<Program>
         return client;
     }
 
+    public HttpClient CreateUnauthenticatedClient()
+    {
+        var client = CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false,
+        });
+
+        client.DefaultRequestHeaders.Add(TestAuthHandler.SkipAuthHeaderName, "true");
+
+        return client;
+    }
+
     public async Task<T> ExecuteDbContextAsync<T>(Func<FleetHubDbContext, Task<T>> action)
     {
         await using var scope = Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<FleetHubDbContext>();
         return await action(db);
+    }
+
+    public async Task ExecuteDbContextAsync(Func<FleetHubDbContext, Task> action)
+    {
+        await using var scope = Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<FleetHubDbContext>();
+        await action(db);
+    }
+
+    public IUserBlacklist GetBlacklist()
+    {
+        return Services.GetRequiredService<IUserBlacklist>();
     }
 }

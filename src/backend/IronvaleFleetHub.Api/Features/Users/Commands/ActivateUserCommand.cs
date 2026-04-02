@@ -13,14 +13,17 @@ public class ActivateUserCommandHandler : IRequestHandler<ActivateUserCommand, R
 {
     private readonly FleetHubDbContext _db;
     private readonly ITenantContext _tenant;
+    private readonly IUserBlacklist _blacklist;
     private readonly ILogger<ActivateUserCommandHandler> _logger;
 
     public ActivateUserCommandHandler(
         FleetHubDbContext db, ITenantContext tenant,
+        IUserBlacklist blacklist,
         ILogger<ActivateUserCommandHandler> logger)
     {
         _db = db;
         _tenant = tenant;
+        _blacklist = blacklist;
         _logger = logger;
     }
 
@@ -34,6 +37,8 @@ public class ActivateUserCommandHandler : IRequestHandler<ActivateUserCommand, R
 
         user.IsActive = true;
         await _db.SaveChangesAsync(ct);
+
+        _blacklist.Remove(user.Id);
 
         _logger.LogInformation("User {TargetUserId} activated by {UserId}", request.UserId, _tenant.UserId);
         return Result<User>.Success(user);
