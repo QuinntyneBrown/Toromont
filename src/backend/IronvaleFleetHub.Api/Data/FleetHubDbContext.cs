@@ -31,6 +31,7 @@ public class FleetHubDbContext : DbContext
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
     public DbSet<EquipmentModelThreshold> EquipmentModelThresholds => Set<EquipmentModelThreshold>();
+    public DbSet<UserOrganization> UserOrganizations => Set<UserOrganization>();
     public DbSet<OrganizationPricing> OrganizationPricings => Set<OrganizationPricing>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -221,6 +222,15 @@ public class FleetHubDbContext : DbContext
             e.HasIndex(x => x.EquipmentModel).IsUnique();
         });
 
+        // --- UserOrganization ---
+        modelBuilder.Entity<UserOrganization>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Organization).WithMany().HasForeignKey(x => x.OrganizationId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(x => new { x.UserId, x.OrganizationId }).IsUnique();
+        });
+
         // --- OrganizationPricing ---
         modelBuilder.Entity<OrganizationPricing>(e =>
         {
@@ -241,6 +251,14 @@ public class FleetHubDbContext : DbContext
             modelBuilder.Entity<AnomalyDetection>().HasQueryFilter(x => x.OrganizationId == orgId);
             modelBuilder.Entity<Notification>().HasQueryFilter(x => x.OrganizationId == orgId);
             modelBuilder.Entity<PartsOrder>().HasQueryFilter(x => x.OrganizationId == orgId);
+            modelBuilder.Entity<User>().HasQueryFilter(x => x.OrganizationId == orgId);
+            modelBuilder.Entity<UserInvitation>().HasQueryFilter(x => x.OrganizationId == orgId);
+            modelBuilder.Entity<NotificationPreference>().HasQueryFilter(x =>
+                Users.Any(u => u.Id == x.UserId && u.OrganizationId == orgId));
+            modelBuilder.Entity<CartItem>().HasQueryFilter(x =>
+                Users.Any(u => u.Id == x.UserId && u.OrganizationId == orgId));
+            modelBuilder.Entity<TelemetryEvent>().HasQueryFilter(x =>
+                Equipment.Any(eq => eq.Id == x.EquipmentId && eq.OrganizationId == orgId));
         }
     }
 }

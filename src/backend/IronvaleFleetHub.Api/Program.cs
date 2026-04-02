@@ -57,6 +57,7 @@ else
 
 // --- Tenant Context ---
 builder.Services.AddScoped<ITenantContext, TenantContext>();
+builder.Services.AddSingleton<IUserBlacklist, InMemoryUserBlacklist>();
 
 // --- MediatR ---
 builder.Services.AddMediatR(cfg =>
