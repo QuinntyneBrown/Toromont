@@ -57,30 +57,6 @@ export function msalInterceptorConfigFactory() {
   };
 }
 
-const msalProviders = [
-  {
-    provide: MSAL_INSTANCE,
-    useFactory: msalInstanceFactory
-  },
-  {
-    provide: MSAL_GUARD_CONFIG,
-    useFactory: msalGuardConfigFactory
-  },
-  {
-    provide: MSAL_INTERCEPTOR_CONFIG,
-    useFactory: msalInterceptorConfigFactory
-  },
-  MsalService,
-  MsalGuard,
-  MsalBroadcastService,
-  {
-    provide: APP_INITIALIZER,
-    useFactory: (msalService: MsalService) => () => msalService.initialize(),
-    deps: [MsalService],
-    multi: true
-  }
-];
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -88,6 +64,25 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       ...(isDevMode() ? [] : [withInterceptors([authInterceptor, tenantInterceptor])])
     ),
-    ...(isDevMode() ? [] : msalProviders)
+    {
+      provide: MSAL_INSTANCE,
+      useFactory: msalInstanceFactory
+    },
+    {
+      provide: MSAL_GUARD_CONFIG,
+      useFactory: msalGuardConfigFactory
+    },
+    {
+      provide: MSAL_INTERCEPTOR_CONFIG,
+      useFactory: msalInterceptorConfigFactory
+    },
+    MsalService,
+    MsalGuard,
+    MsalBroadcastService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => () => Promise.resolve(),
+      multi: true
+    }
   ]
 };
