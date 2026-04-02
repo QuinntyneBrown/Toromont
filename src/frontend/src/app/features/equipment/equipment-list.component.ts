@@ -85,14 +85,14 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
               <app-badge [text]="dataItem.status" [variant]="getStatusVariant(dataItem.status)"></app-badge>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column title="Location" [width]="140">
+          <kendo-grid-column field="location" title="Location" [width]="160">
             <ng-template kendoGridCellTemplate let-dataItem>
-              {{ dataItem.locationLat && dataItem.locationLng ? (dataItem.locationLat | number:'1.2-2') + ', ' + (dataItem.locationLng | number:'1.2-2') : 'N/A' }}
+              {{ dataItem.location || 'N/A' }}
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="currentHours" title="Hours" [width]="100">
+          <kendo-grid-column field="lastServiceDate" title="Last Service" [width]="130">
             <ng-template kendoGridCellTemplate let-dataItem>
-              {{ dataItem.currentHours | number:'1.0-0' }}
+              {{ dataItem.lastServiceDate ? (dataItem.lastServiceDate | date:'mediumDate') : 'None' }}
             </ng-template>
           </kendo-grid-column>
         </kendo-grid>
@@ -112,7 +112,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
             <div class="text-muted small">
               <div><strong>Serial:</strong> {{ item.serialNumber }}</div>
               <div><strong>Category:</strong> {{ item.category }}</div>
-              <div><strong>Hours:</strong> {{ item.currentHours | number:'1.0-0' }}</div>
+              <div><strong>Location:</strong> {{ item.location || 'N/A' }}</div>
             </div>
           </div>
         </div>
