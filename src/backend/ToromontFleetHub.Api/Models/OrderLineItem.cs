@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ToromontFleetHub.Api.Models;
 
 public class OrderLineItem
@@ -10,5 +12,6 @@ public class OrderLineItem
     public decimal UnitPrice { get; set; }
     public int Quantity { get; set; }
     public decimal LineTotal { get; set; }
+    [JsonIgnore]
     public PartsOrder? Order { get; set; }
 }

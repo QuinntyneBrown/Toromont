@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ToromontFleetHub.Api.Models;
 
 public class WorkOrderHistory
@@ -9,6 +11,7 @@ public class WorkOrderHistory
     public string? Notes { get; set; }
     public Guid ChangedByUserId { get; set; }
     public DateTime ChangedAt { get; set; }
+    [JsonIgnore]
     public WorkOrder? WorkOrder { get; set; }
     public User? ChangedBy { get; set; }
 }
