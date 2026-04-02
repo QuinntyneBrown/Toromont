@@ -57,6 +57,30 @@ export function msalInterceptorConfigFactory() {
   };
 }
 
+const msalProviders = [
+  {
+    provide: MSAL_INSTANCE,
+    useFactory: msalInstanceFactory
+  },
+  {
+    provide: MSAL_GUARD_CONFIG,
+    useFactory: msalGuardConfigFactory
+  },
+  {
+    provide: MSAL_INTERCEPTOR_CONFIG,
+    useFactory: msalInterceptorConfigFactory
+  },
+  MsalService,
+  MsalGuard,
+  MsalBroadcastService,
+  {
+    provide: APP_INITIALIZER,
+    useFactory: (msalService: MsalService) => () => msalService.initialize(),
+    deps: [MsalService],
+    multi: true
+  }
+];
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -64,30 +88,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       ...(isDevMode() ? [] : [withInterceptors([authInterceptor, tenantInterceptor])])
     ),
-    {
-      provide: MSAL_INSTANCE,
-      useFactory: msalInstanceFactory
-    },
-    {
-      provide: MSAL_GUARD_CONFIG,
-      useFactory: msalGuardConfigFactory
-    },
-    {
-      provide: MSAL_INTERCEPTOR_CONFIG,
-      useFactory: msalInterceptorConfigFactory
-    },
-    MsalService,
-    MsalGuard,
-    MsalBroadcastService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (msalService: MsalService) => () => {
-        // Skip MSAL initialization in dev mode to avoid zone issues with placeholder credentials
-        if (isDevMode()) return Promise.resolve();
-        return msalService.initialize();
-      },
-      deps: [MsalService],
-      multi: true
-    }
+    ...(isDevMode() ? [] : msalProviders)
   ]
 };
