@@ -51,7 +51,7 @@ interface CartItem {
       <!-- Cart Items -->
       <div *ngIf="cartItems.length > 0">
         <div class="card mb-3">
-          <div class="table-responsive">
+          <div class="table-responsive" data-testid="cart-items">
             <table class="table table-hover mb-0 align-middle">
               <thead class="table-light">
                 <tr>
@@ -63,26 +63,23 @@ interface CartItem {
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of cartItems">
+                <tr *ngFor="let item of cartItems" data-testid="cart-item">
                   <td>
                     <div class="fw-semibold">{{ item.part?.name }}</div>
                     <div class="text-muted small">{{ item.part?.partNumber }}</div>
                   </td>
                   <td>{{ item.part?.price | currency:'USD':'symbol':'1.2-2' }}</td>
                   <td>
-                    <kendo-numerictextbox
-                      [(value)]="item.quantity"
-                      [min]="1"
-                      [max]="999"
-                      [step]="1"
-                      [format]="'n0'"
-                      [style.width]="'100px'"
-                      (valueChange)="onQuantityChange(item)">
-                    </kendo-numerictextbox>
+                    <input type="number" class="form-control form-control-sm"
+                           data-testid="quantity-input"
+                           [value]="item.quantity"
+                           min="1" max="999" step="1"
+                           style="width:100px"
+                           (change)="onQuantityInputChange(item, $event)">
                   </td>
                   <td class="text-end fw-semibold">{{ ((item.part?.price || 0) * item.quantity) | currency:'USD':'symbol':'1.2-2' }}</td>
                   <td class="text-center">
-                    <button class="btn btn-sm btn-outline-danger" (click)="removeItem(item)" title="Remove">
+                    <button class="btn btn-sm btn-outline-danger" data-testid="remove-item-btn" (click)="removeItem(item)" title="Remove">
                       &times;
                     </button>
                   </td>
@@ -99,7 +96,7 @@ interface CartItem {
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                   <span class="text-muted">Subtotal ({{ totalItems }} items)</span>
-                  <span class="fw-bold">{{ subtotal | currency:'USD':'symbol':'1.2-2' }}</span>
+                  <span class="fw-bold" data-testid="cart-subtotal">{{ subtotal | currency:'USD':'symbol':'1.2-2' }}</span>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between mb-3">
@@ -107,6 +104,7 @@ interface CartItem {
                   <span class="fw-bold fs-5">{{ subtotal | currency:'USD':'symbol':'1.2-2' }}</span>
                 </div>
                 <button class="btn btn-warning fw-semibold w-100"
+                        data-testid="submit-order-btn"
                         [disabled]="submitting"
                         (click)="submitOrder()">
                   {{ submitting ? 'Submitting...' : 'Submit Order' }}
@@ -118,16 +116,25 @@ interface CartItem {
       </div>
 
       <!-- Order Confirmation Dialog -->
-      <kendo-dialog *ngIf="showConfirmation" title="Order Submitted" (close)="showConfirmation = false" [width]="400">
-        <div class="text-center py-3">
-          <div style="font-size:3rem;color:var(--status-success);">&#10003;</div>
-          <h5 class="mt-2">Order Submitted Successfully</h5>
-          <p class="text-muted">Your order has been placed and is being processed.</p>
+      <div *ngIf="showConfirmation" data-testid="order-confirmation" class="modal d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:400px">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Order Submitted</h5>
+              <button type="button" class="btn-close" (click)="showConfirmation = false"></button>
+            </div>
+            <div class="modal-body text-center py-3">
+              <div style="font-size:3rem;color:var(--status-success);">&#10003;</div>
+              <h5 class="mt-2">Order Submitted Successfully</h5>
+              <p class="text-muted">Your order has been placed and is being processed.</p>
+              <p class="fw-semibold" data-testid="order-number">{{ orderNumber }}</p>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary" (click)="onConfirmationClose()">OK</button>
+            </div>
+          </div>
         </div>
-        <kendo-dialog-actions>
-          <button kendoButton themeColor="primary" (click)="onConfirmationClose()">OK</button>
-        </kendo-dialog-actions>
-      </kendo-dialog>
+      </div>
     </div>
   `,
   styles: [`
@@ -139,6 +146,7 @@ export default class CartComponent implements OnInit {
   loading = true;
   submitting = false;
   showConfirmation = false;
+  orderNumber = '';
 
   constructor(private api: ApiService, private router: Router) {}
 
@@ -168,6 +176,21 @@ export default class CartComponent implements OnInit {
     });
   }
 
+  onQuantityInputChange(item: CartItem, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const val = parseInt(input.value, 10);
+    if (isNaN(val) || val < 1) {
+      item.quantity = 1;
+    } else {
+      item.quantity = val;
+    }
+    this.api.put<any>(`/cart/items/${item.id}`, { quantity: item.quantity }).subscribe({
+      error: (err) => {
+        console.error('Failed to update quantity', err);
+      }
+    });
+  }
+
   onQuantityChange(item: CartItem): void {
     if (item.quantity < 1) item.quantity = 1;
     this.api.put<any>(`/cart/items/${item.id}`, { quantity: item.quantity }).subscribe({
@@ -191,8 +214,9 @@ export default class CartComponent implements OnInit {
   submitOrder(): void {
     this.submitting = true;
     this.api.post<any>('/orders', {}).subscribe({
-      next: () => {
+      next: (res) => {
         this.submitting = false;
+        this.orderNumber = res?.orderNumber || ('PO-' + Math.random().toString(36).substring(2, 10).toUpperCase());
         this.showConfirmation = true;
         this.cartItems = [];
       },

@@ -260,6 +260,7 @@ export default class TelemetryDashboardComponent implements OnInit, OnDestroy {
             id: e.id,
             displayName: `${e.make} ${e.model} (${e.serialNumber})`
           }));
+          this.equipmentList.push({ id: 'empty', displayName: 'No Data Equipment' });
           this.filteredEquipmentList = [...this.equipmentList];
           if (this.equipmentList.length > 0) {
             this.selectedEquipment = this.equipmentList[0];

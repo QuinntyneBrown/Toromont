@@ -248,7 +248,7 @@ export default class PartsCatalogComponent implements OnInit {
   showMobileFilters = false;
   cartCount = 0;
 
-  partCategories = ['Filters', 'Hydraulics', 'Electrical', 'Engine', 'Transmission', 'Undercarriage', 'Cab', 'Other'];
+  partCategories = ['Filters', 'Hydraulic', 'Electrical', 'Engine', 'Transmission', 'Undercarriage', 'Cab', 'Other'];
   selectedCategories = new Set<string>();
 
   availabilityOptions = [

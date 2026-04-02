@@ -46,44 +46,53 @@ interface NavItem {
         </svg>
       </div>
       <nav class="sidebar-nav">
-        <a *ngFor="let item of navItems"
-           [routerLink]="item.route"
-           class="nav-item"
-           data-testid="nav-item"
-           [attr.data-testid-specific]="'nav-item-' + item.label.toLowerCase().replace(' ', '-')"
-           [attr.data-testid]="'nav-item-' + item.label.toLowerCase().replace(' ', '-')"
-           [class.active]="currentRoute === item.route"
-           [title]="item.label">
-          <span class="nav-icon" [innerHTML]="getIcon(item.icon)"></span>
-          <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
-        </a>
+        <div *ngFor="let item of navItems" data-testid="nav-item" class="nav-item-wrapper">
+          <a [routerLink]="item.route"
+             class="nav-item"
+             [attr.data-testid]="'nav-item-' + item.label.toLowerCase().replace(' ', '-')"
+             [class.active]="currentRoute === item.route"
+             [title]="item.label">
+            <span class="nav-icon" [innerHTML]="getIcon(item.icon)"></span>
+            <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+          </a>
+        </div>
       </nav>
     </aside>
 
     <!-- Bottom navigation bar (mobile only) -->
     <nav class="bottom-nav" data-testid="bottom-nav">
-      <a class="bottom-nav-item" data-testid="bottom-nav-item" [attr.data-testid]="'bottom-nav-home'" routerLink="/dashboard">
-        <span class="nav-icon" [innerHTML]="getIcon('dashboard')"></span>
-        <span class="bottom-nav-label">Home</span>
-      </a>
-      <a class="bottom-nav-item" data-testid="bottom-nav-item" [attr.data-testid]="'bottom-nav-equip'" routerLink="/equipment">
-        <span class="nav-icon" [innerHTML]="getIcon('equipment')"></span>
-        <span class="bottom-nav-label">Equip</span>
-      </a>
-      <a class="bottom-nav-item" data-testid="bottom-nav-item" [attr.data-testid]="'bottom-nav-orders'" routerLink="/parts">
-        <span class="nav-icon" [innerHTML]="getIcon('package')"></span>
-        <span class="bottom-nav-label">Orders</span>
-      </a>
-      <a class="bottom-nav-item" data-testid="bottom-nav-item" [attr.data-testid]="'bottom-nav-telem'" routerLink="/telemetry">
-        <span class="nav-icon" [innerHTML]="getIcon('activity')"></span>
-        <span class="bottom-nav-label">Telem</span>
-      </a>
-      <a class="bottom-nav-item" data-testid="bottom-nav-item" [attr.data-testid]="'bottom-nav-more'" (click)="toggleMobileNav()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
-        </svg>
-        <span class="bottom-nav-label">More</span>
-      </a>
+      <div data-testid="bottom-nav-item" class="bottom-nav-item-wrapper">
+        <a class="bottom-nav-item" data-testid="bottom-nav-home" routerLink="/dashboard">
+          <span class="nav-icon" [innerHTML]="getIcon('dashboard')"></span>
+          <span class="bottom-nav-label">Home</span>
+        </a>
+      </div>
+      <div data-testid="bottom-nav-item" class="bottom-nav-item-wrapper">
+        <a class="bottom-nav-item" data-testid="bottom-nav-equip" routerLink="/equipment">
+          <span class="nav-icon" [innerHTML]="getIcon('equipment')"></span>
+          <span class="bottom-nav-label">Equip</span>
+        </a>
+      </div>
+      <div data-testid="bottom-nav-item" class="bottom-nav-item-wrapper">
+        <a class="bottom-nav-item" data-testid="bottom-nav-orders" routerLink="/parts">
+          <span class="nav-icon" [innerHTML]="getIcon('package')"></span>
+          <span class="bottom-nav-label">Orders</span>
+        </a>
+      </div>
+      <div data-testid="bottom-nav-item" class="bottom-nav-item-wrapper">
+        <a class="bottom-nav-item" data-testid="bottom-nav-telem" routerLink="/telemetry">
+          <span class="nav-icon" [innerHTML]="getIcon('activity')"></span>
+          <span class="bottom-nav-label">Telem</span>
+        </a>
+      </div>
+      <div data-testid="bottom-nav-item" class="bottom-nav-item-wrapper">
+        <a class="bottom-nav-item" data-testid="bottom-nav-more" (click)="toggleMobileNav()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+          </svg>
+          <span class="bottom-nav-label">More</span>
+        </a>
+      </div>
     </nav>
   `,
   styles: [`
@@ -120,6 +129,9 @@ interface NavItem {
       flex-direction: column;
       padding: 24px 16px;
       gap: 4px;
+    }
+    .nav-item-wrapper {
+      display: contents;
     }
     .nav-item {
       display: flex;
@@ -168,7 +180,7 @@ interface NavItem {
 
     /* Mobile nav overlay */
     .mobile-nav-overlay {
-      display: none;
+      display: flex;
       position: fixed;
       top: 0;
       left: 0;
@@ -213,6 +225,11 @@ interface NavItem {
       justify-content: space-around;
       align-items: center;
       height: 56px;
+    }
+    .bottom-nav-item-wrapper {
+      flex: 1;
+      display: flex;
+      justify-content: center;
     }
     .bottom-nav-item {
       display: flex;

@@ -1,13 +1,16 @@
 export interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  displayName: string;
+  firstName?: string;
+  lastName?: string;
   role: 'Admin' | 'FleetManager' | 'Technician' | 'Operator';
-  tenantId: string;
+  organizationId?: string;
+  tenantId?: string;
   isActive: boolean;
-  createdAt: string;
+  createdAt?: string;
   lastLogin?: string;
+  lastLoginAt?: string;
 }
 
 export interface Equipment {

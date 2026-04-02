@@ -24,6 +24,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/equipment/equipment-detail.component')
       },
       {
+        path: 'service/calendar',
+        loadComponent: () => import('./features/service/work-orders.component')
+      },
+      {
         path: 'service',
         loadComponent: () => import('./features/service/work-orders.component')
       },

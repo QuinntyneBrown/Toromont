@@ -35,6 +35,7 @@ interface ChartDataItem {
         <div *ngFor="let type of reportTypes" class="col-12 col-md-4">
           <div class="report-type-card"
                [class.selected]="selectedReport === type.key"
+               [attr.data-testid]="'report-card-' + type.key"
                (click)="selectReport(type.key)">
             <div class="report-icon">
               <svg *ngIf="type.icon === 'bar'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -55,16 +56,18 @@ interface ChartDataItem {
 
       <!-- Config Toolbar -->
       <div class="config-toolbar d-flex flex-wrap gap-3 align-items-end mb-4 p-3 bg-white rounded-3 border">
-        <div>
+        <div data-testid="date-range-picker">
           <label class="form-label mb-1" style="font-size: 12px; font-weight: 600;">Date Range</label>
           <kendo-daterange>
-            <kendo-dateinput kendoDateRangeStartInput [(value)]="dateStart" placeholder="Start date"></kendo-dateinput>
-            <kendo-dateinput kendoDateRangeEndInput [(value)]="dateEnd" placeholder="End date"></kendo-dateinput>
+            <kendo-dateinput kendoDateRangeStartInput [(value)]="dateStart" placeholder="Start date" data-testid="date-range-start"></kendo-dateinput>
+            <kendo-dateinput kendoDateRangeEndInput [(value)]="dateEnd" placeholder="End date" data-testid="date-range-end"></kendo-dateinput>
           </kendo-daterange>
+          <button kendoButton [themeColor]="'info'" [fillMode]="'flat'" [size]="'small'" (click)="generateReport()" data-testid="date-range-apply" class="mt-1">Apply</button>
         </div>
         <div style="min-width: 220px;">
           <label class="form-label mb-1" style="font-size: 12px; font-weight: 600;">Equipment</label>
           <kendo-dropdownlist
+            data-testid="equipment-filter"
             [data]="equipmentList"
             [textField]="'displayName'"
             [valueField]="'id'"
@@ -75,19 +78,19 @@ interface ChartDataItem {
           </kendo-dropdownlist>
         </div>
         <div>
-          <button kendoButton [themeColor]="'primary'" (click)="generateReport()">
+          <button kendoButton [themeColor]="'primary'" (click)="generateReport()" data-testid="generate-report-btn">
             Generate Report
           </button>
         </div>
         <div class="ms-auto d-flex gap-2">
-          <button kendoButton [fillMode]="'outline'" (click)="exportReport('pdf')">PDF</button>
-          <button kendoButton [fillMode]="'outline'" (click)="exportReport('excel')">Excel</button>
-          <button kendoButton [fillMode]="'outline'" (click)="exportReport('csv')">CSV</button>
+          <button kendoButton [fillMode]="'outline'" (click)="exportReport('pdf')" data-testid="export-pdf-btn">PDF</button>
+          <button kendoButton [fillMode]="'outline'" (click)="exportReport('excel')" data-testid="export-excel-btn">Excel</button>
+          <button kendoButton [fillMode]="'outline'" (click)="exportReport('csv')" data-testid="export-csv-btn">CSV</button>
         </div>
       </div>
 
       <!-- Charts -->
-      <div class="row g-4" *ngIf="barChartData.length > 0 || pieChartData.length > 0">
+      <div class="row g-4" data-testid="report-charts" *ngIf="barChartData.length > 0 || pieChartData.length > 0">
         <!-- Bar Chart -->
         <div class="col-12 col-lg-7">
           <div class="chart-card">

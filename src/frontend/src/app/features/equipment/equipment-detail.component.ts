@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { IndicatorsModule } from '@progress/kendo-angular-indicators';
-import { GridModule } from '@progress/kendo-angular-grid';
 import { BadgeComponent } from '../../shared/components/badge/badge.component';
 import { KpiCardComponent } from '../../shared/components/kpi-card/kpi-card.component';
 import { ApiService } from '../../core/services/api.service';
@@ -14,28 +13,28 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
   standalone: true,
   imports: [
     CommonModule, RouterModule,
-    ButtonsModule, IndicatorsModule, GridModule,
+    ButtonsModule, IndicatorsModule,
     BadgeComponent, KpiCardComponent
   ],
   template: `
     <div class="detail-page" *ngIf="equipment; else loadingTpl">
       <!-- Breadcrumb -->
-      <div class="breadcrumb-row">
+      <div data-testid="breadcrumb" class="breadcrumb-row">
         <a routerLink="/equipment" class="bc-link">Equipment</a>
         <span class="bc-sep">/</span>
-        <span class="bc-current">{{ equipment.make }} {{ equipment.model }}</span>
+        <span class="bc-current">{{ equipment.name || (equipment.make + ' ' + equipment.model) }}</span>
       </div>
 
       <!-- Title Row -->
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-3">
-          <h2 class="fw-bold mb-0" style="font-size:22px;">{{ equipment.make }} {{ equipment.model }}</h2>
-          <app-badge [text]="equipment.status" [variant]="getStatusVariant(equipment.status)"></app-badge>
+          <h2 data-testid="equipment-name" class="fw-bold mb-0" style="font-size:22px;">{{ equipment.name || (equipment.make + ' ' + equipment.model) }}</h2>
+          <span data-testid="equipment-status"><app-badge [text]="equipment.status" [variant]="getStatusVariant(equipment.status)"></app-badge></span>
         </div>
         <div class="d-flex gap-2">
-          <button kendoButton themeColor="primary" (click)="scheduleService()">Schedule Service</button>
-          <button kendoButton (click)="viewTelemetry()">View Telemetry</button>
-          <button kendoButton (click)="goBack()">Edit</button>
+          <button data-testid="schedule-service-btn" kendoButton themeColor="primary" (click)="scheduleService()">Schedule Service</button>
+          <button data-testid="view-telemetry-btn" kendoButton (click)="viewTelemetry()">View Telemetry</button>
+          <button data-testid="edit-equipment-btn" kendoButton (click)="goBack()">Edit</button>
         </div>
       </div>
 
@@ -44,26 +43,32 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
         <!-- Left Column: Specs + Telemetry KPIs -->
         <div class="detail-left">
           <!-- Specifications Card -->
-          <div class="detail-card">
+          <div data-testid="specs-panel" class="detail-card">
             <div class="card-title-row">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               <span class="fw-semibold" style="font-size:15px;">Specifications</span>
             </div>
             <div class="specs-grid">
-              <div class="spec-item"><span class="spec-label">Make</span><span class="spec-value">{{ equipment.make }}</span></div>
-              <div class="spec-item"><span class="spec-label">Model</span><span class="spec-value">{{ equipment.model }}</span></div>
-              <div class="spec-item"><span class="spec-label">Year</span><span class="spec-value">{{ equipment.year }}</span></div>
-              <div class="spec-item"><span class="spec-label">Serial Number</span><span class="spec-value">{{ equipment.serialNumber }}</span></div>
+              <div data-testid="spec-make" class="spec-item"><span class="spec-label">Make</span><span class="spec-value">{{ equipment.make }}</span></div>
+              <div data-testid="spec-model" class="spec-item"><span class="spec-label">Model</span><span class="spec-value">{{ equipment.model }}</span></div>
+              <div data-testid="spec-year" class="spec-item"><span class="spec-label">Year</span><span class="spec-value">{{ equipment.year }}</span></div>
+              <div data-testid="spec-serial" class="spec-item"><span class="spec-label">Serial Number</span><span class="spec-value">{{ equipment.serialNumber }}</span></div>
               <div class="spec-item"><span class="spec-label">Category</span><span class="spec-value">{{ equipment.category }}</span></div>
               <div class="spec-item"><span class="spec-label">Status</span><span class="spec-value">{{ equipment.status }}</span></div>
             </div>
           </div>
 
           <!-- Telemetry KPI Cards -->
-          <div class="d-flex gap-3">
-            <app-kpi-card label="Engine Hours" [value]="latestTelemetry?.engineHours ? (latestTelemetry.engineHours | number:'1.0-0') + ' hrs' : 'N/A'" style="flex:1"></app-kpi-card>
-            <app-kpi-card label="Fuel Level" [value]="latestTelemetry?.fuelLevel ? (latestTelemetry.fuelLevel | number:'1.0-0') + '%' : 'N/A'" style="flex:1"></app-kpi-card>
-            <app-kpi-card label="Temperature" [value]="latestTelemetry?.temperature ? (latestTelemetry.temperature | number:'1.0-0') + '°F' : 'N/A'" style="flex:1"></app-kpi-card>
+          <div data-testid="telemetry-summary" class="d-flex gap-3">
+            <div data-testid="engine-hours" style="flex:1">
+              <app-kpi-card label="Engine Hours" [value]="latestTelemetry?.engineHours ? (latestTelemetry.engineHours | number:'1.0-0') + ' hrs' : 'N/A'"></app-kpi-card>
+            </div>
+            <div data-testid="fuel-level" style="flex:1">
+              <app-kpi-card label="Fuel Level" [value]="latestTelemetry?.fuelLevel ? (latestTelemetry.fuelLevel | number:'1.0-0') + '%' : 'N/A'"></app-kpi-card>
+            </div>
+            <div data-testid="temperature" style="flex:1">
+              <app-kpi-card label="Temperature" [value]="latestTelemetry?.temperature ? (latestTelemetry.temperature | number:'1.0-0') + '°F' : 'N/A'"></app-kpi-card>
+            </div>
           </div>
         </div>
 
@@ -75,13 +80,13 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <span class="fw-semibold" style="font-size:14px;">{{ equipment.location || 'Unknown Location' }}</span>
             </div>
-            <div class="map-placeholder">
+            <div data-testid="mini-map" class="map-placeholder">
               <div style="width:12px;height:12px;border-radius:50%;background:var(--status-success);"></div>
             </div>
           </div>
 
           <!-- Service History Timeline -->
-          <div class="detail-card">
+          <div data-testid="service-history" class="detail-card">
             <div class="card-title-row">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
               <span class="fw-semibold" style="font-size:14px;">Service History</span>
@@ -89,7 +94,7 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
             <div *ngIf="workOrders.length === 0" class="text-center py-4" style="color:var(--foreground-secondary);font-size:13px;">
               No service history
             </div>
-            <div *ngFor="let wo of workOrders; let i = index" class="timeline-item">
+            <div *ngFor="let wo of workOrders; let i = index" data-testid="service-history-item" class="timeline-item">
               <div class="timeline-dot" [ngClass]="'dot-' + wo.priority.toLowerCase()"></div>
               <div class="timeline-content">
                 <div class="fw-medium" style="font-size:13px;">{{ wo.serviceType }}: {{ wo.description }}</div>
