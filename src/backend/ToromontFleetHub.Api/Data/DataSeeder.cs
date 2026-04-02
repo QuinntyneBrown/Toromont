@@ -158,6 +158,25 @@ public static class DataSeeder
         };
         db.AnomalyDetections.AddRange(anomalies);
 
+        // --- Notification Preferences (default for all Org1 users) ---
+        var notifTypes = new[] { "CriticalAlert", "WorkOrderAssigned", "ServiceDue", "OrderConfirmation", "AnomalyDetected" };
+        var prefs = new List<NotificationPreference>();
+        foreach (var userId in new[] { User1Id, User2Id, User3Id, User4Id })
+        {
+            foreach (var nt in notifTypes)
+            {
+                prefs.Add(new NotificationPreference
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    NotificationType = nt,
+                    EmailEnabled = nt is "CriticalAlert" or "WorkOrderAssigned" or "OrderConfirmation",
+                    SmsEnabled = nt == "CriticalAlert"
+                });
+            }
+        }
+        db.NotificationPreferences.AddRange(prefs);
+
         // --- Notifications ---
         var notifications = new List<Notification>
         {
