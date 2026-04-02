@@ -18,7 +18,7 @@ export interface Equipment {
   make: string;
   year: number;
   category: string;
-  status: 'Operational' | 'NeedsService' | 'OutOfService' | 'Idle';
+  status: string;
   latitude: number;
   longitude: number;
   location: string;
@@ -27,24 +27,31 @@ export interface Equipment {
   organizationId: string;
   createdAt: string;
   updatedAt: string;
+  currentHours?: number;
+  locationLat?: number;
+  locationLng?: number;
+  tenantId?: string;
 }
 
 export interface WorkOrder {
   id: string;
-  organizationId: string;
-  workOrderNumber: string;
+  organizationId?: string;
+  workOrderNumber?: string;
   equipmentId: string;
-  serviceType: string;
+  serviceType?: string;
+  title?: string;
   description: string;
-  status: 'Open' | 'InProgress' | 'OnHold' | 'Completed' | 'Closed' | 'Cancelled';
-  priority: 'Low' | 'Medium' | 'High' | 'Critical';
-  requestedDate: string;
+  status: string;
+  priority: string;
+  requestedDate?: string;
+  scheduledDate?: string;
   completedDate?: string;
+  assignedTo?: string | { displayName: string; role: string };
   assignedToUserId?: string;
-  assignedTo?: { displayName: string; role: string };
   equipment?: { name: string; make: string; model: string };
   history?: Array<{ previousStatus: string; newStatus: string; notes?: string; changedAt: string }>;
   createdAt: string;
+  [key: string]: unknown;
 }
 
 export interface TelemetryEvent {
