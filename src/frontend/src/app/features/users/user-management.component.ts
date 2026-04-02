@@ -186,7 +186,7 @@ export default class UserManagementComponent implements OnInit, OnDestroy {
 
   openInviteDialog(): void {
     this.inviteEmail = '';
-    this.inviteRole = 'ReadOnly';
+    this.inviteRole = 'Operator';
     this.showInviteDialog = true;
   }
 
