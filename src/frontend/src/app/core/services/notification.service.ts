@@ -18,6 +18,15 @@ export class NotificationService {
     });
   }
 
+  loadRecentNotifications(): void {
+    this.api.get<any>('/notifications', { skip: 0, take: 20 }).subscribe({
+      next: (res) => {
+        this.notifications$.next(res.items || []);
+        this.unreadCount$.next(res.items?.filter((n: any) => !n.isRead).length ?? 0);
+      }
+    });
+  }
+
   startConnection(accessToken: string): void {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl('/hubs/notifications', {
@@ -45,8 +54,24 @@ export class NotificationService {
   }
 
   markAsRead(notificationId: string): void {
-    if (this.hubConnection) {
-      this.hubConnection.invoke('MarkAsRead', notificationId);
-    }
+    this.api.put(`/notifications/${notificationId}/read`, {}).subscribe({
+      next: () => {
+        const current = this.notifications$.value.map(n =>
+          n.id === notificationId ? { ...n, isRead: true } : n
+        );
+        this.notifications$.next(current);
+        this.unreadCount$.next(current.filter(n => !n.isRead).length);
+      }
+    });
+  }
+
+  markAllAsRead(): void {
+    this.api.put('/notifications/read-all', {}).subscribe({
+      next: () => {
+        const current = this.notifications$.value.map(n => ({ ...n, isRead: true }));
+        this.notifications$.next(current);
+        this.unreadCount$.next(0);
+      }
+    });
   }
 }
