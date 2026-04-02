@@ -1,0 +1,239 @@
+
+    <!-- Calendar View -->
+    <div *ngIf="isCalendarView" class="container-fluid py-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold mb-0" style="font-size:22px;">Service Calendar</h2>
+        <div class="btn-group">
+          <button class="btn btn-outline-secondary" data-testid="view-day" [class.active]="calendarView === 'day'" (click)="calendarView = 'day'">Day</button>
+          <button class="btn btn-outline-secondary" data-testid="view-week" [class.active]="calendarView === 'week'" (click)="calendarView = 'week'">Week</button>
+          <button class="btn btn-outline-secondary" data-testid="view-month" [class.active]="calendarView === 'month'" (click)="calendarView = 'month'">Month</button>
+        </div>
+      </div>
+      <div data-testid="service-calendar" class="calendar-container border rounded p-3" style="min-height:400px; position:relative;">
+        <div *ngFor="let evt of calendarEvents"
+             data-testid="calendar-event"
+             class="calendar-event p-2 mb-2 rounded border-start border-4"
+             [ngClass]="'border-' + getPriorityColor(evt.priority)"
+             (click)="onCalendarEventClick(evt)"
+             style="cursor:pointer; background: var(--background-secondary, #f8f9fa);">
+          <strong>{{ evt.workOrderNumber }}</strong> - {{ evt.title }}
+          <div class="text-muted small">{{ evt.equipmentName }} | {{ evt.date | date:'shortDate' }}</div>
+        </div>
+        <div *ngIf="calendarEvents.length === 0" class="text-muted text-center py-5">No scheduled work orders</div>
+      </div>
+
+      <!-- Event Popup -->
+      <div *ngIf="selectedCalendarEvent" data-testid="event-popup" class="card shadow position-absolute" style="z-index:1050; top:50%; left:50%; transform:translate(-50%,-50%); min-width:300px;">
+        <div class="card-body">
+          <h5 class="card-title" data-testid="popup-wo-number">{{ selectedCalendarEvent.workOrderNumber }}</h5>
+          <p data-testid="popup-equipment">{{ selectedCalendarEvent.equipmentName }}</p>
+          <p>{{ selectedCalendarEvent.title }}</p>
+          <button class="btn btn-sm btn-secondary" (click)="selectedCalendarEvent = null">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Work Orders List View -->
+    <div *ngIf="!isCalendarView" class="container-fluid py-3">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 data-testid="work-orders-title" class="fw-bold mb-0" style="font-size:22px;">Service Management</h2>
+        <button data-testid="create-work-order-btn" class="btn btn-warning fw-semibold" (click)="showCreateDialog = true">+ Create Work Order</button>
+      </div>
+
+      <!-- Status Tabs -->
+      <ul data-testid="status-tabs" class="nav nav-tabs mb-3">
+        <li class="nav-item" *ngFor="let tab of statusTabs">
+          <a class="nav-link"
+             [attr.data-testid]="tab.testId"
+             [class.active]="activeStatus === tab.value"
+             (click)="onTabChange(tab.value)"
+             role="button">
+            {{ tab.label }}
+            <span class="badge bg-secondary ms-1" *ngIf="tab.count > 0">{{ tab.count }}</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Desktop Grid (hidden on mobile) -->
+      <div data-testid="work-orders-grid" class="d-none d-md-block">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th style="width:130px">WO #</th>
+              <th style="width:180px">Equipment</th>
+              <th style="width:140px">Service Type</th>
+              <th style="width:200px">Description</th>
+              <th style="width:110px">Priority</th>
+              <th style="width:120px">Status</th>
+              <th style="width:130px">Due Date</th>
+              <th style="width:140px">Assigned To</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of gridData.data" data-testid="work-order-row" (click)="onRowClick(item)" style="cursor:pointer;">
+              <td data-testid="wo-number"><span class="fw-semibold">{{ item.workOrderNumber }}</span></td>
+              <td data-testid="wo-equipment">
+                <a [routerLink]="['/equipment', item.equipmentId]" class="text-decoration-none">
+                  {{ item.equipment?.name || 'Unknown' }}
+                </a>
+              </td>
+              <td data-testid="wo-service-type">{{ item.serviceType }}</td>
+              <td data-testid="wo-description">{{ item.description | slice:0:50 }}{{ (item.description?.length || 0) > 50 ? '...' : '' }}</td>
+              <td data-testid="wo-priority"><app-badge [text]="item.priority" [variant]="getPriorityVariant(item.priority)"></app-badge></td>
+              <td data-testid="wo-status"><app-badge [text]="item.status" [variant]="getStatusVariant(item.status)"></app-badge></td>
+              <td data-testid="wo-due-date">{{ item.requestedDate ? (item.requestedDate | date:'mediumDate') : 'Unscheduled' }}</td>
+              <td data-testid="wo-assigned-to">{{ item.assignedTo?.displayName || 'Unassigned' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Simple pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-2" *ngIf="gridData.total > pageSize">
+          <span class="text-muted">Showing {{ skip + 1 }}-{{ skip + gridData.data.length }} of {{ gridData.total }}</span>
+          <div>
+            <button class="btn btn-sm btn-outline-secondary me-1" [disabled]="skip === 0" (click)="onPrevPage()">Prev</button>
+            <button class="btn btn-sm btn-outline-secondary" [disabled]="skip + pageSize >= gridData.total" (click)="onNextPage()">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Card Layout (visible on mobile only) -->
+      <div class="d-md-none">
+        <div *ngFor="let item of gridData.data"
+             data-testid="work-order-card"
+             class="card mb-2 shadow-sm"
+             (click)="onRowClick(item)"
+             style="cursor:pointer;">
+          <div class="card-body py-2 px-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span data-testid="wo-number" class="fw-semibold">{{ item.workOrderNumber }}</span>
+              <span data-testid="wo-status"><app-badge [text]="item.status" [variant]="getStatusVariant(item.status)"></app-badge></span>
+            </div>
+            <div data-testid="wo-description" class="text-truncate mb-1">{{ item.description }}</div>
+            <div class="d-flex justify-content-between">
+              <span data-testid="wo-priority"><app-badge [text]="item.priority" [variant]="getPriorityVariant(item.priority)"></app-badge></span>
+              <span class="text-muted small">{{ item.requestedDate ? (item.requestedDate | date:'shortDate') : '' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Work Order Detail View -->
+      <div *ngIf="selectedWorkOrder" class="modal d-block" style="background:rgba(0,0,0,0.3);" (click)="selectedWorkOrder = null">
+        <div class="modal-dialog modal-lg" (click)="$event.stopPropagation()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                Work Order <span data-testid="wo-number">{{ selectedWorkOrder.workOrderNumber }}</span>
+              </h5>
+              <button type="button" class="btn-close" (click)="selectedWorkOrder = null"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <strong>Status: </strong>
+                <span data-testid="wo-status"><app-badge [text]="selectedWorkOrder.status" [variant]="getStatusVariant(selectedWorkOrder.status)"></app-badge></span>
+              </div>
+              <div class="mb-3">
+                <strong>Equipment: </strong>{{ selectedWorkOrder.equipment?.name || 'Unknown' }}
+              </div>
+              <div class="mb-3">
+                <strong>Description: </strong>{{ selectedWorkOrder.description }}
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="mb-3" *ngIf="selectedWorkOrder.status === 'Open'">
+                <button data-testid="action-start-work" class="btn btn-primary" (click)="startWork()">Start Work</button>
+              </div>
+              <div class="mb-3" *ngIf="selectedWorkOrder.status === 'InProgress' || selectedWorkOrder.status === 'In Progress'">
+                <button data-testid="action-complete" class="btn btn-success" (click)="showCompletionForm = true">Complete</button>
+              </div>
+
+              <!-- Completion Form -->
+              <div *ngIf="showCompletionForm" class="mb-3 p-3 border rounded bg-light">
+                <label class="form-label fw-semibold">Completion Notes</label>
+                <textarea data-testid="completion-notes" class="form-control mb-2" [(ngModel)]="completionNotes" rows="3"></textarea>
+                <button data-testid="confirm-complete" class="btn btn-success" (click)="confirmComplete()">Confirm Completion</button>
+              </div>
+
+              <!-- Status History -->
+              <h6 class="mt-4 mb-2">Status History</h6>
+              <div *ngFor="let h of selectedWorkOrderHistory" data-testid="wo-history-item" class="border-bottom py-2">
+                <span data-testid="history-status" class="fw-semibold me-2">{{ h.status }}</span>
+                <span data-testid="history-user" class="text-muted me-2">{{ h.user }}</span>
+                <span data-testid="history-timestamp" class="text-muted small">{{ h.timestamp }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Work Order Dialog -->
+      <div *ngIf="showCreateDialog" class="modal d-block" style="background:rgba(0,0,0,0.3);" (click)="showCreateDialog = false">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Create Work Order</h5>
+              <button type="button" class="btn-close" (click)="showCreateDialog = false"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Equipment</label>
+                <div data-testid="wo-equipment-select" class="dropdown position-relative">
+                  <button class="btn btn-outline-secondary w-100 text-start" type="button" (click)="equipmentDropdownOpen = !equipmentDropdownOpen">
+                    {{ newWorkOrder.equipmentItem?.label || 'Select equipment...' }}
+                  </button>
+                  <div *ngIf="equipmentDropdownOpen" class="dropdown-menu show w-100">
+                    <a *ngFor="let eq of equipmentList"
+                       data-testid="equipment-option"
+                       class="dropdown-item"
+                       (click)="selectEquipment(eq)">{{ eq.label }}</a>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Service Type</label>
+                <select data-testid="wo-service-type" class="form-select" [(ngModel)]="newWorkOrder.title">
+                  <option *ngFor="let st of serviceTypes" [value]="st">{{ st }}</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Description</label>
+                <textarea data-testid="wo-description" class="form-control" [(ngModel)]="newWorkOrder.description" rows="3"></textarea>
+              </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Priority</label>
+                  <select data-testid="wo-priority" class="form-select" [(ngModel)]="newWorkOrder.priority">
+                    <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Scheduled Date</label>
+                  <input data-testid="wo-requested-date" type="date" class="form-control" [(ngModel)]="newWorkOrder.scheduledDateStr">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Assigned Technician</label>
+                <div data-testid="wo-assignee" class="dropdown position-relative">
+                  <button class="btn btn-outline-secondary w-100 text-start" type="button" (click)="assigneeDropdownOpen = !assigneeDropdownOpen">
+                    {{ newWorkOrder.assignedTo || 'Select technician...' }}
+                  </button>
+                  <div *ngIf="assigneeDropdownOpen" class="dropdown-menu show w-100">
+                    <a *ngFor="let tech of technicians"
+                       data-testid="assignee-option"
+                       class="dropdown-item"
+                       (click)="selectAssignee(tech)">{{ tech }}</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" (click)="showCreateDialog = false">Cancel</button>
+              <button data-testid="wo-submit" class="btn btn-primary" (click)="createWorkOrder()">Create</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+

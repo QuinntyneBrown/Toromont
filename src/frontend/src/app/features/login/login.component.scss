@@ -1,0 +1,163 @@
+
+    .login-container {
+      display: flex;
+      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .login-branding {
+      width: 600px;
+      min-width: 600px;
+      background: var(--surface-inverse);
+      color: var(--foreground-inverse);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 60px;
+    }
+
+    .branding-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground-inverse);
+      letter-spacing: 2px;
+    }
+
+    .logo-text {
+      font-size: 48px;
+      font-weight: 800;
+      margin: 0;
+      color: var(--foreground-inverse);
+    }
+
+    .description {
+      font-size: 18px;
+      color: var(--foreground-secondary);
+    }
+
+    .tagline {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--sidebar-text);
+      max-width: 420px;
+    }
+
+    .login-form-panel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-secondary);
+    }
+
+    .login-card {
+      background: var(--surface-secondary);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      width: 400px;
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .login-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .sign-in-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--foreground-primary);
+    }
+
+    .sign-in-subtitle {
+      font-size: 14px;
+      color: var(--foreground-secondary);
+      margin: 0;
+      text-align: center;
+    }
+
+    .ms-login-btn {
+      width: 320px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: var(--surface-secondary);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--foreground-primary);
+      font-family: var(--font-body);
+    }
+
+    .ms-login-btn:hover {
+      background: var(--surface-hover);
+    }
+
+    .divider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 320px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border-subtle);
+    }
+
+    .divider-text {
+      font-size: 11px;
+      color: var(--foreground-disabled);
+      white-space: nowrap;
+    }
+
+    .copyright-text {
+      margin: 0;
+      font-size: 12px;
+      color: var(--foreground-disabled);
+    }
+
+    @media (max-width: 960px) {
+      .login-container {
+        flex-direction: column;
+      }
+
+      .login-branding {
+        width: 100%;
+        min-width: unset;
+        padding: 32px 24px;
+        min-height: auto;
+      }
+
+      .login-form-panel {
+        padding: 32px 16px;
+      }
+
+      .login-card {
+        width: 100%;
+        max-width: 420px;
+      }
+    }
+

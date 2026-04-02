@@ -1,6 +1,9 @@
 # Toromont Coding Conventions
 
-This document defines the coding conventions for the Toromont solution, with primary emphasis on the backend C# code in `src/backend/ToromontFleetHub.Api`.
+This document defines the coding conventions for the Toromont solution, with primary emphasis on:
+
+- backend C# code in `src/backend/ToromontFleetHub.Api`
+- frontend Angular code in `src/frontend/src`
 
 ## Scope
 
@@ -18,6 +21,11 @@ This document defines the coding conventions for the Toromont solution, with pri
 - Keep folder structure aligned to responsibility. Examples: `Controllers/`, `Models/`, `Services/`, `DTOs/`, `Middleware/`, `Authentication/`.
 - `Program.cs` is the only bootstrap file allowed to use top-level statements. Supporting types used by application startup must live in their own files.
 - Use partial types only when there is a clear framework or tooling requirement.
+- Frontend Angular components must be split by file type:
+  `component-name.component.ts`, `component-name.component.html`, and `component-name.component.scss`.
+- Do not use inline Angular component templates or inline component styles in `@Component` metadata.
+- Keep each Angular component, service, guard, interceptor, and model in its own `.ts` file.
+- Keep component assets beside the component TypeScript file rather than in shared template/style bundle files.
 
 ## Naming
 
@@ -38,6 +46,7 @@ This document defines the coding conventions for the Toromont solution, with pri
 - Avoid deep nesting; return early when guard clauses improve readability.
 - Add comments only for non-obvious intent, invariants, or framework workarounds.
 - Do not add comments that restate the code.
+- In Angular templates, keep structural markup in the `.html` file and styling in the `.scss` file instead of embedding either in TypeScript.
 
 ## Dependency Injection and Architecture
 
@@ -46,6 +55,17 @@ This document defines the coding conventions for the Toromont solution, with pri
 - Keep controllers thin. Controllers should coordinate HTTP concerns and delegate business logic to services.
 - Keep domain and persistence logic out of controllers.
 - Put cross-cutting request pipeline concerns in middleware, filters, or dedicated services.
+- For Angular, keep components focused on presentation and user interaction, and keep data access and cross-cutting logic in injected services.
+
+## Frontend Conventions
+
+- Prefer standalone Angular components unless the project introduces a clear module-based requirement.
+- Use `templateUrl` and `styleUrl` for Angular components.
+- Name shared UI building blocks with the `.component.ts` suffix and keep the sibling `.html` and `.scss` files aligned to the same basename.
+- Keep route screens under `features/` and reusable UI under `shared/components/`.
+- Keep global theming, resets, and framework overrides in `src/styles.scss`. Component-specific styles belong in component `.scss` files.
+- Avoid inline `style=""` attributes in templates when a reusable class or component stylesheet rule is more appropriate.
+- Keep TypeScript-only concerns in `.ts` files. Markup belongs in `.html`. Styling belongs in `.scss`.
 
 ## API Contracts
 

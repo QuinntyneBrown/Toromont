@@ -1,0 +1,43 @@
+
+    <div class="login-container">
+      <!-- Left Panel: Branding -->
+      <div class="login-branding" data-testid="login-branding">
+        <div class="branding-content">
+          <div class="logo-section">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFCD11" stroke-width="2">
+              <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
+            </svg>
+            <span class="brand-name">TOROMONT</span>
+          </div>
+          <h1 class="logo-text" data-testid="logo-text">FLEET HUB</h1>
+          <p class="description" data-testid="login-tagline">Equipment Fleet Management &amp; Service Portal</p>
+          <p class="tagline">
+            Manage your heavy equipment fleet, schedule service, track
+            work orders, and get AI-powered insights — all in one place.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Panel: Sign In -->
+      <div class="login-form-panel">
+        <div class="login-card">
+          <h2 class="sign-in-title" data-testid="welcome-title">Welcome Back</h2>
+          <p class="sign-in-subtitle" data-testid="login-subtitle">Sign in to access your fleet dashboard</p>
+
+          <button class="ms-login-btn" data-testid="sign-in-microsoft" (click)="onLogin()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--status-info)" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>Sign in with Microsoft</span>
+          </button>
+
+          <div class="divider-row">
+            <span class="divider-line"></span>
+            <span class="divider-text" data-testid="entra-id-badge">Secured by Microsoft Entra ID</span>
+            <span class="divider-line"></span>
+          </div>
+          <p class="copyright-text" data-testid="copyright">&copy; {{ currentYear }} Toromont Industries Ltd.</p>
+        </div>
+      </div>
+    </div>
+

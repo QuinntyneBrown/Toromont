@@ -1,0 +1,129 @@
+
+    <div class="container-fluid p-4">
+      <h2 class="mb-4 fw-bold">Reports &amp; Analytics</h2>
+
+      <!-- Report Type Cards -->
+      <div class="row g-3 mb-4">
+        <div *ngFor="let type of reportTypes" class="col-12 col-md-4">
+          <div class="report-type-card"
+               [class.selected]="selectedReport === type.key"
+               [attr.data-testid]="'report-card-' + type.key"
+               (click)="selectReport(type.key)">
+            <div class="report-icon">
+              <svg *ngIf="type.icon === 'bar'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/>
+              </svg>
+              <svg *ngIf="type.icon === 'dollar'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+              <svg *ngIf="type.icon === 'repeat'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              </svg>
+            </div>
+            <div class="report-label">{{ type.label }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Config Toolbar -->
+      <div class="config-toolbar d-flex flex-wrap gap-3 align-items-end mb-4 p-3 bg-white rounded-3 border">
+        <div data-testid="date-range-picker">
+          <label class="form-label mb-1" style="font-size: 12px; font-weight: 600;">Date Range</label>
+          <kendo-daterange>
+            <kendo-dateinput kendoDateRangeStartInput [(value)]="dateStart" placeholder="Start date" data-testid="date-range-start"></kendo-dateinput>
+            <kendo-dateinput kendoDateRangeEndInput [(value)]="dateEnd" placeholder="End date" data-testid="date-range-end"></kendo-dateinput>
+          </kendo-daterange>
+          <button kendoButton [themeColor]="'info'" [fillMode]="'flat'" [size]="'small'" (click)="generateReport()" data-testid="date-range-apply" class="mt-1">Apply</button>
+        </div>
+        <div style="min-width: 220px;">
+          <label class="form-label mb-1" style="font-size: 12px; font-weight: 600;">Equipment</label>
+          <kendo-dropdownlist
+            data-testid="equipment-filter"
+            [data]="equipmentList"
+            [textField]="'displayName'"
+            [valueField]="'id'"
+            [value]="selectedEquipment"
+            [valuePrimitive]="false"
+            (valueChange)="selectedEquipment = $event"
+            [defaultItem]="{ id: '', displayName: 'All Equipment' }">
+          </kendo-dropdownlist>
+        </div>
+        <div>
+          <button kendoButton [themeColor]="'primary'" (click)="generateReport()" data-testid="generate-report-btn">
+            Generate Report
+          </button>
+        </div>
+        <div class="ms-auto d-flex gap-2">
+          <button kendoButton [fillMode]="'outline'" (click)="exportReport('pdf')" data-testid="export-pdf-btn">PDF</button>
+          <button kendoButton [fillMode]="'outline'" (click)="exportReport('excel')" data-testid="export-excel-btn">Excel</button>
+          <button kendoButton [fillMode]="'outline'" (click)="exportReport('csv')" data-testid="export-csv-btn">CSV</button>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="row g-4" data-testid="report-charts" *ngIf="barChartData.length > 0 || pieChartData.length > 0">
+        <!-- Bar Chart -->
+        <div class="col-12 col-lg-7">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h6 class="mb-0 fw-semibold">{{ barChartTitle }}</h6>
+            </div>
+            <div class="chart-body">
+              <kendo-chart [style.height.px]="350">
+                <kendo-chart-series>
+                  <kendo-chart-series-item
+                    type="column"
+                    [data]="barChartData"
+                    field="value"
+                    categoryField="label"
+                    [color]="'#FFCD11'">
+                  </kendo-chart-series-item>
+                </kendo-chart-series>
+                <kendo-chart-category-axis>
+                  <kendo-chart-category-axis-item [labels]="{ rotation: -45, font: '11px sans-serif' }">
+                  </kendo-chart-category-axis-item>
+                </kendo-chart-category-axis>
+                <kendo-chart-value-axis>
+                  <kendo-chart-value-axis-item [title]="{ text: barChartValueLabel }">
+                  </kendo-chart-value-axis-item>
+                </kendo-chart-value-axis>
+                <kendo-chart-tooltip [shared]="true"></kendo-chart-tooltip>
+              </kendo-chart>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="col-12 col-lg-5">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h6 class="mb-0 fw-semibold">{{ pieChartTitle }}</h6>
+            </div>
+            <div class="chart-body">
+              <kendo-chart [style.height.px]="350">
+                <kendo-chart-series>
+                  <kendo-chart-series-item
+                    type="pie"
+                    [data]="pieChartData"
+                    field="value"
+                    categoryField="label"
+                    [labels]="{ visible: true, content: pieLabel }">
+                  </kendo-chart-series-item>
+                </kendo-chart-series>
+                <kendo-chart-legend [position]="'bottom'"></kendo-chart-legend>
+                <kendo-chart-tooltip></kendo-chart-tooltip>
+              </kendo-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="barChartData.length === 0 && pieChartData.length === 0" class="text-center text-muted py-5 bg-white rounded-3 border">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5">
+          <rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/>
+        </svg>
+        <div class="mt-2">Select a report type and click "Generate Report" to view charts</div>
+      </div>
+    </div>
+

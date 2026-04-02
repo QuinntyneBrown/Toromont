@@ -1,0 +1,35 @@
+
+    .kpi-card {
+      background-color: var(--surface-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .kpi-label {
+      font-size: 13px;
+      color: var(--foreground-secondary);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--foreground-primary);
+      font-family: var(--font-data);
+    }
+    .kpi-trend {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .trend-up { color: var(--status-success); }
+    .trend-down { color: var(--status-error); }
+    .trend-stable { color: var(--foreground-secondary); }
+    .trend-value { font-family: var(--font-data); }
+

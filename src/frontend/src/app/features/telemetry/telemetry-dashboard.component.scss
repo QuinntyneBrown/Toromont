@@ -1,0 +1,21 @@
+
+    .chart-card {
+      background: var(--surface-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .chart-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .chart-body {
+      padding: 16px;
+    }
+    .btn-group .btn {
+      border-radius: var(--radius-sm);
+    }
+    .btn-group .btn + .btn {
+      margin-left: -1px;
+    }
+

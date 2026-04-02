@@ -1,0 +1,29 @@
+
+    .card {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      color: var(--surface-inverse);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .table th {
+      font-size: 13px;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border-subtle);
+    }
+    .table td {
+      font-size: 13px;
+      vertical-align: middle;
+    }
+

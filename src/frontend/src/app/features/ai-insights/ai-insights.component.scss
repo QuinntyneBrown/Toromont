@@ -1,0 +1,70 @@
+
+    .card {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .kpi-highlight {
+      border-radius: var(--radius-lg);
+    }
+    .kpi-red :host ::ng-deep .kpi-value,
+    .kpi-red .kpi-value { color: var(--status-error); }
+    .kpi-warning :host ::ng-deep .kpi-value,
+    .kpi-warning .kpi-value { color: var(--status-warning); }
+    .kpi-green :host ::ng-deep .kpi-value,
+    .kpi-green .kpi-value { color: var(--status-success); }
+
+    .anomaly-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .icon-critical { background: rgba(239,68,68,0.1); color: var(--status-error); }
+    .icon-high { background: rgba(249,115,22,0.1); color: var(--status-warning); }
+    .icon-medium { background: rgba(234,179,8,0.1); color: var(--status-warning); }
+    .icon-low { background: rgba(107,114,128,0.1); color: var(--foreground-secondary); }
+
+    .anomaly-item:last-child {
+      border-bottom: none !important;
+    }
+    .anomaly-item:hover {
+      background: var(--surface-primary);
+    }
+
+    .progress {
+      border-radius: var(--radius-sm);
+      background: var(--border-subtle);
+    }
+
+    .table th {
+      background: var(--surface-primary, #f8f9fa);
+      border-bottom: 2px solid var(--border-subtle, #dee2e6);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--foreground-secondary, #6c757d);
+      padding: 10px 12px;
+      white-space: nowrap;
+    }
+    .table td {
+      padding: 10px 12px;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border-subtle, #dee2e6);
+    }
+    .sortable-header {
+      cursor: pointer;
+      user-select: none;
+    }
+    .sortable-header:hover {
+      background: var(--border-subtle, #e9ecef);
+    }
+

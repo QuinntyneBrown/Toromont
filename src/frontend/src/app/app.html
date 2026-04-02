@@ -1,0 +1,14 @@
+
+    <div class="app-layout" *ngIf="!(isLoginPage$ | async); else loginLayout">
+      <app-sidebar [currentRoute]="(currentRoute$ | async) ?? '/dashboard'" (collapsedChange)="sidebarCollapsed = $event"></app-sidebar>
+      <div class="main-area" [class.sidebar-collapsed]="sidebarCollapsed">
+        <app-header></app-header>
+        <main class="main-content">
+          <router-outlet></router-outlet>
+        </main>
+      </div>
+    </div>
+    <ng-template #loginLayout>
+      <router-outlet></router-outlet>
+    </ng-template>
+

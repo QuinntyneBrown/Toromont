@@ -1,0 +1,51 @@
+
+    .severity-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-critical { background-color: var(--status-error); }
+    .dot-high { background-color: var(--status-warning); }
+    .dot-medium { background-color: var(--status-warning); }
+    .dot-low { background-color: var(--status-info); }
+
+    .alert-row:last-child {
+      border-bottom: none !important;
+    }
+    .alert-row:hover {
+      background-color: var(--surface-primary);
+    }
+
+    .card {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--surface-secondary);
+    }
+    .card-header {
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 16px;
+    }
+    .map-marker {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--status-info);
+      border: 2px solid #fff;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+    }
+    .marker-popup {
+      position: absolute;
+      background: #fff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      font-size: 12px;
+      transform: translate(-50%, -120%);
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+

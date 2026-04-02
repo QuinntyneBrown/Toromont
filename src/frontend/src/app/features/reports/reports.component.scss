@@ -1,0 +1,51 @@
+
+    .report-type-card {
+      background: var(--surface-secondary);
+      border: 2px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.15s;
+    }
+    .report-type-card:hover {
+      border-color: var(--accent-primary);
+    }
+    .report-type-card.selected {
+      border-color: var(--accent-primary);
+      background: var(--surface-secondary);
+    }
+    .report-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: var(--surface-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--foreground-secondary);
+    }
+    .selected .report-icon {
+      background: var(--accent-primary);
+      color: var(--surface-inverse);
+    }
+    .report-label {
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .chart-card {
+      background: var(--surface-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .chart-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .chart-body {
+      padding: 16px;
+    }
+

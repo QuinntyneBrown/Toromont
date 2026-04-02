@@ -1,0 +1,8 @@
+
+    :host { display: block; }
+    .cursor-pointer { cursor: pointer; }
+    .card:hover { border-color: var(--accent-primary); }
+    .sortable-header:hover { background: var(--surface-secondary, #f5f5f5); }
+    .modal-backdrop { z-index: 1040; }
+    .modal { z-index: 1050; }
+
