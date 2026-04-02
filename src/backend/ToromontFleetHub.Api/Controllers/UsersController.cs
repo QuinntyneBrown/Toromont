@@ -95,7 +95,7 @@ public class UsersController : ControllerBase
         if (user.Id == _tenant.UserId)
             return BadRequest(new { Error = "Cannot change your own role." });
 
-        var validRoles = new[] { "Admin", "FleetManager", "Technician", "Viewer" };
+        var validRoles = new[] { "Admin", "FleetManager", "Technician", "Operator" };
         if (!validRoles.Contains(request.Role))
             return BadRequest(new { Error = $"Invalid role. Valid roles: {string.Join(", ", validRoles)}" });
 
