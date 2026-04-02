@@ -95,7 +95,7 @@ export interface AnomalyDetection {
   expectedValue: number;
   actualValue: number;
   deviationSigma: number;
-  severity: string;
+  severity: 'Low' | 'Medium' | 'High' | 'Critical';
   detectedAt: string;
   equipment?: { id: string; name: string; make: string; model: string };
 }
