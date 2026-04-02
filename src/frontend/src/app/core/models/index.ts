@@ -8,7 +8,7 @@ export interface User {
   organizationId?: string;
   tenantId?: string;
   isActive: boolean;
-  createdAt?: string;
+  createdAt: string;
   lastLogin?: string;
   lastLoginAt?: string;
 }
