@@ -10,7 +10,7 @@ import { AuthService } from '../../core/services/auth.service';
   template: `
     <div class="login-container">
       <!-- Left Panel: Branding -->
-      <div class="login-branding">
+      <div class="login-branding" data-testid="login-branding">
         <div class="branding-content">
           <div class="logo-section">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFCD11" stroke-width="2">
@@ -18,8 +18,8 @@ import { AuthService } from '../../core/services/auth.service';
             </svg>
             <span class="brand-name">TOROMONT</span>
           </div>
-          <h1 class="logo-text">FLEET HUB</h1>
-          <p class="description">Equipment Fleet Management &amp; Service Portal</p>
+          <h1 class="logo-text" data-testid="logo-text">FLEET HUB</h1>
+          <p class="description" data-testid="login-tagline">Equipment Fleet Management &amp; Service Portal</p>
           <p class="tagline">
             Manage your heavy equipment fleet, schedule service, track
             work orders, and get AI-powered insights — all in one place.
@@ -30,10 +30,10 @@ import { AuthService } from '../../core/services/auth.service';
       <!-- Right Panel: Sign In -->
       <div class="login-form-panel">
         <div class="login-card">
-          <h2 class="sign-in-title">Welcome Back</h2>
-          <p class="sign-in-subtitle">Sign in to access your fleet dashboard</p>
+          <h2 class="sign-in-title" data-testid="welcome-title">Welcome Back</h2>
+          <p class="sign-in-subtitle" data-testid="login-subtitle">Sign in to access your fleet dashboard</p>
 
-          <button class="ms-login-btn" (click)="onLogin()">
+          <button class="ms-login-btn" data-testid="sign-in-microsoft" (click)="onLogin()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--status-info)" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
@@ -42,10 +42,10 @@ import { AuthService } from '../../core/services/auth.service';
 
           <div class="divider-row">
             <span class="divider-line"></span>
-            <span class="divider-text">Secured by Microsoft Entra ID</span>
+            <span class="divider-text" data-testid="entra-id-badge">Secured by Microsoft Entra ID</span>
             <span class="divider-line"></span>
           </div>
-          <p class="copyright-text">&copy; {{ currentYear }} Toromont Industries Ltd.</p>
+          <p class="copyright-text" data-testid="copyright">&copy; {{ currentYear }} Toromont Industries Ltd.</p>
         </div>
       </div>
     </div>

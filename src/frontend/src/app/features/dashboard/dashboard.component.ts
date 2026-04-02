@@ -26,23 +26,23 @@ interface DashboardKpis {
   imports: [CommonModule, RouterModule, KpiCardComponent, BadgeComponent],
   template: `
     <div class="container-fluid p-4">
-      <h2 class="mb-0 fw-bold" style="font-size: 22px; margin-bottom: 20px !important;">Fleet Overview</h2>
+      <h2 class="mb-0 fw-bold" data-testid="dashboard-title" style="font-size: 22px; margin-bottom: 20px !important;">Fleet Overview</h2>
 
       <!-- KPI Cards Row -->
-      <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-lg">
+      <div class="row g-3 mb-4" data-testid="kpi-row">
+        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-total-equipment kpi-card">
           <app-kpi-card label="Total Equipment" [value]="kpis.totalEquipment" [trendValue]="kpis.totalEquipmentTrend" [trendDirection]="'stable'"></app-kpi-card>
         </div>
-        <div class="col-12 col-sm-6 col-lg">
+        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-active-equipment kpi-card">
           <app-kpi-card label="Active" [value]="kpis.activeEquipment" [trendValue]="kpis.activeEquipmentTrend" [trendDirection]="'up'"></app-kpi-card>
         </div>
-        <div class="col-12 col-sm-6 col-lg">
+        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-service-required kpi-card">
           <app-kpi-card label="Service Required" [value]="kpis.serviceRequired" [trendValue]="kpis.serviceRequiredTrend" [trendDirection]="kpis.serviceRequired > 0 ? 'down' : 'stable'"></app-kpi-card>
         </div>
-        <div class="col-12 col-sm-6 col-lg">
+        <div class="col-12 col-sm-6 col-lg d-none d-sm-block" data-testid="kpi-overdue-work-orders kpi-card">
           <app-kpi-card label="Overdue Work Orders" [value]="kpis.overdueWorkOrders" [trendValue]="kpis.overdueWorkOrdersTrend" [trendDirection]="kpis.overdueWorkOrders > 0 ? 'down' : 'stable'"></app-kpi-card>
         </div>
-        <div class="col-12 col-sm-6 col-lg">
+        <div class="col-12 col-sm-6 col-lg" data-testid="kpi-fleet-utilization kpi-card">
           <app-kpi-card label="Fleet Utilization" [value]="kpis.fleetUtilization + '%'" [trendValue]="kpis.fleetUtilizationTrend" [trendDirection]="'up'"></app-kpi-card>
         </div>
       </div>
@@ -50,14 +50,28 @@ interface DashboardKpis {
       <!-- Two-column: Map + Alerts -->
       <div class="row g-4">
         <!-- Equipment Locations Map -->
-        <div class="col-12 col-lg-7">
-          <div class="card h-100">
+        <div class="col-12 col-lg-7 d-none d-lg-block">
+          <div class="card h-100" data-testid="equipment-map">
             <div class="card-header d-flex justify-content-between align-items-center bg-white">
               <h5 class="mb-0 fw-semibold" style="font-size: 15px;">Equipment Locations</h5>
               <span class="text-muted" style="font-size: 12px;">{{ kpis.totalEquipment }} units tracked</span>
             </div>
-            <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 300px; background: var(--surface-primary);">
+            <div class="card-body position-relative" style="min-height: 300px; background: var(--surface-primary);">
               <span class="text-muted">Map view — Leaflet integration</span>
+              <div *ngFor="let marker of mapMarkers; let i = index"
+                   class="map-marker"
+                   data-testid="map-marker"
+                   [style.left.%]="marker.x"
+                   [style.top.%]="marker.y"
+                   (click)="selectedMarker = i">
+              </div>
+              <div *ngIf="selectedMarker !== null"
+                   class="marker-popup"
+                   data-testid="marker-popup"
+                   [style.left.%]="mapMarkers[selectedMarker].x"
+                   [style.top.%]="mapMarkers[selectedMarker].y">
+                {{ mapMarkers[selectedMarker].label }}
+              </div>
             </div>
           </div>
         </div>

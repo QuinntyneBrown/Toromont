@@ -8,8 +8,8 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="kpi-card">
       <div class="kpi-label">{{ label }}</div>
-      <div class="kpi-value">{{ value }}</div>
-      <div class="kpi-trend" *ngIf="trendDirection" [ngClass]="'trend-' + trendDirection">
+      <div class="kpi-value" data-testid="kpi-value">{{ value }}</div>
+      <div class="kpi-trend" data-testid="kpi-trend" *ngIf="trendDirection" [ngClass]="'trend-' + trendDirection">
         <svg *ngIf="trendDirection === 'up'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
           <polyline points="17 6 23 6 23 12"/>
