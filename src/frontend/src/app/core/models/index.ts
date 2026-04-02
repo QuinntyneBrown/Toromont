@@ -89,12 +89,14 @@ export interface AIPrediction {
 export interface AnomalyDetection {
   id: string;
   equipmentId: string;
-  parameterName: string;
+  anomalyType: string;
+  metricName: string;
   expectedValue: number;
   actualValue: number;
-  deviationPercentage: number;
+  deviationSigma: number;
   severity: 'Low' | 'Medium' | 'High' | 'Critical';
   detectedAt: string;
+  equipment?: { id: string; name: string };
 }
 
 export interface Notification {
