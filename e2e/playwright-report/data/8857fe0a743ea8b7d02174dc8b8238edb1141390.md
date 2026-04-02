@@ -22,6 +22,15 @@ Call log:
 
 ```
 
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e4]: "TS2339: Property 'displayName' does not exist on type 'User'."
+  - generic [ref=e5]: src/app/features/users/user-management.component.ts:44:53
+  - generic [ref=e6]: Click outside, press Esc key, or fix the code to dismiss.
+```
+
 # Test source
 
 ```ts
