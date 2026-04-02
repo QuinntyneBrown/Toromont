@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronvaleFleetHub.Api", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronvaleFleetHub.Api.IntegrationTests", "tests\backend\IronvaleFleetHub.Api.IntegrationTests\IronvaleFleetHub.Api.IntegrationTests.csproj", "{D0A5D07B-5A1E-4A84-9D42-9B7D3DBAF202}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronvaleFleetHub.Functions", "src\backend\IronvaleFleetHub.Functions\IronvaleFleetHub.Functions.csproj", "{3A7B8C9D-1E2F-4A5B-6C7D-8E9F0A1B2C3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{D0A5D07B-5A1E-4A84-9D42-9B7D3DBAF202}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0A5D07B-5A1E-4A84-9D42-9B7D3DBAF202}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0A5D07B-5A1E-4A84-9D42-9B7D3DBAF202}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A7B8C9D-1E2F-4A5B-6C7D-8E9F0A1B2C3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A7B8C9D-1E2F-4A5B-6C7D-8E9F0A1B2C3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A7B8C9D-1E2F-4A5B-6C7D-8E9F0A1B2C3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A7B8C9D-1E2F-4A5B-6C7D-8E9F0A1B2C3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -31,6 +37,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FE360695-3F2B-1049-3887-35FBB5135923} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{10493763-F5B1-F464-93C2-6758FEBD594C} = {FE360695-3F2B-1049-3887-35FBB5135923}
+		{3A7B8C9D-1E2F-4A5B-6C7D-8E9F0A1B2C3D} = {FE360695-3F2B-1049-3887-35FBB5135923}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF29B131-5900-450C-BB8E-28903C391BBF}

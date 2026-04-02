@@ -141,6 +141,7 @@ public static class DataSeeder
                 {
                     Id = Guid.NewGuid(),
                     EquipmentId = equipmentIds[eqIdx],
+                    OrganizationId = eqIdx < 6 ? Org1Id : Org2Id,
                     EventType = "Reading",
                     Timestamp = ts,
                     EngineHours = 4500 + day * 8 + rng.Next(0, 5),
