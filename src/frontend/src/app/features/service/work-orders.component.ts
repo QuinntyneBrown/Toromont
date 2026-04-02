@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { GridModule, DataStateChangeEvent, CellClickEvent } from '@progress/kendo-angular-grid';
+import { SchedulerModule, SchedulerEvent, DateChangeEvent } from '@progress/kendo-angular-scheduler';
 import { BadgeComponent } from '../../shared/components/badge/badge.component';
 import { ApiService } from '../../core/services/api.service';
 import { ApiResponse, WorkOrder } from '../../core/models';
@@ -19,20 +21,12 @@ interface HistoryItem {
   timestamp: string;
 }
 
-interface CalendarEvent {
-  id: string;
-  workOrderNumber: string;
-  equipmentName: string;
-  priority: string;
-  date: string;
-  title: string;
-}
-
 @Component({
   selector: 'app-work-orders',
   standalone: true,
   imports: [
     CommonModule, RouterModule, FormsModule,
+    GridModule, SchedulerModule,
     BadgeComponent
   ],
   templateUrl: './work-orders.component.html',
@@ -42,10 +36,11 @@ export default class WorkOrdersComponent implements OnInit {
   gridData: { data: WorkOrder[]; total: number } = { data: [], total: 0 };
   pageSize = 20;
   skip = 0;
+  sort = '';
+  filter = '';
   activeStatus = '';
   showCreateDialog = false;
   isCalendarView = false;
-  calendarView = 'month';
   equipmentDropdownOpen = false;
   assigneeDropdownOpen = false;
 
@@ -54,8 +49,10 @@ export default class WorkOrdersComponent implements OnInit {
   showCompletionForm = false;
   completionNotes = '';
 
-  calendarEvents: CalendarEvent[] = [];
-  selectedCalendarEvent: CalendarEvent | null = null;
+  // Kendo Scheduler properties
+  schedulerEvents: SchedulerEvent[] = [];
+  selectedDate: Date = new Date();
+  schedulerViews: string[] = ['day', 'week', 'month'];
 
   statusTabs: StatusTab[] = [
     { label: 'All', value: '', count: 0, testId: 'tab-all' },
@@ -98,6 +95,8 @@ export default class WorkOrdersComponent implements OnInit {
       take: this.pageSize
     };
     if (this.activeStatus) params['status'] = this.activeStatus;
+    if (this.sort) params['sort'] = this.sort;
+    if (this.filter) params['filter'] = this.filter;
 
     this.api.get<any>('/work-orders', params).subscribe({
       next: (res) => {
@@ -128,22 +127,56 @@ export default class WorkOrdersComponent implements OnInit {
   }
 
   loadCalendarData(): void {
-    this.api.get<any>('/work-orders', { skip: 0, take: 100 }).subscribe({
-      next: (res) => {
-        const items = res.items || [];
-        this.calendarEvents = items
-          .filter((wo: any) => wo.requestedDate)
-          .map((wo: any) => ({
-            id: wo.id,
-            workOrderNumber: wo.workOrderNumber,
-            equipmentName: wo.equipment?.name || 'Unknown',
-            priority: wo.priority,
-            date: wo.requestedDate,
-            title: `${wo.serviceType} - ${wo.description?.substring(0, 40) || ''}`
-          }));
+    const start = this.getCalendarRangeStart().toISOString();
+    const end = this.getCalendarRangeEnd().toISOString();
+
+    this.api.get<any[]>('/work-orders/calendar', { start, end }).subscribe({
+      next: (events) => {
+        const items = Array.isArray(events) ? events : (events as any).items || [];
+        this.schedulerEvents = items.map((e: any) => ({
+          id: e.id,
+          title: e.title,
+          start: new Date(e.start),
+          end: new Date(e.end),
+          color: e.color
+        } as SchedulerEvent));
       },
-      error: () => { this.calendarEvents = []; }
+      error: () => { this.schedulerEvents = []; }
     });
+  }
+
+  getCalendarRangeStart(): Date {
+    const d = new Date(this.selectedDate);
+    d.setDate(1);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  getCalendarRangeEnd(): Date {
+    const d = new Date(this.selectedDate);
+    d.setMonth(d.getMonth() + 1, 0);
+    d.setHours(23, 59, 59, 999);
+    return d;
+  }
+
+  onSchedulerDateChange(event: DateChangeEvent): void {
+    this.selectedDate = event.selectedDate;
+    this.loadCalendarData();
+  }
+
+  onSchedulerEventClick(event: any): void {
+    if (event?.event?.id) {
+      this.api.get<any>(`/work-orders/${event.event.id}`).subscribe({
+        next: (detail) => {
+          this.selectedWorkOrder = detail;
+          this.selectedWorkOrderHistory = (detail.history || []).map((h: any) => ({
+            status: h.newStatus,
+            user: h.changedBy?.displayName || h.changedBy || 'System',
+            timestamp: h.changedAt
+          }));
+        }
+      });
+    }
   }
 
   updateTabCounts(res: ApiResponse<WorkOrder[]>): void {
@@ -158,52 +191,49 @@ export default class WorkOrdersComponent implements OnInit {
     }
   }
 
+  onDataStateChange(state: DataStateChangeEvent): void {
+    this.skip = state.skip ?? 0;
+    this.pageSize = state.take ?? 20;
+
+    if (state.sort && state.sort.length > 0) {
+      this.sort = state.sort.map(s => `${s.field}-${s.dir}`).join(',');
+    } else {
+      this.sort = '';
+    }
+
+    if (state.filter) {
+      this.filter = JSON.stringify(state.filter);
+    } else {
+      this.filter = '';
+    }
+
+    this.loadData();
+  }
+
   onTabChange(status: string): void {
     this.activeStatus = status;
     this.skip = 0;
     this.loadData();
   }
 
-  onPrevPage(): void {
-    this.skip = Math.max(0, this.skip - this.pageSize);
-    this.loadData();
-  }
-
-  onNextPage(): void {
-    this.skip = this.skip + this.pageSize;
-    this.loadData();
-  }
-
   onRowClick(item: WorkOrder): void {
-    this.selectedWorkOrder = { ...item } as any;
     this.showCompletionForm = false;
     this.completionNotes = '';
-    this.loadWorkOrderHistory(item);
-  }
 
-  loadWorkOrderHistory(item: WorkOrder): void {
-    // Try loading from API, fall back to a default entry
-    this.api.get<any>(`/work-orders/${(item as any).id}/history`).subscribe({
-      next: (res) => {
-        this.selectedWorkOrderHistory = (res.items || res || []).map((h: any) => ({
-          status: h.status || h.newStatus || '',
-          user: h.user || h.changedBy || '',
-          timestamp: h.timestamp || h.changedAt || ''
+    // Load full detail from the detail endpoint (includes history via EF Core Include)
+    this.api.get<any>(`/work-orders/${item.id}`).subscribe({
+      next: (detail) => {
+        this.selectedWorkOrder = detail;
+        this.selectedWorkOrderHistory = (detail.history || []).map((h: any) => ({
+          status: h.newStatus,
+          user: h.changedBy?.displayName || h.changedBy || 'System',
+          timestamp: h.changedAt
         }));
-        if (this.selectedWorkOrderHistory.length === 0) {
-          this.selectedWorkOrderHistory = [{
-            status: item.status,
-            user: 'System',
-            timestamp: new Date().toISOString()
-          }];
-        }
       },
       error: () => {
-        this.selectedWorkOrderHistory = [{
-          status: item.status,
-          user: 'System',
-          timestamp: new Date().toISOString()
-        }];
+        // Show the item without history on error — no fabricated data
+        this.selectedWorkOrder = { ...item } as any;
+        this.selectedWorkOrderHistory = [];
       }
     });
   }
@@ -212,27 +242,17 @@ export default class WorkOrdersComponent implements OnInit {
     if (!this.selectedWorkOrder) return;
     const id = (this.selectedWorkOrder as any).id;
     this.api.put<any>(`/work-orders/${id}/status`, { status: 'InProgress' }).subscribe({
-      next: () => {
-        if (this.selectedWorkOrder) {
-          (this.selectedWorkOrder as any).status = 'In Progress';
-          this.selectedWorkOrderHistory.unshift({
-            status: 'In Progress',
-            user: 'Current User',
-            timestamp: new Date().toISOString()
-          });
-        }
+      next: (updated) => {
+        this.selectedWorkOrder = updated;
+        this.selectedWorkOrderHistory.unshift({
+          status: 'InProgress',
+          user: 'Current User',
+          timestamp: new Date().toISOString()
+        });
         this.loadData();
       },
       error: () => {
-        // Update locally even if API fails (for e2e tests with mocked backends)
-        if (this.selectedWorkOrder) {
-          (this.selectedWorkOrder as any).status = 'In Progress';
-          this.selectedWorkOrderHistory.unshift({
-            status: 'In Progress',
-            user: 'Current User',
-            timestamp: new Date().toISOString()
-          });
-        }
+        // Do NOT update UI on failure — no optimistic updates
       }
     });
   }
@@ -241,28 +261,18 @@ export default class WorkOrdersComponent implements OnInit {
     if (!this.selectedWorkOrder) return;
     const id = (this.selectedWorkOrder as any).id;
     this.api.put<any>(`/work-orders/${id}/status`, { status: 'Completed', notes: this.completionNotes }).subscribe({
-      next: () => {
-        if (this.selectedWorkOrder) {
-          (this.selectedWorkOrder as any).status = 'Completed';
-          this.showCompletionForm = false;
-          this.selectedWorkOrderHistory.unshift({
-            status: 'Completed',
-            user: 'Current User',
-            timestamp: new Date().toISOString()
-          });
-        }
+      next: (updated) => {
+        this.selectedWorkOrder = updated;
+        this.showCompletionForm = false;
+        this.selectedWorkOrderHistory.unshift({
+          status: 'Completed',
+          user: 'Current User',
+          timestamp: new Date().toISOString()
+        });
         this.loadData();
       },
       error: () => {
-        if (this.selectedWorkOrder) {
-          (this.selectedWorkOrder as any).status = 'Completed';
-          this.showCompletionForm = false;
-          this.selectedWorkOrderHistory.unshift({
-            status: 'Completed',
-            user: 'Current User',
-            timestamp: new Date().toISOString()
-          });
-        }
+        // Do NOT update UI on failure — no optimistic updates
       }
     });
   }
@@ -275,10 +285,6 @@ export default class WorkOrdersComponent implements OnInit {
   selectAssignee(tech: string): void {
     this.newWorkOrder.assignedTo = tech;
     this.assigneeDropdownOpen = false;
-  }
-
-  onCalendarEventClick(evt: CalendarEvent): void {
-    this.selectedCalendarEvent = evt;
   }
 
   createWorkOrder(): void {
