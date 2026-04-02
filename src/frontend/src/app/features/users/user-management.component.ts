@@ -11,7 +11,7 @@ import { ApiService } from '../../core/services/api.service';
 import { User } from '../../core/models';
 import { Subject, takeUntil } from 'rxjs';
 
-type UserRole = 'Admin' | 'FleetManager' | 'Technician' | 'PartsSpecialist' | 'ReadOnly';
+type UserRole = 'Admin' | 'FleetManager' | 'Technician' | 'Operator';
 
 @Component({
   selector: 'app-user-management',
@@ -132,11 +132,11 @@ export default class UserManagementComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   users: User[] = [];
-  roles: UserRole[] = ['Admin', 'FleetManager', 'Technician', 'PartsSpecialist', 'ReadOnly'];
+  roles: UserRole[] = ['Admin', 'FleetManager', 'Technician', 'Operator'];
 
   showInviteDialog = false;
   inviteEmail = '';
-  inviteRole: UserRole = 'ReadOnly';
+  inviteRole: UserRole = 'Operator';
 
   ngOnInit(): void {
     this.loadUsers();
