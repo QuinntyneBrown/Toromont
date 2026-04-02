@@ -92,8 +92,8 @@ import { ApiResponse, Equipment, WorkOrder, TelemetryEvent } from '../../core/mo
             <div *ngFor="let wo of workOrders; let i = index" class="timeline-item">
               <div class="timeline-dot" [ngClass]="'dot-' + wo.priority.toLowerCase()"></div>
               <div class="timeline-content">
-                <div class="fw-medium" style="font-size:13px;">{{ wo.title || wo.description }}</div>
-                <div style="font-size:12px;color:var(--foreground-secondary);">{{ wo.scheduledDate ? (wo.scheduledDate | date:'mediumDate') : (wo.createdAt | date:'mediumDate') }}</div>
+                <div class="fw-medium" style="font-size:13px;">{{ wo.serviceType }}: {{ wo.description }}</div>
+                <div style="font-size:12px;color:var(--foreground-secondary);">{{ wo.requestedDate ? (wo.requestedDate | date:'mediumDate') : (wo.createdAt | date:'mediumDate') }}</div>
               </div>
             </div>
           </div>
