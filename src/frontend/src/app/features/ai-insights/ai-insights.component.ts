@@ -10,8 +10,8 @@ import { Subject, takeUntil } from 'rxjs';
 interface DashboardStats {
   totalPredictions: number;
   highPriority: number;
-  activeAnomalies: number;
-  estimatedCostSavings: number;
+  anomalyCount: number;
+  estimatedSavings: number;
 }
 
 interface PredictionRow extends AIPrediction {
@@ -38,12 +38,12 @@ interface PredictionRow extends AIPrediction {
         </div>
         <div class="col-12 col-sm-6 col-lg-3" data-testid="kpi-anomalies">
           <div class="kpi-highlight kpi-warning">
-            <app-kpi-card label="Active Anomalies" [value]="stats.activeAnomalies"></app-kpi-card>
+            <app-kpi-card label="Active Anomalies" [value]="stats.anomalyCount"></app-kpi-card>
           </div>
         </div>
         <div class="col-12 col-sm-6 col-lg-3" data-testid="kpi-cost-savings">
           <div class="kpi-highlight kpi-green">
-            <app-kpi-card label="Est. Cost Savings" [value]="'$' + formatNumber(stats.estimatedCostSavings)"></app-kpi-card>
+            <app-kpi-card label="Est. Cost Savings" [value]="'$' + formatNumber(stats.estimatedSavings)"></app-kpi-card>
           </div>
         </div>
       </div>
@@ -249,8 +249,8 @@ export default class AiInsightsComponent implements OnInit, OnDestroy {
   stats: DashboardStats = {
     totalPredictions: 0,
     highPriority: 0,
-    activeAnomalies: 0,
-    estimatedCostSavings: 0
+    anomalyCount: 0,
+    estimatedSavings: 0
   };
 
   predictions: PredictionRow[] = [];
@@ -349,6 +349,7 @@ export default class AiInsightsComponent implements OnInit, OnDestroy {
   }
 
   formatNumber(value: number): string {
+    if (!value && value !== 0) return '0';
     if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
     if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
     return value.toFixed(0);
