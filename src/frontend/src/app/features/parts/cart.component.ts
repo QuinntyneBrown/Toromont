@@ -149,9 +149,9 @@ export default class CartComponent implements OnInit {
 
   loadCart(): void {
     this.loading = true;
-    this.api.get<ApiResponse<CartItem[]>>('/cart').subscribe({
+    this.api.get<CartItem[]>('/cart').subscribe({
       next: (res) => {
-        this.cartItems = res.data || [];
+        this.cartItems = Array.isArray(res) ? res : [];
         this.loading = false;
       },
       error: () => {

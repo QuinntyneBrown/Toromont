@@ -254,16 +254,16 @@ export default class PartsCatalogComponent implements OnInit {
     const cats = Array.from(this.selectedCategories);
     if (cats.length === 1) params['category'] = cats[0];
 
-    this.api.get<ApiResponse<Part[]>>('/parts', params).subscribe({
+    this.api.get<any>('/parts', params).subscribe({
       next: (res) => {
-        let data = res.data || [];
+        let data = res.items || [];
         // Client-side multi-category filter if needed
         if (this.selectedCategories.size > 1) {
-          data = data.filter(p => this.selectedCategories.has(p.category));
+          data = data.filter((p: any) => this.selectedCategories.has(p.category));
         }
         this.gridData = {
           data,
-          total: res.totalCount || data.length
+          total: res.pagination?.totalItems || data.length
         };
       },
       error: () => {
@@ -284,11 +284,12 @@ export default class PartsCatalogComponent implements OnInit {
 
   onAISearch(): void {
     if (!this.aiSearchQuery.trim()) return;
-    this.api.get<ApiResponse<Part[]>>('/parts/search', { q: this.aiSearchQuery }).subscribe({
+    this.api.get<any[]>('/parts/search', { q: this.aiSearchQuery }).subscribe({
       next: (res) => {
+        const data = Array.isArray(res) ? res : [];
         this.gridData = {
-          data: res.data || [],
-          total: res.totalCount || (res.data ? res.data.length : 0)
+          data,
+          total: data.length
         };
       },
       error: () => {
