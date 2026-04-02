@@ -42,6 +42,7 @@ public class IngestTelemetryCommandHandler : IRequestHandler<IngestTelemetryComm
         {
             Id = Guid.NewGuid(),
             EquipmentId = request.EquipmentId,
+            OrganizationId = equipment.OrganizationId,
             EventType = request.EventType,
             Timestamp = DateTime.UtcNow,
             EngineHours = request.EngineHours ?? 0,

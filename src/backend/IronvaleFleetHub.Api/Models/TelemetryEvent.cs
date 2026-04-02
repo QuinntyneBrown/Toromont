@@ -4,6 +4,7 @@ public class TelemetryEvent
 {
     public Guid Id { get; set; }
     public Guid EquipmentId { get; set; }
+    public Guid OrganizationId { get; set; }
     public string EventType { get; set; } = string.Empty;
     public DateTime Timestamp { get; set; }
     public double EngineHours { get; set; }

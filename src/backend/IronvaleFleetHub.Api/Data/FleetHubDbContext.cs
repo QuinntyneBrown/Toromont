@@ -31,6 +31,8 @@ public class FleetHubDbContext : DbContext
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
     public DbSet<EquipmentModelThreshold> EquipmentModelThresholds => Set<EquipmentModelThreshold>();
+    public DbSet<AlertThreshold> AlertThresholds => Set<AlertThreshold>();
+    public DbSet<TelemetryDeadLetterEntry> TelemetryDeadLetterEntries => Set<TelemetryDeadLetterEntry>();
     public DbSet<UserOrganization> UserOrganizations => Set<UserOrganization>();
     public DbSet<OrganizationPricing> OrganizationPricings => Set<OrganizationPricing>();
 
@@ -160,6 +162,7 @@ public class FleetHubDbContext : DbContext
             e.HasKey(x => x.Id);
             e.Property(x => x.EventType).HasMaxLength(50);
             e.HasIndex(x => new { x.EquipmentId, x.Timestamp });
+            e.HasIndex(x => x.OrganizationId);
         });
 
         // --- Alert ---
@@ -239,6 +242,22 @@ public class FleetHubDbContext : DbContext
             e.HasIndex(x => new { x.OrganizationId, x.PartId }).IsUnique();
         });
 
+        // --- AlertThreshold ---
+        modelBuilder.Entity<AlertThreshold>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.MetricName).HasMaxLength(100).IsRequired();
+            e.HasIndex(x => x.OrganizationId);
+        });
+
+        // --- TelemetryDeadLetterEntry ---
+        modelBuilder.Entity<TelemetryDeadLetterEntry>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.OriginalPayload).IsRequired();
+            e.Property(x => x.ErrorMessage).HasMaxLength(2000).IsRequired();
+        });
+
         // --- Global query filters for multi-tenancy ---
         if (_tenantContext != null && _tenantContext.OrganizationId != Guid.Empty)
         {
@@ -257,8 +276,8 @@ public class FleetHubDbContext : DbContext
                 Users.Any(u => u.Id == x.UserId && u.OrganizationId == orgId));
             modelBuilder.Entity<CartItem>().HasQueryFilter(x =>
                 Users.Any(u => u.Id == x.UserId && u.OrganizationId == orgId));
-            modelBuilder.Entity<TelemetryEvent>().HasQueryFilter(x =>
-                Equipment.Any(eq => eq.Id == x.EquipmentId && eq.OrganizationId == orgId));
+            modelBuilder.Entity<TelemetryEvent>().HasQueryFilter(x => x.OrganizationId == orgId);
+            modelBuilder.Entity<AlertThreshold>().HasQueryFilter(x => x.OrganizationId == orgId);
         }
     }
 }
