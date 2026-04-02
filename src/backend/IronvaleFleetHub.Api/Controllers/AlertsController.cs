@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using IronvaleFleetHub.Api.DTOs;
 using IronvaleFleetHub.Api.Features.Alerts.Commands;
 using IronvaleFleetHub.Api.Features.Alerts.Queries;
 using IronvaleFleetHub.Api.Models;
@@ -75,12 +76,4 @@ public class AlertsController : ControllerBase
         if (!result.IsSuccess) return result.Error == "Not found." ? NotFound() : BadRequest(new { Error = result.Error });
         return NoContent();
     }
-}
-
-public class UpdateAlertThresholdRequest
-{
-    public string MetricName { get; set; } = string.Empty;
-    public double WarningValue { get; set; }
-    public double CriticalValue { get; set; }
-    public Guid? EquipmentId { get; set; }
 }

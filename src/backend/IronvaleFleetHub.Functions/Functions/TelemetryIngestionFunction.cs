@@ -136,9 +136,8 @@ public class TelemetryIngestionFunction
             IsReprocessed = false
         }, ct);
 
-        var acceptedResponse = req.CreateResponse(HttpStatusCode.Accepted);
-        await acceptedResponse.WriteAsJsonAsync(new { eventId = Guid.NewGuid(), status = "accepted" }, ct);
-        return acceptedResponse;
+        return await CreateErrorResponse(req, HttpStatusCode.InternalServerError,
+            "Telemetry ingestion failed after retries. Event has been recorded for reprocessing.");
     }
 
     private static async Task<HttpResponseData> CreateErrorResponse(
