@@ -117,6 +117,56 @@ public static class DataSeeder
         };
         db.EquipmentModelThresholds.AddRange(thresholds);
 
+        // --- Telemetry Events (7 days of data for first 3 equipment) ---
+        var telemetryEvents = new List<TelemetryEvent>();
+        var rng = new Random(42);
+        foreach (var eqIdx in new[] { 0, 1, 2 })
+        {
+            for (int day = 0; day < 7; day++)
+            {
+                var ts = now.AddDays(-day).AddHours(-rng.Next(0, 8));
+                telemetryEvents.Add(new TelemetryEvent
+                {
+                    Id = Guid.NewGuid(),
+                    EquipmentId = equipmentIds[eqIdx],
+                    EventType = "Reading",
+                    Timestamp = ts,
+                    EngineHours = 4500 + day * 8 + rng.Next(0, 5),
+                    FuelLevel = 40 + rng.Next(0, 50),
+                    Temperature = 80 + rng.Next(0, 30),
+                    Latitude = 43.65 + rng.NextDouble() * 0.1,
+                    Longitude = -79.38 + rng.NextDouble() * 0.1
+                });
+            }
+        }
+        db.TelemetryEvents.AddRange(telemetryEvents);
+
+        // --- AI Predictions ---
+        var predictions = new List<AIPrediction>
+        {
+            new() { Id = Guid.NewGuid(), OrganizationId = Org1Id, EquipmentId = equipmentIds[0], Component = "Hydraulic Pump", ConfidenceScore = 0.87, RecommendedAction = "Replace hydraulic pump seals within 14 days", Timeframe = "7-14 days", Priority = "High", GeneratedAt = now.AddDays(-1) },
+            new() { Id = Guid.NewGuid(), OrganizationId = Org1Id, EquipmentId = equipmentIds[1], Component = "Track Assembly", ConfidenceScore = 0.72, RecommendedAction = "Inspect and adjust track tension", Timeframe = "14-30 days", Priority = "Medium", GeneratedAt = now.AddDays(-2) },
+            new() { Id = Guid.NewGuid(), OrganizationId = Org1Id, EquipmentId = equipmentIds[3], Component = "Air Filter", ConfidenceScore = 0.45, RecommendedAction = "Replace air filter at next service", Timeframe = "30+ days", Priority = "Low", GeneratedAt = now.AddDays(-3) },
+        };
+        db.AIPredictions.AddRange(predictions);
+
+        // --- Anomaly Detections ---
+        var anomalies = new List<AnomalyDetection>
+        {
+            new() { Id = Guid.NewGuid(), OrganizationId = Org1Id, EquipmentId = equipmentIds[0], AnomalyType = "TemperatureAnomaly", MetricName = "Engine Temperature", ExpectedValue = 92.0, ActualValue = 108.5, DeviationSigma = 2.8, Severity = "High", DetectedAt = now.AddHours(-4) },
+            new() { Id = Guid.NewGuid(), OrganizationId = Org1Id, EquipmentId = equipmentIds[2], AnomalyType = "FuelAnomaly", MetricName = "Fuel Consumption", ExpectedValue = 18.0, ActualValue = 26.5, DeviationSigma = 2.1, Severity = "Medium", DetectedAt = now.AddHours(-8) },
+        };
+        db.AnomalyDetections.AddRange(anomalies);
+
+        // --- Notifications ---
+        var notifications = new List<Notification>
+        {
+            new() { Id = Guid.NewGuid(), UserId = User1Id, OrganizationId = Org1Id, Type = "CriticalAlert", Title = "Engine Overheat", Message = "CAT 745 engine temperature exceeded safe limit", EntityType = "Equipment", EntityId = equipmentIds[4], IsRead = false, CreatedAt = now.AddHours(-2) },
+            new() { Id = Guid.NewGuid(), UserId = User2Id, OrganizationId = Org1Id, Type = "WorkOrderAssigned", Title = "Work Order Assigned", Message = "WO-2026-001 has been assigned to you", EntityType = "WorkOrder", IsRead = false, CreatedAt = now.AddHours(-6) },
+            new() { Id = Guid.NewGuid(), UserId = User1Id, OrganizationId = Org1Id, Type = "ServiceDue", Title = "Service Reminder", Message = "CAT 320 Excavator #1 - 500hr service due in 3 days", EntityType = "Equipment", EntityId = equipmentIds[0], IsRead = true, CreatedAt = now.AddDays(-1) },
+        };
+        db.Notifications.AddRange(notifications);
+
         await db.SaveChangesAsync();
     }
 }
