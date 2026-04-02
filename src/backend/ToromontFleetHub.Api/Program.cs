@@ -210,7 +210,7 @@ public class DevAuthHandler : Microsoft.AspNetCore.Authentication.Authentication
             new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Email, "admin@toromont.com"),
             new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, "Dev Admin"),
             new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, "Admin"),
-            new System.Security.Claims.Claim("organizationId", "00000000-0000-0000-0000-000000000001"),
+            new System.Security.Claims.Claim("organizationId", "a1b2c3d4-0001-0000-0000-000000000001"),
         };
         var identity = new System.Security.Claims.ClaimsIdentity(claims, Scheme.Name);
         var principal = new System.Security.Claims.ClaimsPrincipal(identity);
