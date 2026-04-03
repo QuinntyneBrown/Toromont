@@ -18,7 +18,7 @@ public class ValidationProblemDetailsTests : IClassFixture<ApiWebApplicationFact
         var client = _factory.CreateAuthenticatedClient();
 
         // Send empty payload — missing required fields
-        var response = await client.PostAsJsonAsync("/api/v1/workorders", new
+        var response = await client.PostAsJsonAsync("/api/v1/work-orders", new
         {
             EquipmentId = Guid.Empty,
             ServiceType = "",
