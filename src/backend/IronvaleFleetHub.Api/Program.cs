@@ -60,6 +60,10 @@ else
 // --- Tenant Context ---
 builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddSingleton<IUserBlacklist, InMemoryUserBlacklist>();
+builder.Services.AddHttpContextAccessor();
+
+// --- ProblemDetails ---
+builder.Services.AddProblemDetails();
 
 // --- MediatR ---
 builder.Services.AddMediatR(cfg =>
