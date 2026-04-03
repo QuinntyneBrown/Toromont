@@ -2,10 +2,11 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using IronvaleFleetHub.Api.IntegrationTests.Infrastructure;
+using Xunit;
 
 namespace IronvaleFleetHub.Api.IntegrationTests;
 
-public class ValidationProblemDetailsTests : IClassFixture<ApiWebApplicationFactory>
+internal class ValidationProblemDetailsTests : IClassFixture<ApiWebApplicationFactory>
 {
     private readonly ApiWebApplicationFactory _factory;
     private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };

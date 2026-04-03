@@ -2,10 +2,11 @@ using System.Reflection;
 using FluentValidation;
 using MediatR;
 using IronvaleFleetHub.Api.Common;
+using Xunit;
 
 namespace IronvaleFleetHub.Api.IntegrationTests;
 
-public class ValidatorCoverageTests
+internal class ValidatorCoverageTests
 {
     [Fact]
     public void AllCommands_MustHaveValidator_OrISkipValidation()
