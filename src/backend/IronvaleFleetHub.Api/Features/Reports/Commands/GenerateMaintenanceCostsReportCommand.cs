@@ -25,3 +25,15 @@ public class GenerateMaintenanceCostsReportCommandHandler
         return await _reportService.GenerateMaintenanceCostsAsync(request.Request, _tenant.OrganizationId, ct);
     }
 }
+
+public class GenerateMaintenanceCostsReportCommandValidator : AbstractValidator<GenerateMaintenanceCostsReportCommand>
+{
+    public GenerateMaintenanceCostsReportCommandValidator()
+    {
+        RuleFor(x => x.Request).NotNull();
+        RuleFor(x => x.Request.StartDate)
+            .LessThan(x => x.Request.EndDate)
+            .When(x => x.Request != null)
+            .WithMessage("StartDate must be before EndDate.");
+    }
+}
