@@ -38,3 +38,12 @@ public class UpdateCartItemCommandHandler : IRequestHandler<UpdateCartItemComman
         return Result<CartItem>.Success(item);
     }
 }
+
+public class UpdateCartItemCommandValidator : AbstractValidator<UpdateCartItemCommand>
+{
+    public UpdateCartItemCommandValidator()
+    {
+        RuleFor(x => x.Id).NotEmpty();
+        RuleFor(x => x.Quantity).GreaterThan(0);
+    }
+}
