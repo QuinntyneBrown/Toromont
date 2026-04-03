@@ -77,3 +77,14 @@ public class AcceptInviteCommandHandler : IRequestHandler<AcceptInviteCommand, R
         return Result<User>.Success(user);
     }
 }
+
+public class AcceptInviteCommandValidator : AbstractValidator<AcceptInviteCommand>
+{
+    public AcceptInviteCommandValidator()
+    {
+        RuleFor(x => x.Token).NotEmpty();
+        RuleFor(x => x.EntraObjectId).NotEmpty();
+        RuleFor(x => x.Email).NotEmpty().EmailAddress();
+        RuleFor(x => x.DisplayName).NotEmpty();
+    }
+}
