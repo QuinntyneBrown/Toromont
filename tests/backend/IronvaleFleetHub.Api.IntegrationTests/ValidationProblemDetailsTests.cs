@@ -6,17 +6,15 @@ using Xunit;
 
 namespace IronvaleFleetHub.Api.IntegrationTests;
 
-internal class ValidationProblemDetailsTests : IClassFixture<ApiWebApplicationFactory>
+public sealed class ValidationProblemDetailsTests
 {
-    private readonly ApiWebApplicationFactory _factory;
-    private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
-
-    public ValidationProblemDetailsTests(ApiWebApplicationFactory factory) => _factory = factory;
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     [Fact]
     public async Task Post_InvalidWorkOrder_Returns400ProblemDetails()
     {
-        var client = _factory.CreateAuthenticatedClient();
+        await using var factory = new ApiWebApplicationFactory();
+        using var client = factory.CreateAuthenticatedClient();
 
         // Send empty payload — missing required fields
         var response = await client.PostAsJsonAsync("/api/v1/work-orders", new
@@ -31,7 +29,7 @@ internal class ValidationProblemDetailsTests : IClassFixture<ApiWebApplicationFa
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
 
-        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
         Assert.Equal(400, body.GetProperty("status").GetInt32());
         Assert.Equal("Validation Failed", body.GetProperty("title").GetString());
         Assert.True(body.TryGetProperty("errors", out _));
@@ -40,7 +38,8 @@ internal class ValidationProblemDetailsTests : IClassFixture<ApiWebApplicationFa
     [Fact]
     public async Task Post_InvalidEquipment_Returns400ProblemDetails()
     {
-        var client = _factory.CreateAuthenticatedClient();
+        await using var factory = new ApiWebApplicationFactory();
+        using var client = factory.CreateAuthenticatedClient();
 
         var response = await client.PostAsJsonAsync("/api/v1/equipment", new
         {
@@ -54,7 +53,7 @@ internal class ValidationProblemDetailsTests : IClassFixture<ApiWebApplicationFa
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
-        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
         Assert.Equal(400, body.GetProperty("status").GetInt32());
         Assert.True(body.TryGetProperty("errors", out var errors));
         Assert.True(errors.EnumerateObject().Any());

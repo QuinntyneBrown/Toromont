@@ -6,7 +6,7 @@ using Xunit;
 
 namespace IronvaleFleetHub.Api.IntegrationTests;
 
-internal class ValidatorCoverageTests
+public sealed class ValidatorCoverageTests
 {
     [Fact]
     public void AllCommands_MustHaveValidator_OrISkipValidation()
