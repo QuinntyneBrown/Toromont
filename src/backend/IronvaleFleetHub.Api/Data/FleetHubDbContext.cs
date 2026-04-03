@@ -4,7 +4,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Data;
 
-public class FleetHubDbContext : DbContext
+public partial class FleetHubDbContext : DbContext
 {
     private readonly ITenantContext? _tenantContext;
 
@@ -13,6 +13,19 @@ public class FleetHubDbContext : DbContext
     {
         _tenantContext = tenantContext;
     }
+
+    /// <summary>
+    /// Returns the current organization ID from the tenant context, or Guid.Empty when unresolved.
+    /// EF Core captures this property reference in query filter expressions so that
+    /// each request evaluates the filter against the current scoped tenant.
+    /// </summary>
+    public Guid CurrentOrganizationId => _tenantContext?.OrganizationId ?? Guid.Empty;
+
+    /// <summary>
+    /// True when a tenant has been resolved for the current request.
+    /// When false, all tenant-filtered queries return zero rows (fail-closed).
+    /// </summary>
+    public bool TenantResolved => CurrentOrganizationId != Guid.Empty;
 
     public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<User> Users => Set<User>();
