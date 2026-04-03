@@ -1,0 +1,14 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "Telemetry__ApiKey": "dev-api-key-12345",
+    "ConnectionStrings__DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=IronvaleFleetHub_Dev;Trusted_Connection=True;"
+  },
+  "_comments": {
+    "AzureWebJobsStorage": "Routes storage operations to Azurite. Start Azurite before running: npx azurite --silent --location .azurite",
+    "Telemetry__ApiKey": "Use any non-empty string. Callers must send the same value in the X-Api-Key header.",
+    "ConnectionStrings__DefaultConnection": "Point to LocalDB, Docker SQL Server, or a shared dev instance. Dapper requires a real SQL Server -- EF Core in-memory is not supported."
+  }
+}
