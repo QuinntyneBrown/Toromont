@@ -182,6 +182,8 @@ app.UseExceptionHandler(errorApp =>
 
         context.Response.ContentType = "application/problem+json";
 
+        var problemJsonType = "application/problem+json";
+
         switch (exception)
         {
             case ValidationException validationEx:
@@ -195,7 +197,7 @@ app.UseExceptionHandler(errorApp =>
                     title = "Validation Failed",
                     status = 400,
                     errors
-                });
+                }, new System.Text.Json.JsonSerializerOptions(), problemJsonType, ct: context.RequestAborted);
                 break;
 
             case BusinessRuleException businessEx:
@@ -206,7 +208,7 @@ app.UseExceptionHandler(errorApp =>
                     title = "Business Rule Violation",
                     status = 422,
                     detail = businessEx.Message
-                });
+                }, new System.Text.Json.JsonSerializerOptions(), problemJsonType, ct: context.RequestAborted);
                 break;
 
             default:
@@ -219,7 +221,7 @@ app.UseExceptionHandler(errorApp =>
                     detail = app.Environment.IsDevelopment()
                         ? exception?.Message
                         : "An unexpected error occurred."
-                });
+                }, new System.Text.Json.JsonSerializerOptions(), problemJsonType, ct: context.RequestAborted);
                 break;
         }
     });
