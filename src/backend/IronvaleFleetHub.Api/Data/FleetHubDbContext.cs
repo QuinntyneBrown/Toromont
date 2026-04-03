@@ -48,6 +48,8 @@ public partial class FleetHubDbContext : DbContext
     public DbSet<TelemetryDeadLetterEntry> TelemetryDeadLetterEntries => Set<TelemetryDeadLetterEntry>();
     public DbSet<UserOrganization> UserOrganizations => Set<UserOrganization>();
     public DbSet<OrganizationPricing> OrganizationPricings => Set<OrganizationPricing>();
+    public DbSet<DeliveryAttemptRecord> DeliveryAttemptRecords => Set<DeliveryAttemptRecord>();
+    public DbSet<DevSmsMessageRecord> DevSmsMessageRecords => Set<DevSmsMessageRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
