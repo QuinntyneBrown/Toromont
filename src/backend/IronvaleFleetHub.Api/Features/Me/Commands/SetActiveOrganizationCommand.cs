@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Common;
 
 namespace IronvaleFleetHub.Api.Features.Me.Commands;
 
-public record SetActiveOrganizationCommand(Guid OrganizationId) : IRequest<Result<CurrentUserContextResponse>>;
+public record SetActiveOrganizationCommand(Guid OrganizationId) : IRequest<Result<CurrentUserContextResponse>>, ISkipValidation;
 
 public class SetActiveOrganizationCommandHandler : IRequestHandler<SetActiveOrganizationCommand, Result<CurrentUserContextResponse>>
 {

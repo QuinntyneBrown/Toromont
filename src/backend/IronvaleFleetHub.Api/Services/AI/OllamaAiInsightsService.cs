@@ -53,13 +53,10 @@ public class OllamaAiInsightsService : IAiInsightsService
         };
     }
 
-    public async Task<IReadOnlyList<AnomalyInsight>> DetectAnomaliesAsync(Guid equipmentId, CancellationToken ct)
+    public Task<IReadOnlyList<AnomalyInsight>> DetectAnomaliesAsync(Guid equipmentId, CancellationToken ct)
     {
-        // Anomaly detection uses rule-based engine only; Ollama used for explanation text enhancement
-        var engine = new DevAiInsightsService(null!, _engine, _formatter, Options.Create(_options), null!);
-        // Fall back to rule-based for anomalies
         _logger.LogDebug("Anomaly detection uses rule-based engine (Ollama limited to explanation enhancement)");
-        return Array.Empty<AnomalyInsight>();
+        return Task.FromResult<IReadOnlyList<AnomalyInsight>>(Array.Empty<AnomalyInsight>());
     }
 
     private async Task<string> EnhanceWithOllamaAsync(PredictionEvidence evidence, CancellationToken ct)
