@@ -54,3 +54,12 @@ public class AddCartItemCommandHandler : IRequestHandler<AddCartItemCommand, Res
         return Result<CartItem>.Success(item);
     }
 }
+
+public class AddCartItemCommandValidator : AbstractValidator<AddCartItemCommand>
+{
+    public AddCartItemCommandValidator()
+    {
+        RuleFor(x => x.PartId).NotEmpty();
+        RuleFor(x => x.Quantity).GreaterThan(0);
+    }
+}
