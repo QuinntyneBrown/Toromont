@@ -25,3 +25,15 @@ public class GenerateFleetUtilizationReportCommandHandler
         return await _reportService.GenerateFleetUtilizationAsync(request.Request, _tenant.OrganizationId, ct);
     }
 }
+
+public class GenerateFleetUtilizationReportCommandValidator : AbstractValidator<GenerateFleetUtilizationReportCommand>
+{
+    public GenerateFleetUtilizationReportCommandValidator()
+    {
+        RuleFor(x => x.Request).NotNull();
+        RuleFor(x => x.Request.StartDate)
+            .LessThan(x => x.Request.EndDate)
+            .When(x => x.Request != null)
+            .WithMessage("StartDate must be before EndDate.");
+    }
+}
