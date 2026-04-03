@@ -47,3 +47,17 @@ public class ChangeUserRoleCommandHandler : IRequestHandler<ChangeUserRoleComman
         return Result<User>.Success(user);
     }
 }
+
+public class ChangeUserRoleCommandValidator : AbstractValidator<ChangeUserRoleCommand>
+{
+    private static readonly string[] ValidRoles = { "Admin", "FleetManager", "Technician", "Operator" };
+
+    public ChangeUserRoleCommandValidator()
+    {
+        RuleFor(x => x.UserId).NotEmpty();
+        RuleFor(x => x.Role)
+            .NotEmpty()
+            .Must(r => ValidRoles.Contains(r))
+            .WithMessage("Role must be one of: Admin, FleetManager, Technician, Operator.");
+    }
+}
