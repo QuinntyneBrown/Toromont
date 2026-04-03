@@ -12,15 +12,24 @@ public class NotificationDispatchService : INotificationDispatchService
     private readonly FleetHubDbContext _db;
     private readonly IHubContext<NotificationHub> _hubContext;
     private readonly ILogger<NotificationDispatchService> _logger;
+    private readonly IEmailChannel? _emailChannel;
+    private readonly ISmsChannel? _smsChannel;
+    private readonly NotificationTemplateRenderer? _templateRenderer;
 
     public NotificationDispatchService(
         FleetHubDbContext db,
         IHubContext<NotificationHub> hubContext,
-        ILogger<NotificationDispatchService> logger)
+        ILogger<NotificationDispatchService> logger,
+        IEmailChannel? emailChannel = null,
+        ISmsChannel? smsChannel = null,
+        NotificationTemplateRenderer? templateRenderer = null)
     {
         _db = db;
         _hubContext = hubContext;
         _logger = logger;
+        _emailChannel = emailChannel;
+        _smsChannel = smsChannel;
+        _templateRenderer = templateRenderer;
     }
 
     public async Task DispatchAsync(
@@ -93,12 +102,53 @@ public class NotificationDispatchService : INotificationDispatchService
 
         if (preferences?.EmailEnabled == true)
         {
-            _logger.LogInformation("Email notification queued for user {UserId}: {Title}", userId, title);
+            if (_emailChannel is not null && _templateRenderer is not null)
+            {
+                var emailRequest = _templateRenderer.RenderEmail(
+                    user.Email ?? $"{userId}@ironvale.local", type, title, message);
+                var result = await _emailChannel.SendAsync(emailRequest, ct);
+                await RecordDeliveryAttemptAsync(notification.Id, emailRequest.To, type, result, ct);
+            }
+            else
+            {
+                _logger.LogInformation("Email notification queued for user {UserId}: {Title}", userId, title);
+            }
         }
 
         if (preferences?.SmsEnabled == true)
         {
-            _logger.LogInformation("SMS notification queued for user {UserId}: {Title}", userId, title);
+            if (_smsChannel is not null && _templateRenderer is not null)
+            {
+                var smsRequest = _templateRenderer.RenderSms(
+                    user.PhoneNumber ?? "unknown", type, title, message);
+                var result = await _smsChannel.SendAsync(smsRequest, ct);
+                await RecordDeliveryAttemptAsync(notification.Id, smsRequest.To, type, result, ct);
+            }
+            else
+            {
+                _logger.LogInformation("SMS notification queued for user {UserId}: {Title}", userId, title);
+            }
         }
+    }
+
+    private async Task RecordDeliveryAttemptAsync(
+        Guid notificationId, string recipient, string eventType,
+        DeliveryAttemptResult result, CancellationToken ct)
+    {
+        var record = new DeliveryAttemptRecord
+        {
+            Id = Guid.NewGuid(),
+            NotificationId = notificationId,
+            Recipient = recipient,
+            EventType = eventType,
+            Channel = result.Channel,
+            Target = result.Target,
+            Success = result.Success,
+            Error = result.Error,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _db.DeliveryAttemptRecords.Add(record);
+        await _db.SaveChangesAsync(ct);
     }
 }
