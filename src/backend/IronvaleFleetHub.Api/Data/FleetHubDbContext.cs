@@ -187,6 +187,9 @@ public partial class FleetHubDbContext : DbContext
             e.Property(x => x.Message).HasMaxLength(1000);
             e.Property(x => x.Status).HasMaxLength(20);
             e.HasIndex(x => new { x.OrganizationId, x.Status, x.Severity });
+            e.HasIndex(x => new { x.SourceTelemetryEventId, x.AlertType })
+                .IsUnique()
+                .HasFilter("SourceTelemetryEventId IS NOT NULL");
             e.HasOne(x => x.Equipment).WithMany().HasForeignKey(x => x.EquipmentId).OnDelete(DeleteBehavior.Restrict);
         });
 
