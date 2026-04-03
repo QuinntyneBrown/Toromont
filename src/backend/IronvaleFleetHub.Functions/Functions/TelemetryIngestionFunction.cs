@@ -10,6 +10,15 @@ using IronvaleFleetHub.Telemetry;
 
 namespace IronvaleFleetHub.Functions.Functions;
 
+public class TelemetryIngestionOutput
+{
+    [HttpResult]
+    public required HttpResponseData HttpResponse { get; set; }
+
+    [QueueOutput("telemetry-alert-evaluation", Connection = "AzureWebJobsStorage")]
+    public string? AlertEvaluationMessage { get; set; }
+}
+
 public class TelemetryIngestionFunction
 {
     private static readonly int[] RetryDelaysMs = { 1000, 4000, 16000 };
@@ -32,14 +41,17 @@ public class TelemetryIngestionFunction
     }
 
     [Function("TelemetryIngestion")]
-    public async Task<HttpResponseData> Run(
+    public async Task<TelemetryIngestionOutput> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "telemetry")] HttpRequestData req,
         CancellationToken ct)
     {
         // API Key validation - no hardcoded fallback
         if (!req.Headers.TryGetValues("X-Api-Key", out var apiKeyValues))
         {
-            return await CreateErrorResponse(req, HttpStatusCode.Unauthorized, "API key is required.");
+            return new TelemetryIngestionOutput
+            {
+                HttpResponse = await CreateErrorResponse(req, HttpStatusCode.Unauthorized, "API key is required.")
+            };
         }
 
         var apiKey = apiKeyValues.FirstOrDefault();
@@ -48,7 +60,10 @@ public class TelemetryIngestionFunction
 
         if (string.IsNullOrWhiteSpace(apiKey) || apiKey != configuredKey)
         {
-            return await CreateErrorResponse(req, HttpStatusCode.Unauthorized, "Invalid API key.");
+            return new TelemetryIngestionOutput
+            {
+                HttpResponse = await CreateErrorResponse(req, HttpStatusCode.Unauthorized, "Invalid API key.")
+            };
         }
 
         // Deserialize and validate request
@@ -64,17 +79,26 @@ public class TelemetryIngestionFunction
         catch (JsonException ex)
         {
             _logger.LogWarning(ex, "Invalid JSON in telemetry ingestion request");
-            return await CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid request body.");
+            return new TelemetryIngestionOutput
+            {
+                HttpResponse = await CreateErrorResponse(req, HttpStatusCode.BadRequest, "Invalid request body.")
+            };
         }
 
         if (request is null || request.EquipmentId == Guid.Empty)
         {
-            return await CreateErrorResponse(req, HttpStatusCode.BadRequest, "EquipmentId is required.");
+            return new TelemetryIngestionOutput
+            {
+                HttpResponse = await CreateErrorResponse(req, HttpStatusCode.BadRequest, "EquipmentId is required.")
+            };
         }
 
         if (string.IsNullOrWhiteSpace(request.EventType))
         {
-            return await CreateErrorResponse(req, HttpStatusCode.BadRequest, "EventType is required.");
+            return new TelemetryIngestionOutput
+            {
+                HttpResponse = await CreateErrorResponse(req, HttpStatusCode.BadRequest, "EventType is required.")
+            };
         }
 
         var timestamp = request.Timestamp ?? DateTime.UtcNow;
@@ -88,7 +112,7 @@ public class TelemetryIngestionFunction
         {
             try
             {
-                var (eventId, _) = await _repository.InsertTelemetryEventAsync(
+                var (eventId, orgId) = await _repository.InsertTelemetryEventAsync(
                     request.EquipmentId,
                     request.EventType,
                     timestamp,
@@ -100,14 +124,33 @@ public class TelemetryIngestionFunction
                     payloadJson,
                     ct);
 
+                // Enqueue alert evaluation message
+                var alertMessage = new TelemetryAlertEvaluationMessage(
+                    eventId,
+                    request.EquipmentId,
+                    orgId,
+                    timestamp,
+                    request.EventType,
+                    request.Payload?.Temperature ?? 0,
+                    request.Payload?.FuelLevel ?? 0,
+                    request.Payload?.EngineHours ?? 0);
+
                 var response = req.CreateResponse(HttpStatusCode.Accepted);
                 await response.WriteAsJsonAsync(new { eventId, status = "accepted" }, ct);
-                return response;
+
+                return new TelemetryIngestionOutput
+                {
+                    HttpResponse = response,
+                    AlertEvaluationMessage = JsonSerializer.Serialize(alertMessage)
+                };
             }
             catch (ArgumentException ex)
             {
                 // Equipment not found - don't retry
-                return await CreateErrorResponse(req, HttpStatusCode.BadRequest, ex.Message);
+                return new TelemetryIngestionOutput
+                {
+                    HttpResponse = await CreateErrorResponse(req, HttpStatusCode.BadRequest, ex.Message)
+                };
             }
             catch (Exception ex)
             {
@@ -137,8 +180,11 @@ public class TelemetryIngestionFunction
             IsReprocessed = false
         }, ct);
 
-        return await CreateErrorResponse(req, HttpStatusCode.InternalServerError,
-            "Telemetry ingestion failed after retries. Event has been recorded for reprocessing.");
+        return new TelemetryIngestionOutput
+        {
+            HttpResponse = await CreateErrorResponse(req, HttpStatusCode.InternalServerError,
+                "Telemetry ingestion failed after retries. Event has been recorded for reprocessing.")
+        };
     }
 
     private static async Task<HttpResponseData> CreateErrorResponse(
