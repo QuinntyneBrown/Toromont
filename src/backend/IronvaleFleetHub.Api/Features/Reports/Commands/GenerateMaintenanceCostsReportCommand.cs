@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using IronvaleFleetHub.Api.DTOs;
 using IronvaleFleetHub.Api.Services;
