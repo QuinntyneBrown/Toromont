@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Orders.Commands;
 
-public record SubmitOrderCommand : IRequest<Result<PartsOrder>>;
+public record SubmitOrderCommand : IRequest<Result<PartsOrder>>, ISkipValidation;
 
 public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand, Result<PartsOrder>>
 {

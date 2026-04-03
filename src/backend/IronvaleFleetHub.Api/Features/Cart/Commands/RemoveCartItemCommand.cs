@@ -6,7 +6,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Cart.Commands;
 
-public record RemoveCartItemCommand(Guid Id) : IRequest<Result<bool>>;
+public record RemoveCartItemCommand(Guid Id) : IRequest<Result<bool>>, ISkipValidation;
 
 public class RemoveCartItemCommandHandler : IRequestHandler<RemoveCartItemCommand, Result<bool>>
 {

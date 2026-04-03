@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.AIInsights.Commands;
 
-public record DismissPredictionCommand(Guid Id) : IRequest<Result<AIPrediction>>;
+public record DismissPredictionCommand(Guid Id) : IRequest<Result<AIPrediction>>, ISkipValidation;
 
 public class DismissPredictionCommandHandler : IRequestHandler<DismissPredictionCommand, Result<AIPrediction>>
 {

@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Notifications.Commands;
 
-public record MarkNotificationReadCommand(Guid Id) : IRequest<Result<Notification>>;
+public record MarkNotificationReadCommand(Guid Id) : IRequest<Result<Notification>>, ISkipValidation;
 
 public class MarkNotificationReadCommandHandler : IRequestHandler<MarkNotificationReadCommand, Result<Notification>>
 {

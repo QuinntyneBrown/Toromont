@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Users.Commands;
 
-public record ActivateUserCommand(Guid UserId) : IRequest<Result<User>>;
+public record ActivateUserCommand(Guid UserId) : IRequest<Result<User>>, ISkipValidation;
 
 public class ActivateUserCommandHandler : IRequestHandler<ActivateUserCommand, Result<User>>
 {

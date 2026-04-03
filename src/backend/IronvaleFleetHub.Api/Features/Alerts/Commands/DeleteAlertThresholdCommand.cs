@@ -6,7 +6,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Alerts.Commands;
 
-public record DeleteAlertThresholdCommand(Guid Id) : IRequest<Result<bool>>;
+public record DeleteAlertThresholdCommand(Guid Id) : IRequest<Result<bool>>, ISkipValidation;
 
 public class DeleteAlertThresholdCommandHandler : IRequestHandler<DeleteAlertThresholdCommand, Result<bool>>
 {

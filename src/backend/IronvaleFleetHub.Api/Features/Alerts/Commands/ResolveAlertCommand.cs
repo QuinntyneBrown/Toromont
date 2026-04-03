@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Alerts.Commands;
 
-public record ResolveAlertCommand(Guid Id) : IRequest<Result<Alert>>;
+public record ResolveAlertCommand(Guid Id) : IRequest<Result<Alert>>, ISkipValidation;
 
 public class ResolveAlertCommandHandler : IRequestHandler<ResolveAlertCommand, Result<Alert>>
 {

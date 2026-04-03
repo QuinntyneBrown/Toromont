@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Alerts.Commands;
 
-public record AcknowledgeAlertCommand(Guid Id) : IRequest<Result<Alert>>;
+public record AcknowledgeAlertCommand(Guid Id) : IRequest<Result<Alert>>, ISkipValidation;
 
 public class AcknowledgeAlertCommandHandler : IRequestHandler<AcknowledgeAlertCommand, Result<Alert>>
 {

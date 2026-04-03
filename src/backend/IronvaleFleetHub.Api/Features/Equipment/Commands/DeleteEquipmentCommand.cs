@@ -6,7 +6,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Equipment.Commands;
 
-public record DeleteEquipmentCommand(Guid Id) : IRequest<Result<bool>>;
+public record DeleteEquipmentCommand(Guid Id) : IRequest<Result<bool>>, ISkipValidation;
 
 public class DeleteEquipmentCommandHandler : IRequestHandler<DeleteEquipmentCommand, Result<bool>>
 {

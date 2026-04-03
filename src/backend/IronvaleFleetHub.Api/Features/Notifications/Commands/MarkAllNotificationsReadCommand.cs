@@ -1,11 +1,12 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using IronvaleFleetHub.Api.Common;
 using IronvaleFleetHub.Api.Data;
 using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Notifications.Commands;
 
-public record MarkAllNotificationsReadCommand : IRequest;
+public record MarkAllNotificationsReadCommand : IRequest, ISkipValidation;
 
 public class MarkAllNotificationsReadCommandHandler : IRequestHandler<MarkAllNotificationsReadCommand>
 {
