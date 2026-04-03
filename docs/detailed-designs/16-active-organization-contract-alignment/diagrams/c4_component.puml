@@ -1,0 +1,45 @@
+@startuml c4_component
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam rectangle {
+  RoundCorner 10
+  StereotypeFontSize 10
+}
+
+title Active Organization Contract Alignment - C4 Component
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #0E6655
+  FontColor white
+  BorderColor #0B5345
+}
+skinparam rectangle<<backend>> {
+  BackgroundColor #438DD5
+  FontColor white
+  BorderColor #2E6DA4
+}
+skinparam rectangle<<service>> {
+  BackgroundColor #2E86C1
+  FontColor white
+  BorderColor #1F618D
+}
+
+rectangle "Header Org Switcher\n\nDisplays memberships\nChanges active org" <<frontend>> as header
+rectangle "ActiveOrganizationService\n\nLoads /me/context\nStores active org" <<frontend>> as svc
+rectangle "ActiveOrganizationInterceptor\n\nSends X-Active-Organization" <<frontend>> as intc
+rectangle "Me Context API\n\nReturns memberships\nPersists active org" <<backend>> as api
+rectangle "TenantContextMiddleware\n\nResolves org from membership + header" <<service>> as mw
+database "SQL Server\n\nUsers\nUserOrganizations\nOrganizations" as db
+
+header --> svc : select org
+svc --> api : GET /api/v1/me/context\nPUT /api/v1/me/active-organization
+svc --> intc : current org id
+intc --> api : X-Active-Organization
+api --> db : read/write memberships
+api --> mw : request processing path
+mw --> db : validate membership
+
+@enduml

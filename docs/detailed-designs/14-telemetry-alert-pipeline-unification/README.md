@@ -42,6 +42,10 @@ The unified pipeline consists of:
 
 ![Sequence Diagram](diagrams/sequence_telemetry_alert_pipeline.png)
 
+### 2.3 Class Diagram
+
+![Class Diagram](diagrams/class_diagram.png)
+
 ## 3. Changes Required
 
 ### 3.1 Declare a Single Canonical Ingestion Path

@@ -1,0 +1,49 @@
+@startuml class_diagram
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontSize 11
+
+title Active Organization Contract Alignment - Class Diagram
+
+class ActiveOrganizationService {
+  +context$: Observable<CurrentUserContext>
+  +activeOrganizationId$: Observable<string?>
+  +setActiveOrganization(id): Observable<CurrentUserContext>
+}
+
+class ActiveOrganizationInterceptor {
+  +intercept(req, next)
+}
+
+class CurrentUserContextResponse {
+  +User: CurrentUserDto
+  +ActiveOrganizationId: Guid
+  +Memberships: List<MembershipDto>
+}
+
+class MembershipDto {
+  +OrganizationId: Guid
+  +OrganizationName: string
+  +IsDefault: bool
+  +IsActive: bool
+}
+
+class MeController {
+  +GetContext(): Task<ActionResult>
+  +SetActiveOrganization(request): Task<ActionResult>
+}
+
+class TenantContextMiddleware {
+  +InvokeAsync(context, tenantContext, db, ...): Task
+}
+
+ActiveOrganizationService --> ActiveOrganizationInterceptor
+ActiveOrganizationService --> CurrentUserContextResponse
+CurrentUserContextResponse --> MembershipDto
+MeController --> CurrentUserContextResponse
+TenantContextMiddleware --> MembershipDto : validates membership
+
+@enduml

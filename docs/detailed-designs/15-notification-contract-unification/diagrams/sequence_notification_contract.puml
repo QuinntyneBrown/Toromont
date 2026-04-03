@@ -1,0 +1,35 @@
+@startuml sequence_notification_contract
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+
+title Notification Contract Unification - Sequence
+
+participant "Angular SPA" as SPA
+participant "AuthService" as Auth
+participant "NotificationService" as NS
+participant "NotificationHub" as Hub
+participant "HubAudienceResolver" as Resolver
+participant "Feature Handler" as Handler
+participant "NotificationDispatchService" as Dispatch
+database "SQL Server" as DB
+
+SPA -> Auth : getAccessToken()
+Auth --> SPA : bearer token
+SPA -> NS : startConnection(token)
+NS -> Hub : negotiate + connect
+Hub -> Resolver : ResolveAsync(principal)
+Resolver -> DB : load user + active org
+Resolver --> Hub : HubAudience
+Hub --> NS : connected to user-{id}, org-{id}
+
+Handler -> Dispatch : DispatchAsync(...)
+Dispatch -> DB : INSERT Notification
+Dispatch -> DB : COUNT unread
+Dispatch -> Hub : ReceiveNotification(dto)
+Dispatch -> Hub : UpdateBadgeCount(count)
+Hub --> NS : canonical events
+NS --> SPA : update bell + dropdown
+
+@enduml

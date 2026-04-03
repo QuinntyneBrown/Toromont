@@ -1,0 +1,51 @@
+@startuml c4_container
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam rectangle {
+  RoundCorner 10
+  StereotypeFontSize 10
+}
+
+title Telemetry Alert Pipeline Unification - C4 Container
+
+skinparam rectangle<<external>> {
+  BackgroundColor #999999
+  FontColor white
+  BorderColor #777777
+}
+skinparam rectangle<<function>> {
+  BackgroundColor #2E86C1
+  FontColor white
+  BorderColor #1F618D
+}
+skinparam rectangle<<container>> {
+  BackgroundColor #438DD5
+  FontColor white
+  BorderColor #2E6DA4
+}
+skinparam queue {
+  BackgroundColor #F7DC6F
+  BorderColor #B7950B
+}
+
+rectangle "IoT / GPS Device\n\nPosts telemetry readings" <<external>> as device
+rectangle "TelemetryIngestionFunction\n\nValidates request\nPersists TelemetryEvent\nEnqueues evaluation" <<function>> as ingest
+queue "telemetry-alert-evaluation\nqueue" as q
+rectangle "TelemetryAlertEvaluationFunction\n\nLoads event\nEvaluates thresholds\nCreates alerts" <<function>> as eval
+rectangle "Fleet Hub API\n\nRead endpoints for telemetry,\nalerts, dashboard, notifications" <<container>> as api
+rectangle "Angular SPA\n\nCharts, alerts, notification bell" <<external>> as spa
+database "SQL Server\n\nTelemetryEvents\nAlerts\nNotifications\nThresholds" as db
+
+device --> ingest : POST /api/telemetry
+ingest --> db : INSERT TelemetryEvent
+ingest --> q : Publish TelemetryAlertEvaluationMessage
+q --> eval : Queue trigger
+eval --> db : Read event + thresholds
+eval --> db : INSERT Alert + Notification
+spa --> api : Query alerts / telemetry
+api --> db : Read models
+
+@enduml

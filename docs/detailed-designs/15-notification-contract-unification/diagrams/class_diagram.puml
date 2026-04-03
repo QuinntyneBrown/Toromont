@@ -1,0 +1,53 @@
+@startuml class_diagram
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontSize 11
+
+title Notification Contract Unification - Class Diagram
+
+class NotificationHub {
+  +OnConnectedAsync(): Task
+}
+
+interface IHubAudienceResolver {
+  +ResolveAsync(principal, ct): Task<HubAudience?>
+}
+
+class HubAudience {
+  +UserId: Guid
+  +OrganizationId: Guid
+}
+
+interface INotificationDispatchService {
+  +DispatchAsync(userId, type, title, message, ...): Task
+}
+
+class NotificationDispatchService {
+  +DispatchAsync(userId, type, title, message, ...): Task
+}
+
+class NotificationDto {
+  +Id: Guid
+  +UserId: Guid
+  +Type: string
+  +Title: string
+  +Message: string
+  +IsRead: bool
+  +EntityType: string?
+  +EntityId: Guid?
+}
+
+class WorkOrderCreatedNotificationHandler
+class WorkOrderStatusChangedNotificationHandler
+
+NotificationHub --> IHubAudienceResolver
+IHubAudienceResolver --> HubAudience
+NotificationDispatchService ..|> INotificationDispatchService
+NotificationDispatchService --> NotificationDto
+WorkOrderCreatedNotificationHandler --> INotificationDispatchService
+WorkOrderStatusChangedNotificationHandler --> INotificationDispatchService
+
+@enduml

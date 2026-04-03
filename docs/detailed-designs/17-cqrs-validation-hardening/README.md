@@ -41,6 +41,10 @@ The API already has MediatR request handlers and pipeline behaviors, but the cur
 
 ![Sequence Diagram](diagrams/sequence_validation_pipeline.png)
 
+### 2.3 Class Diagram
+
+![Class Diagram](diagrams/class_diagram.png)
+
 ## 3. Changes Required
 
 ### 3.1 Add Global ProblemDetails Exception Handling

@@ -37,6 +37,10 @@ The SPA must never use `aadTenantId` as the business tenant header.
 
 ![Sequence Diagram](diagrams/sequence_active_org_switch.png)
 
+### 2.3 Class Diagram
+
+![Class Diagram](diagrams/class_diagram.png)
+
 ## 3. Changes Required
 
 ### 3.1 Add a Current-User Context Endpoint

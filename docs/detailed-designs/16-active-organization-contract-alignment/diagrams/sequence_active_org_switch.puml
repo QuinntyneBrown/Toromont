@@ -1,0 +1,33 @@
+@startuml sequence_active_org_switch
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+
+title Active Organization Contract Alignment - Sequence
+
+participant "Angular SPA" as SPA
+participant "ActiveOrganizationService" as Svc
+participant "Me API" as API
+database "SQL Server" as DB
+participant "Interceptor" as Int
+participant "TenantContextMiddleware" as TCM
+
+SPA -> Svc : app bootstrap
+Svc -> API : GET /api/v1/me/context
+API -> DB : load memberships + default org
+API --> Svc : CurrentUserContextResponse
+Svc --> SPA : render org switcher
+
+SPA -> Svc : select Org B
+Svc -> API : PUT /api/v1/me/active-organization
+API -> DB : validate membership\npersist active org
+API --> Svc : updated context
+
+SPA -> Int : subsequent API request
+Int -> API : X-Active-Organization: OrgB
+API -> TCM : request pipeline
+TCM -> DB : validate user membership
+TCM --> API : tenant context set
+
+@enduml

@@ -1,0 +1,69 @@
+@startuml class_diagram
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontSize 11
+
+title Telemetry Alert Pipeline Unification - Class Diagram
+
+class TelemetryIngestionFunction {
+  +Run(req, ct): Task<HttpResponseData>
+}
+
+class TelemetryAlertEvaluationFunction {
+  +Run(message, ct): Task
+}
+
+interface ITelemetryRepository {
+  +InsertTelemetryEventAsync(...): Task<Guid>
+}
+
+interface ITelemetryAlertEvaluationService {
+  +EvaluateAsync(message, ct): Task
+}
+
+class TelemetryAlertEvaluationService {
+  +EvaluateAsync(message, ct): Task
+}
+
+class TelemetryAlertEvaluationMessage {
+  +TelemetryEventId: Guid
+  +EquipmentId: Guid
+  +OrganizationId: Guid
+  +Timestamp: DateTime
+  +EventType: string
+}
+
+class TelemetryEvent {
+  +Id: Guid
+  +EquipmentId: Guid
+  +OrganizationId: Guid
+  +Temperature: double
+  +FuelLevel: double
+}
+
+class Alert {
+  +Id: Guid
+  +AlertType: string
+  +SourceTelemetryEventId: Guid?
+}
+
+class Notification {
+  +Id: Guid
+  +Type: string
+  +EntityType: string?
+  +EntityId: Guid?
+}
+
+TelemetryIngestionFunction --> ITelemetryRepository
+TelemetryIngestionFunction --> TelemetryAlertEvaluationMessage : publishes
+TelemetryAlertEvaluationFunction --> ITelemetryAlertEvaluationService
+TelemetryAlertEvaluationService --> TelemetryAlertEvaluationMessage
+TelemetryAlertEvaluationService --> TelemetryEvent : loads
+TelemetryAlertEvaluationService --> Alert : creates
+TelemetryAlertEvaluationService --> Notification : creates
+ITelemetryAlertEvaluationService <|.. TelemetryAlertEvaluationService
+
+@enduml

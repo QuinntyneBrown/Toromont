@@ -1,0 +1,45 @@
+@startuml class_diagram
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontSize 11
+
+title Tenant Query Filter Hardening - Class Diagram
+
+interface ITenantContext {
+  +OrganizationId: Guid
+  +UserId: Guid
+}
+
+class FleetHubDbContext {
+  -_tenantContext: ITenantContext
+  +CurrentOrganizationId: Guid
+  +TenantResolved: bool
+  +OnModelCreating(modelBuilder)
+}
+
+class Equipment {
+  +OrganizationId: Guid
+}
+
+class WorkOrder {
+  +OrganizationId: Guid
+}
+
+class Notification {
+  +OrganizationId: Guid
+}
+
+class TenantContextMiddleware {
+  +InvokeAsync(...): Task
+}
+
+TenantContextMiddleware --> ITenantContext
+FleetHubDbContext --> ITenantContext
+FleetHubDbContext --> Equipment : HasQueryFilter
+FleetHubDbContext --> WorkOrder : HasQueryFilter
+FleetHubDbContext --> Notification : HasQueryFilter
+
+@enduml

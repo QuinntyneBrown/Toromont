@@ -1,0 +1,33 @@
+@startuml sequence_telemetry_alert_pipeline
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+
+title Telemetry Alert Pipeline Unification - Sequence
+
+participant "IoT Device" as Device
+participant "TelemetryIngestionFunction" as Ingest
+database "SQL Server" as DB
+queue "Evaluation Queue" as Q
+participant "TelemetryAlertEvaluationFunction" as EvalFn
+participant "TelemetryAlertEvaluationService" as EvalSvc
+participant "Fleet Hub API" as API
+participant "Angular SPA" as SPA
+
+Device -> Ingest : POST /api/telemetry
+Ingest -> DB : INSERT TelemetryEvent
+Ingest -> Q : Publish evaluation message
+Ingest --> Device : 202 Accepted
+
+Q -> EvalFn : Trigger message
+EvalFn -> EvalSvc : EvaluateAsync(message)
+EvalSvc -> DB : Load event + thresholds
+EvalSvc -> DB : INSERT Alert
+EvalSvc -> DB : INSERT Notification
+
+SPA -> API : GET /api/v1/alerts
+API -> DB : Read alert state
+API --> SPA : Alert list / unread count
+
+@enduml

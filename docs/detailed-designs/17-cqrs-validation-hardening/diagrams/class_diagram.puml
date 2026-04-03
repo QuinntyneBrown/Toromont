@@ -1,0 +1,39 @@
+@startuml class_diagram
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontSize 11
+
+title CQRS & Validation Hardening - Class Diagram
+
+class LoggingBehavior~TRequest,TResponse~ {
+  +Handle(request, next, ct): Task<TResponse>
+}
+
+class ValidationBehavior~TRequest,TResponse~ {
+  +Handle(request, next, ct): Task<TResponse>
+}
+
+class CreateWorkOrderCommand
+class CreateWorkOrderCommandValidator {
+  +Validate(command)
+}
+
+class BusinessRuleException
+
+class ProblemDetailsExceptionHandler {
+  +Handle(context): Task
+}
+
+interface "IRequestHandler<TRequest, TResponse>" as IRequestHandler
+
+ValidationBehavior --> CreateWorkOrderCommandValidator
+CreateWorkOrderCommandValidator --> CreateWorkOrderCommand
+LoggingBehavior --> ValidationBehavior : wraps
+ValidationBehavior --> IRequestHandler : invokes
+ProblemDetailsExceptionHandler --> BusinessRuleException : maps
+ProblemDetailsExceptionHandler --> ValidationBehavior : maps ValidationException
+
+@enduml

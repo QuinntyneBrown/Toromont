@@ -1,0 +1,45 @@
+@startuml c4_component
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam rectangle {
+  RoundCorner 10
+  StereotypeFontSize 10
+}
+
+title Notification Contract Unification - C4 Component
+
+skinparam rectangle<<frontend>> {
+  BackgroundColor #0E6655
+  FontColor white
+  BorderColor #0B5345
+}
+skinparam rectangle<<backend>> {
+  BackgroundColor #438DD5
+  FontColor white
+  BorderColor #2E6DA4
+}
+skinparam rectangle<<service>> {
+  BackgroundColor #2E86C1
+  FontColor white
+  BorderColor #1F618D
+}
+
+rectangle "Header + NotificationService\n\nLoads inbox\nStarts SignalR\nUpdates bell state" <<frontend>> as fe
+rectangle "NotificationHub\n\nResolves audience\nJoins canonical groups" <<backend>> as hub
+rectangle "HubAudienceResolver\n\nMaps claims -> internal user/org" <<service>> as resolver
+rectangle "NotificationDispatchService\n\nPersists NotificationDto\nPushes ReceiveNotification" <<service>> as dispatch
+rectangle "Feature Handlers\n\nWork order / order / alert events" <<backend>> as handlers
+database "SQL Server\n\nNotifications\nUsers\nMemberships" as db
+
+fe --> hub : authenticated SignalR connect
+hub --> resolver : resolve audience
+resolver --> db : load user + active org
+handlers --> dispatch : DispatchAsync(...)
+dispatch --> db : save notification
+dispatch --> hub : canonical event + badge count
+hub --> fe : ReceiveNotification\nUpdateBadgeCount
+
+@enduml

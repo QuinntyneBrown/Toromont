@@ -1,0 +1,46 @@
+@startuml c4_component
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam rectangle {
+  RoundCorner 10
+  StereotypeFontSize 10
+}
+
+title CQRS & Validation Hardening - C4 Component
+
+skinparam rectangle<<client>> {
+  BackgroundColor #999999
+  FontColor white
+  BorderColor #777777
+}
+skinparam rectangle<<backend>> {
+  BackgroundColor #438DD5
+  FontColor white
+  BorderColor #2E6DA4
+}
+skinparam rectangle<<pipeline>> {
+  BackgroundColor #2E86C1
+  FontColor white
+  BorderColor #1F618D
+}
+
+rectangle "API Client" <<client>> as client
+rectangle "Controller" <<backend>> as ctrl
+rectangle "LoggingBehavior" <<pipeline>> as log
+rectangle "ValidationBehavior" <<pipeline>> as val
+rectangle "Request Handler" <<backend>> as handler
+rectangle "Exception Mapper\nProblemDetails" <<pipeline>> as err
+database "SQL Server" as db
+
+client --> ctrl : HTTP request
+ctrl --> log : IMediator.Send(...)
+log --> val : next()
+val --> handler : validated request
+handler --> db : execute business logic
+handler --> err : throw on failure
+err --> client : stable ProblemDetails
+
+@enduml

@@ -46,6 +46,10 @@ Application request handlers stay on the filtered path.
 
 ![Sequence Diagram](diagrams/sequence_tenant_filter_bootstrap.png)
 
+### 2.3 Class Diagram
+
+![Class Diagram](diagrams/class_diagram.png)
+
 ## 3. Changes Required
 
 ### 3.1 Remove Conditional Filter Registration

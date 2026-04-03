@@ -45,6 +45,10 @@ Raw Entra claim values are used only to authenticate the caller and resolve the 
 
 ![Sequence Diagram](diagrams/sequence_notification_contract.png)
 
+### 2.3 Class Diagram
+
+![Class Diagram](diagrams/class_diagram.png)
+
 ## 3. Changes Required
 
 ### 3.1 Add a Shared Hub Audience Resolver

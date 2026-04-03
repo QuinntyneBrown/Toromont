@@ -1,0 +1,31 @@
+@startuml sequence_tenant_filter_bootstrap
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+
+title Tenant Query Filter Hardening - Sequence
+
+participant "HTTP Request" as Req
+participant "TenantContextMiddleware" as TCM
+participant "FleetHubDbContext" as Db
+participant "Feature Handler" as H
+database "SQL Server" as SQL
+
+Req -> TCM : authenticated request
+TCM -> TCM : resolve active organization
+TCM -> Db : set scoped tenant state
+
+Req -> H : business operation
+H -> Db : query Equipment / WorkOrders
+Db -> Db : apply HasQueryFilter\nTenantResolved && OrgId match
+Db -> SQL : filtered query
+SQL --> Db : tenant rows only
+Db --> H : filtered results
+
+== Bootstrap path ==
+
+TCM -> Db : IgnoreQueryFilters()\nfor user / membership lookup
+Db -> SQL : explicit unfiltered query
+
+@enduml

@@ -1,0 +1,30 @@
+@startuml sequence_validation_pipeline
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+
+title CQRS & Validation Hardening - Sequence
+
+participant "API Client" as Client
+participant "Controller" as Ctrl
+participant "LoggingBehavior" as Log
+participant "ValidationBehavior" as Val
+participant "Handler" as H
+participant "Exception Mapper" as Err
+
+Client -> Ctrl : POST /api/v1/work-orders
+Ctrl -> Log : IMediator.Send(command)
+Log -> Val : Handle(command)
+Val -> Val : run validators
+
+alt validation passes
+  Val -> H : Handle(command)
+  H --> Ctrl : Result<T>
+  Ctrl --> Client : 201 / 200
+else validation fails
+  Val -> Err : throw ValidationException
+  Err --> Client : 400 ProblemDetails
+end
+
+@enduml
