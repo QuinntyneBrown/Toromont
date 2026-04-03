@@ -1,0 +1,29 @@
+<div class="org-switcher" *ngIf="context$ | async as ctx" data-testid="org-switcher">
+  <button
+    class="org-switcher-btn"
+    data-testid="org-switcher-toggle"
+    (click)="toggleDropdown()"
+    [class.multi-org]="ctx.memberships.length > 1">
+    <span class="org-name">{{ getActiveOrgName(ctx) }}</span>
+    <svg *ngIf="ctx.memberships.length > 1" class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </button>
+
+  <div class="org-dropdown" *ngIf="dropdownOpen && ctx.memberships.length > 1" data-testid="org-dropdown">
+    <div
+      *ngFor="let m of ctx.memberships"
+      class="org-option"
+      [attr.data-testid]="'org-option-' + m.organizationId"
+      [class.active]="m.isActive"
+      (click)="selectOrganization(m)">
+      <span class="org-option-name">{{ m.organizationName }}</span>
+      <svg *ngIf="m.isActive" class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Helper method needed in component -->
+<!-- getActiveOrgName returns the active org's name from memberships -->
