@@ -172,6 +172,59 @@ if (!string.IsNullOrEmpty(aiConnectionString))
 
 var app = builder.Build();
 
+// --- Global Exception Handler (ProblemDetails) ---
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
+        var exception = exceptionFeature?.Error;
+
+        context.Response.ContentType = "application/problem+json";
+
+        switch (exception)
+        {
+            case ValidationException validationEx:
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                var errors = validationEx.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+                    title = "Validation Failed",
+                    status = 400,
+                    errors
+                });
+                break;
+
+            case BusinessRuleException businessEx:
+                context.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    type = "https://tools.ietf.org/html/rfc9110#section-15.5.23",
+                    title = "Business Rule Violation",
+                    status = 422,
+                    detail = businessEx.Message
+                });
+                break;
+
+            default:
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    type = "https://tools.ietf.org/html/rfc9110#section-15.6.1",
+                    title = "Internal Server Error",
+                    status = 500,
+                    detail = app.Environment.IsDevelopment()
+                        ? exception?.Message
+                        : "An unexpected error occurred."
+                });
+                break;
+        }
+    });
+});
+
 // --- Middleware pipeline ---
 
 // Security headers
