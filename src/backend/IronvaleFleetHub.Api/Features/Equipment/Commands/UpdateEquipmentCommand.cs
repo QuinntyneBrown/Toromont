@@ -50,3 +50,11 @@ public class UpdateEquipmentCommandHandler : IRequestHandler<UpdateEquipmentComm
         return Result<Models.Equipment>.Success(equipment);
     }
 }
+
+public class UpdateEquipmentCommandValidator : AbstractValidator<UpdateEquipmentCommand>
+{
+    public UpdateEquipmentCommandValidator()
+    {
+        RuleFor(x => x.Id).NotEmpty();
+    }
+}
