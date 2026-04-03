@@ -27,4 +27,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IronvaleFleetHub.Telemetry\IronvaleFleetHub.Telemetry.csproj" />
+  </ItemGroup>
+
 </Project>
