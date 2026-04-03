@@ -62,3 +62,12 @@ public class IngestTelemetryCommandHandler : IRequestHandler<IngestTelemetryComm
         return Result<Guid>.Success(telemetryEvent.Id);
     }
 }
+
+public class IngestTelemetryCommandValidator : AbstractValidator<IngestTelemetryCommand>
+{
+    public IngestTelemetryCommandValidator()
+    {
+        RuleFor(x => x.EquipmentId).NotEmpty();
+        RuleFor(x => x.EventType).NotEmpty();
+    }
+}
