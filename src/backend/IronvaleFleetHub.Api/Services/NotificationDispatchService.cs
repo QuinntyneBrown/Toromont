@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
+using IronvaleFleetHub.Api.DTOs;
 using IronvaleFleetHub.Api.Hubs;
 using IronvaleFleetHub.Api.Models;
 
@@ -31,7 +32,6 @@ public class NotificationDispatchService : INotificationDispatchService
         Guid? entityId = null,
         CancellationToken ct = default)
     {
-        // Look up user to get organizationId
         var user = await _db.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == userId, ct);
@@ -42,7 +42,6 @@ public class NotificationDispatchService : INotificationDispatchService
             return;
         }
 
-        // Create notification record
         var notification = new Notification
         {
             Id = Guid.NewGuid(),
@@ -60,19 +59,22 @@ public class NotificationDispatchService : INotificationDispatchService
         _db.Notifications.Add(notification);
         await _db.SaveChangesAsync(ct);
 
-        // Push via SignalR to user's group
+        // Build unified DTO for both REST and SignalR
+        var dto = new NotificationDto(
+            notification.Id,
+            notification.UserId,
+            notification.Type,
+            notification.Title,
+            notification.Message,
+            notification.IsRead,
+            notification.CreatedAt,
+            notification.EntityType,
+            notification.EntityId);
+
+        // Push via SignalR using canonical event name
         await _hubContext.Clients
             .Group($"user-{userId}")
-            .SendAsync("ReceiveNotification", new
-            {
-                notification.Id,
-                notification.Type,
-                notification.Title,
-                notification.Message,
-                notification.EntityType,
-                notification.EntityId,
-                notification.CreatedAt
-            }, ct);
+            .SendAsync("ReceiveNotification", dto, ct);
 
         // Update badge count
         var unreadCount = await _db.Notifications
@@ -92,13 +94,11 @@ public class NotificationDispatchService : INotificationDispatchService
         if (preferences?.EmailEnabled == true)
         {
             _logger.LogInformation("Email notification queued for user {UserId}: {Title}", userId, title);
-            // Email dispatch would be handled by an external email service
         }
 
         if (preferences?.SmsEnabled == true)
         {
             _logger.LogInformation("SMS notification queued for user {UserId}: {Title}", userId, title);
-            // SMS dispatch would be handled by an external SMS service
         }
     }
 }
