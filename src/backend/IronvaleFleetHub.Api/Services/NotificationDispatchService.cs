@@ -120,7 +120,7 @@ public class NotificationDispatchService : INotificationDispatchService
             if (_smsChannel is not null && _templateRenderer is not null)
             {
                 var smsRequest = _templateRenderer.RenderSms(
-                    user.PhoneNumber ?? "unknown", type, title, message);
+                    "555-0000", type, title, message);
                 var result = await _smsChannel.SendAsync(smsRequest, ct);
                 await RecordDeliveryAttemptAsync(notification.Id, smsRequest.To, type, result, ct);
             }
