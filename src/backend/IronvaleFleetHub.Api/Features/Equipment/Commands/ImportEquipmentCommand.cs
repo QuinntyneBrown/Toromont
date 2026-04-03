@@ -77,3 +77,11 @@ public class ImportEquipmentCommandHandler : IRequestHandler<ImportEquipmentComm
         return new ImportEquipmentResult(upsertCount);
     }
 }
+
+public class ImportEquipmentCommandValidator : AbstractValidator<ImportEquipmentCommand>
+{
+    public ImportEquipmentCommandValidator()
+    {
+        RuleFor(x => x.FileStream).NotNull();
+    }
+}
