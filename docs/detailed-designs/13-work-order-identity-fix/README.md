@@ -270,7 +270,7 @@ test.describe('Work Order Technician Assignment', () => {
 - The users API endpoint (`GET /api/v1/users`) requires Admin role. For technician assignment, either: (a) relax the endpoint to allow FleetManager access, or (b) create a dedicated `GET /api/v1/users/assignable` endpoint that returns only assignable users (Technician + FleetManager roles) and is accessible to any authenticated user with write access.
 - The `assignedToUserId` must be validated server-side — the backend should verify the user exists in the same organization.
 
-## 6. Open Questions
+## 6. Design Decisions (formerly Open Questions)
 
-1. **User list access.** The current `GET /api/v1/users` is Admin-only. Should FleetManagers and Technicians also be able to list assignable users for work order creation, or should a separate endpoint be created?
-2. **User search.** Should the assignee dropdown support typeahead search for organizations with many users, or is a simple dropdown sufficient for the expected org size?
+1. **User list access:** resolved. `GET /api/v1/users/assignable` already exists with `RequireWrite` policy, returning active users with Technician or FleetManager roles. This endpoint was designed specifically for work-order assignment dropdowns. No additional endpoint is needed.
+2. **User search:** simple dropdown for v1. The expected organization size (tens of users, not thousands) does not justify typeahead search complexity. A `<select>` populated by the assignable users endpoint is sufficient. If organizations grow beyond ~50 users, a Kendo ComboBox with server-side filtering can be introduced later.

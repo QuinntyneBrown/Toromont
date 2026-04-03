@@ -361,8 +361,8 @@ This design covers two independent delivery channels plus their integration with
 
 Email and SMS channels (20A, 20B) can be implemented independently and tested in isolation. The integration step (20C) wires them into the existing notification pipeline.
 
-## 10. Open Questions
+## 10. Design Decisions (formerly Open Questions)
 
-1. Should captured email bodies be stored only on disk, or also indexed in SQL for easier search?
-2. Should `ConsoleSmsChannel` support a file sink in addition to repository storage for non-database local runs?
-3. Is `CompositeEmailChannel` sufficient, or do we want an explicit switch between SMTP and file-drop behavior?
+1. **Email body storage:** disk only via `FileDropEmailChannel`. SQL indexing adds complexity for a development tool — developers can grep `.eml` files or use MailHog's built-in search. If MailHog is running, emails are already searchable in its web UI at `http://localhost:8025`.
+2. **ConsoleSmsChannel file sink:** no file sink. The `DevSmsMessageRecord` entity in `FleetHubDbContext` is always available in local development (in-memory or SQL). A file sink adds no value when the database is the source of truth for SMS inspection via `DevNotificationController`.
+3. **CompositeEmailChannel sufficiency:** yes, `CompositeEmailChannel` is sufficient. It tries SMTP first, falls back to file drop automatically. An explicit switch adds configuration complexity without improving the developer experience. The `DevNotificationDeliveryOptions.UseSmtp` flag already controls whether SMTP is attempted.

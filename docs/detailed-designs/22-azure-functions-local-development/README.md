@@ -317,9 +317,9 @@ The `TelemetryIngestionFunction` writes telemetry events with an `OrganizationId
 
 The existing `DataSeeder` seeds equipment for both `Northern Construction Ltd.` (Org1) and `Pacific Mining Corp.` (Org2), providing adequate multi-tenant test coverage.
 
-## 8. Open Questions
+## 8. Design Decisions (formerly Open Questions)
 
-1. Should the Functions project include a dev-only HTTP endpoint to list recent dead-letter entries, or is direct SQL querying sufficient?
-2. Should the API expose a development-only bypass endpoint (`POST /api/dev/telemetry/ingest`) that writes directly to the in-memory database, avoiding the need to run the Functions host at all?
-3. Should the EF Core migrations be shared between the API and Functions projects, or should the Functions project manage its own schema via Dapper SQL scripts?
-4. Should the `DevTelemetrySeeder` reuse the API's `DataSeeder` logic (via a shared library), or maintain its own minimal seed set?
+1. **Dead-letter inspection endpoint:** direct SQL querying is sufficient. Dead-letter entries are a rare diagnostic scenario, not a routine workflow. Adding a dev-only HTTP endpoint increases the API surface for minimal benefit. Developers can query `SELECT * FROM TelemetryDeadLetters ORDER BY CreatedAt DESC` directly using any SQL client.
+2. **API bypass endpoint:** yes, add `POST /api/dev/telemetry/ingest` to the main API. This endpoint writes telemetry directly to `FleetHubDbContext` (in-memory or SQL) without requiring the Functions host or Azurite. It is the cheapest way to support developers who only need basic telemetry flow. The endpoint is guarded by `IHostEnvironment.IsDevelopment()` and follows the `DevWorkflowController` pattern. This is the recommended default for most developers; the full Functions pipeline is only needed when testing retry, dead-letter, or API key behavior.
+3. **EF Core migrations sharing:** the Functions project manages its own schema via Dapper SQL scripts. The Functions project already uses `DapperTelemetryRepository` with raw SQL, not EF Core. Introducing EF Core into the Functions project to share migrations would add a dependency and change the established pattern. When both processes share a database, the API's EF Core migrations create all tables and the Functions project writes to them via Dapper.
+4. **DevTelemetrySeeder approach:** use the shared SQL database with the API's `DataSeeder` handling all seed data. This eliminates the need for a separate `DevTelemetrySeeder` entirely. When using the shared SQL approach (Option A), the API seeds organizations, equipment, and thresholds. When using independent databases (Option B), developers run the API once to seed, then point both processes at the same database. A separate seeder in the Functions project is not worth the maintenance cost.

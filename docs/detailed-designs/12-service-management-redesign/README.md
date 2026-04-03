@@ -334,7 +334,7 @@ test.describe('Status Change Error Handling', () => {
 });
 ```
 
-## 5. Open Questions
+## 5. Design Decisions (formerly Open Questions)
 
-1. **Kendo Scheduler drag-drop.** The design mentions drag-drop rescheduling. Should the drag-and-drop call `PUT /api/v1/work-orders/{id}/status` to update the `requestedDate`, or should there be a dedicated reschedule endpoint?
-2. **Kendo Grid toolbar.** Should the Kendo Grid include an inline toolbar for bulk actions (e.g., bulk close completed work orders)?
+1. **Kendo Scheduler drag-drop rescheduling:** use the existing `PUT /api/v1/work-orders/{id}` endpoint to update `RequestedDate`. A dedicated reschedule endpoint adds API surface for a single field update. The Kendo Scheduler's `dragEnd` event fires with the new date/time — the component maps this to the existing update command with only the `RequestedDate` field changed.
+2. **Kendo Grid bulk actions:** no bulk actions for v1. Bulk close/complete requires batch API support (`PATCH` with multiple IDs or a batch endpoint), adds complexity to the grid toolbar, and needs confirmation UX. Individual work order status changes via the existing detail view are sufficient for the initial deployment.

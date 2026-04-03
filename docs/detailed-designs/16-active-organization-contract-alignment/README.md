@@ -225,7 +225,7 @@ test('switching org refreshes dashboard with new organization data', async ({ pa
 - The header remains advisory, not authoritative; the backend owns final tenant resolution.
 - Client local state must never be treated as proof of org access.
 
-## 6. Open Questions
+## 6. Design Decisions (formerly Open Questions)
 
-1. Should `PUT /api/v1/me/active-organization` update `IsDefault`, or should the active org remain session-only?
-2. Should the active organization also be reflected in the SignalR connection contract, or should the hub resolve it independently on connect?
+1. **Active organization persistence:** session-only, do not persist `IsDefault`. The `PUT /api/v1/me/active-organization` endpoint sets the active org in the user's session (via the `X-Active-Organization` header stored client-side). Persisting `IsDefault` on `UserOrganization` adds a write on every org switch, requires a migration, and creates a sync problem if the user switches orgs on multiple devices. Session-only is simpler and avoids database writes for a UI preference.
+2. **SignalR hub active organization:** the hub resolves the active organization independently from claims on connect. The SignalR `OnConnectedAsync` method reads the user's `OrganizationId` claim (set by `TenantContextMiddleware`) to join the correct group. This is consistent with the existing middleware pattern and avoids coupling the hub to the REST API's session state. When the user switches orgs, the client disconnects and reconnects, triggering a fresh group assignment.

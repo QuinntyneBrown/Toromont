@@ -388,8 +388,8 @@ if (builder.Environment.IsDevelopment())
 
 In production, `IAiInsightsService` and `IAiSearchService` are registered with Azure OpenAI-backed implementations. The interface contracts remain identical.
 
-## 9. Open Questions
+## 9. Design Decisions (formerly Open Questions)
 
-1. Should the synonym catalog live in code, JSON, or a database table for easier updates?
-2. Is the rule-based local search good enough, or do we want to support local embeddings in a later iteration?
-3. Should the optional Ollama integration cover only explanation text, or also parts-search query expansion?
+1. **Synonym catalog storage:** in code as a static `Dictionary<string, string[]>` within `SynonymCatalog`. This is the cheapest option — no file parsing, no database queries, no configuration. The catalog is small (dozens of entries for heavy equipment domain terms), changes infrequently, and benefits from compile-time checking. If the catalog grows beyond ~200 entries, it can be migrated to JSON.
+2. **Rule-based vs local embeddings:** rule-based is sufficient for v1. Local embeddings require additional dependencies (ML.NET, ONNX, or a local model server), increase memory usage, and add setup complexity. The token-based lexical search with synonym expansion provides adequate results for the seeded parts catalog. Embeddings can be explored in a later iteration if search quality is insufficient.
+3. **Ollama integration scope:** explanation text only. Limiting Ollama to enriching narrative explanations (predictions, anomaly descriptions) keeps the integration surface small and testable. Parts-search query expansion via Ollama adds complexity to the search pipeline and makes results non-deterministic, which conflicts with the goal of repeatable test behavior.

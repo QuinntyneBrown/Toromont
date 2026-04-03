@@ -320,7 +320,7 @@ test.describe('Notification Preferences', () => {
 - SignalR connection must include the JWT access token for authentication.
 - Notification preferences updates must not allow cross-user modification.
 
-## 6. Open Questions
+## 6. Design Decisions (formerly Open Questions)
 
-1. **Notification dropdown pagination.** The design shows max 20 notifications. Should there be a "View All" link that navigates to a full notification history page, or is the dropdown sufficient?
-2. **SignalR reconnection.** `withAutomaticReconnect()` is already configured. Should the UI show a connection status indicator when SignalR is disconnected?
+1. **Notification dropdown pagination:** add a "View All" link at the bottom of the dropdown that navigates to a full notification list page. The dropdown shows the 20 most recent notifications. This is the cheapest approach — it requires only a `routerLink` in the dropdown template and a simple list component that calls `GET /api/v1/notifications` with pagination. No changes to the existing notification API are needed.
+2. **SignalR reconnection indicator:** no connection status indicator for v1. `withAutomaticReconnect()` handles transient disconnections transparently. Adding a visible indicator requires UI design decisions (where to show it, styling, animations) and increases scope. If users report confusion about stale notifications, an indicator can be added later.

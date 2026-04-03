@@ -245,8 +245,8 @@ public async Task Alert_pipeline_persists_notification_record()
 - API keys remain validated only at the ingestion edge.
 - Idempotent processing prevents replay-based alert amplification.
 
-## 6. Open Questions
+## 6. Design Decisions (formerly Open Questions)
 
-1. Should the durable message transport be Azure Storage Queue or Service Bus?
-2. Should alert-evaluation dead letters be stored in SQL like ingestion dead letters, or handled by queue-native poison message support?
-3. Do alert notifications need recipient targeting at evaluation time, or is organization-scoped notification creation sufficient for the first iteration?
+1. **Durable message transport:** Azure Storage Queue. Storage Queues are significantly cheaper than Service Bus ($0.00036/10K operations vs Service Bus Basic at $0.05/million operations plus a base cost). The pipeline does not need Service Bus features (topics, sessions, scheduled delivery). Storage Queues provide at-least-once delivery and 7-day message retention, which is sufficient for alert evaluation messages.
+2. **Alert-evaluation dead letters:** queue-native poison message support. Azure Storage Queues move messages to a `{queue-name}-poison` queue after the configured `maxDequeueCount` (default 5). This is zero-cost infrastructure — no additional SQL tables, no custom dead-letter logic. Poison messages are inspectable via Azure Storage Explorer or Azurite in local development.
+3. **Alert notification recipient targeting:** organization-scoped notification creation for v1. Creating a `Notification` entity scoped to the organization (via `OrganizationId`) is sufficient. All org members with matching `NotificationPreference` settings receive the notification via SignalR broadcast. Per-user targeting (e.g., only the equipment's assigned technician) adds query complexity and can be introduced in a later iteration when user roles are more granular.

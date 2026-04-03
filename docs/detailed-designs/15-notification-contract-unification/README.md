@@ -231,7 +231,7 @@ test('live notification appears in bell dropdown after domain event', async ({ p
 - Notification DTOs must expose only fields safe for the current user.
 - Direct hub methods for arbitrary `SendToUser` and `SendToOrganization` should be restricted or removed to avoid misuse.
 
-## 6. Open Questions
+## 6. Design Decisions (formerly Open Questions)
 
-1. Should the hub remain app-hosted, or should the platform move to Azure SignalR Service for scale-out?
-2. Should work-order status changes create inbox notifications for every org member, or remain an org broadcast plus optional inbox entry?
+1. **SignalR hosting model:** remain app-hosted for v1. Azure SignalR Service adds a monthly cost (~$50/unit for Standard tier). The application is pre-production with a small user base. App-hosted SignalR supports the expected concurrency (tens of simultaneous connections, not thousands). When the application needs scale-out across multiple API instances, migrating to Azure SignalR Service is a configuration change (`AddAzureSignalR()` in `Program.cs`) with no client-side changes.
+2. **Work-order status change notifications:** org broadcast only, no inbox entry for status changes. Creating an inbox `Notification` entity for every status change on every work order would generate high write volume (e.g., 5 work orders × 4 status transitions = 20 notifications per cycle). For v1, status changes are broadcast via SignalR to connected org members only. Users who are offline do not receive a persistent notification. Inbox entries can be added selectively for critical transitions (e.g., work order completion) in a later iteration.

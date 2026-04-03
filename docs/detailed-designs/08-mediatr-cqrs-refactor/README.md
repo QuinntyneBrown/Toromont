@@ -817,12 +817,9 @@ Each step:
 - **Validation runs before handlers.** The `ValidationBehavior` pipeline ensures no malformed data reaches handler logic.
 - **No sensitive data in logs.** `LoggingBehavior` logs only request type names and durations, not request payloads.
 
-## 12. Open Questions
+## 12. Design Decisions (formerly Open Questions)
 
-1. **Result<T> vs exceptions for business errors:** This design proposes `Result<T>` for expected business failures (e.g., duplicate serial number) and exceptions for unexpected errors. An alternative is to use exceptions for all failures and rely on the global exception handler. The team should decide which pattern they prefer.
-
-2. **Existing service interfaces:** Services like `IReportGenerationService` and `IExportService` contain significant logic. Should they remain as injected services called by handlers, or should their logic be absorbed into the handlers themselves? Recommendation: keep them as services — they represent reusable domain capabilities, not request-specific operations.
-
-3. **DTOs vs MediatR records:** Existing request DTOs (e.g., `CreateEquipmentRequest`) overlap with the new MediatR command records. Should controllers accept the existing DTOs and map to commands, or should the MediatR commands be the API contract directly? Recommendation: use MediatR commands as the API contract to avoid mapping boilerplate.
-
-4. **Notification handler failure isolation:** If a `INotificationHandler` fails (e.g., SignalR push fails), should it fail silently or propagate the exception? MediatR publishes notifications sequentially by default. Recommendation: wrap notification handlers in try/catch with logging — notification delivery should not fail the primary operation.
+1. **Result\<T\> vs exceptions for business errors:** use `Result<T>` for expected business failures (e.g., duplicate serial number, entity not found) and exceptions for unexpected errors. This is the pattern already partially established in the codebase. `Result<T>` makes failure paths explicit in handler return types without requiring try/catch in controllers. The global exception handler catches unexpected errors only.
+2. **Existing service interfaces:** keep them as injected services called by handlers. Services like `IReportGenerationService` and `IExportService` represent reusable domain capabilities, not request-specific operations. Absorbing their logic into handlers would duplicate code across multiple handlers that share the same capability.
+3. **DTOs vs MediatR records:** use MediatR commands as the API contract directly. Controllers bind request bodies to command records and pass them to `IMediator.Send()`. This eliminates mapping boilerplate between DTOs and commands. Existing request DTOs can be retired as their corresponding handlers are implemented.
+4. **Notification handler failure isolation:** wrap notification handlers in try/catch with warning-level logging. Notification delivery (e.g., SignalR push) should never fail the primary operation (e.g., creating a work order). MediatR publishes notifications sequentially by default, so an unhandled exception would propagate to the caller. Each `INotificationHandler` must catch its own exceptions.

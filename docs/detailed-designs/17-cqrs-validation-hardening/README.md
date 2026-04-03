@@ -210,7 +210,7 @@ public void All_commands_have_validator_or_skip_marker()
 - ProblemDetails responses must not leak stack traces in production.
 - Logging must avoid request payloads for sensitive routes.
 
-## 6. Open Questions
+## 6. Design Decisions (formerly Open Questions)
 
-1. Should expected business-rule failures continue to use `Result<T>`, or should they migrate fully to exceptions plus middleware mapping?
-2. Should selected read queries also require validators, or should validation remain command-first?
+1. **Result\<T\> vs exceptions for business-rule failures:** continue using `Result<T>` for expected failures. This is consistent with the decision in Design #08 (MediatR CQRS Refactor). `Result<T>` makes failure paths explicit in handler signatures, avoids exception-driven control flow for predictable scenarios (validation failures, not-found, authorization), and lets controllers map `Result<T>` to appropriate HTTP status codes without catch blocks. Exceptions remain for unexpected errors only.
+2. **Query validation scope:** command-first validation only. Adding `FluentValidation` validators to read queries increases boilerplate for minimal safety gain — queries typically accept simple filter parameters (IDs, pagination) that are already constrained by route binding and model binding. If a query parameter is invalid, the handler returns an empty result or `Result<T>.NotFound`. Validators can be added to specific complex queries later if needed.

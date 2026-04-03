@@ -403,8 +403,8 @@ This design covers the core engine plus three distinct workflow implementations.
 
 Each workflow (19B–19D) has distinct domain concerns and can be implemented and tested independently once the core engine (19A) is in place.
 
-## 9. Open Questions
+## 9. Design Decisions (formerly Open Questions)
 
-1. Should workflow run history live in SQL tables, or is structured logging alone sufficient for v1 local development?
-2. Should the parts-order local event source be file-based, table-based, or both?
-3. Is serial workflow execution sufficient, or do developers need opt-in parallel execution for high-volume local load testing?
+1. **Workflow run history storage:** SQL tables via `FleetHubDbContext` (`WorkflowRunRecord` entity). Structured logging alone is insufficient because the `DevWorkflowController` needs to serve run history through the API, and tests need to assert on run state. The DbContext entity is already specified in Section 3.1.
+2. **Parts-order local event source:** table-based. A `DevPartsOrderEvents` entity seeded by `DataSeeder` is cheaper than a file-based approach because it avoids file-path configuration, works with the in-memory database, and is queryable. File-based loading adds no value over a seeded DbSet.
+3. **Serial vs parallel workflow execution:** serial only. Local development does not require high-volume load testing. Serial execution is simpler, more predictable for debugging, and avoids concurrency bugs in the hosted service. Parallel execution can be introduced later if needed.

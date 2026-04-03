@@ -439,7 +439,7 @@ test.describe('Tenant & Identity Hardening', () => {
 - **Removing header-based override** closes a privilege escalation vector where an attacker could spoof `X-Organization-Id` to access another tenant's data.
 - **Global query filters on all tenant-scoped entities** provide defense-in-depth — even if controller-level filtering is missed, EF Core prevents cross-tenant data access.
 
-## 8. Open Questions
+## 8. Design Decisions (formerly Open Questions)
 
-1. **Migration strategy for `UserOrganization`.** Existing `User.OrganizationId` records need to be migrated to `UserOrganization` rows. Should this be an EF migration with a SQL data-motion step, or a separate script?
-2. **Accept-invite authentication.** Should the accept-invite endpoint require the user to be authenticated via Entra ID first (to extract their ObjectId), or accept an unauthenticated request with just the token? The design says "public with valid token" but also needs the Entra ObjectId to link the user.
+1. **Migration strategy for `UserOrganization`:** EF migration with a SQL data-motion step. The migration adds the `UserOrganization` table and includes a `Sql()` call that copies existing `User.OrganizationId` values into `UserOrganization` rows. This is the cheapest approach because it uses EF's existing migration tooling, runs as part of the normal `dotnet ef database update`, and keeps the migration auditable in version control. A separate script introduces operational risk (forgetting to run it) and requires documentation.
+2. **Accept-invite authentication:** require Entra ID authentication first. The accept-invite endpoint needs the user's Entra ObjectId to link the identity to the `User` entity. A "public with valid token" approach would require the token to embed the ObjectId (leaking identity into an email link) or a two-step flow (validate token, then prompt login). Requiring authentication first is simpler: the user clicks the invite link, authenticates via Entra ID, and the endpoint extracts the ObjectId from claims and validates the invite token in a single request.

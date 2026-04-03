@@ -187,7 +187,7 @@ public async Task Middleware_bootstrap_queries_use_ignore_query_filters()
 - Filter bypasses become explicit and auditable via `IgnoreQueryFilters()`.
 - Background jobs must document every intentional cross-tenant query path.
 
-## 6. Open Questions
+## 6. Design Decisions (formerly Open Questions)
 
-1. Should the project introduce marker interfaces such as `IOrganizationScoped` to reduce filter boilerplate?
-2. Are there any legitimate admin reporting paths that need a first-class filtered-bypass abstraction instead of repeated `IgnoreQueryFilters()` usage?
+1. **Marker interface (`IOrganizationScoped`):** no marker interface for v1. The current approach of explicit `OrganizationId` properties on each entity is clear and grep-able. A marker interface adds an abstraction layer that must be maintained, documented, and understood by all contributors. The 13 entities with global query filters are already configured in `FleetHubDbContext.OnModelCreating`. If the entity count grows beyond ~25, a marker interface with a convention-based filter registration loop can be introduced to reduce boilerplate.
+2. **Admin reporting filter bypass:** use `IgnoreQueryFilters()` directly in admin reporting queries. There are currently no admin reporting paths in the application — the only cross-tenant access is the `DataSeeder` (which runs before filters are active). When admin reporting is added, each query that needs cross-tenant access calls `.IgnoreQueryFilters()` explicitly. A first-class abstraction (e.g., `ICrossTenantQuery<T>`) is premature — it hides the security-sensitive filter bypass behind an interface, making it harder to audit. Explicit `IgnoreQueryFilters()` calls are self-documenting and easy to search for in code review.
