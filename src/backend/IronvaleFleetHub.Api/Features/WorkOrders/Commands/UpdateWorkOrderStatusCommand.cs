@@ -103,3 +103,12 @@ public class UpdateWorkOrderStatusCommandHandler : IRequestHandler<UpdateWorkOrd
         return allowed;
     }
 }
+
+public class UpdateWorkOrderStatusCommandValidator : AbstractValidator<UpdateWorkOrderStatusCommand>
+{
+    public UpdateWorkOrderStatusCommandValidator()
+    {
+        RuleFor(x => x.Id).NotEmpty();
+        RuleFor(x => x.Status).NotEmpty();
+    }
+}
