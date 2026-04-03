@@ -287,8 +287,8 @@ public partial class FleetHubDbContext : DbContext
         modelBuilder.Entity<TelemetryEvent>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
         modelBuilder.Entity<AlertThreshold>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
         modelBuilder.Entity<NotificationPreference>().HasQueryFilter(x =>
-            TenantResolved && Users.IgnoreQueryFilters().Any(u => u.Id == x.UserId && u.OrganizationId == CurrentOrganizationId));
+            TenantResolved && Users.Any(u => u.Id == x.UserId && u.OrganizationId == CurrentOrganizationId));
         modelBuilder.Entity<CartItem>().HasQueryFilter(x =>
-            TenantResolved && Users.IgnoreQueryFilters().Any(u => u.Id == x.UserId && u.OrganizationId == CurrentOrganizationId));
+            TenantResolved && Users.Any(u => u.Id == x.UserId && u.OrganizationId == CurrentOrganizationId));
     }
 }
