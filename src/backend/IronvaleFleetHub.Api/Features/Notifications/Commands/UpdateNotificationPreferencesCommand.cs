@@ -58,3 +58,11 @@ public class UpdateNotificationPreferencesCommandHandler
             .ToListAsync(ct);
     }
 }
+
+public class UpdateNotificationPreferencesCommandValidator : AbstractValidator<UpdateNotificationPreferencesCommand>
+{
+    public UpdateNotificationPreferencesCommandValidator()
+    {
+        RuleFor(x => x.Preferences).NotEmpty();
+    }
+}
