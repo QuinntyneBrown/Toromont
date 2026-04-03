@@ -93,3 +93,15 @@ public class CreateWorkOrderCommandHandler : IRequestHandler<CreateWorkOrderComm
         return Result<WorkOrder>.Success(wo);
     }
 }
+
+public class CreateWorkOrderCommandValidator : AbstractValidator<CreateWorkOrderCommand>
+{
+    public CreateWorkOrderCommandValidator()
+    {
+        RuleFor(x => x.EquipmentId).NotEmpty();
+        RuleFor(x => x.ServiceType).NotEmpty();
+        RuleFor(x => x.Priority).NotEmpty();
+        RuleFor(x => x.Description).NotEmpty().MaximumLength(2000);
+        RuleFor(x => x.RequestedDate).NotEmpty();
+    }
+}
