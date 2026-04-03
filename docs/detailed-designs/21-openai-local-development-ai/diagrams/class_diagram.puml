@@ -1,0 +1,51 @@
+@startuml class_diagram
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontSize 11
+
+title Azure OpenAI Local Development AI - Class Diagram
+
+interface IAiInsightsService {
+  +PredictMaintenanceAsync(equipmentId, ct)
+  +DetectAnomaliesAsync(equipmentId, ct)
+}
+
+interface IAiSearchService {
+  +SearchPartsAsync(query, ct)
+}
+
+class AiProviderSelector
+class LocalAiInsightsService
+class RuleBasedPredictionEngine
+class NarrativeFormatter
+class LocalNaturalLanguageSearchService
+class TokenVectorizer
+class SynonymCatalog
+class OllamaAiInsightsService
+
+class MaintenancePrediction {
+  +ConfidenceScore: decimal
+  +PredictedIssue: string
+}
+
+class AiSearchResult {
+  +PartNumber: string
+  +Score: decimal
+}
+
+IAiInsightsService <|.. LocalAiInsightsService
+IAiInsightsService <|.. OllamaAiInsightsService
+IAiSearchService <|.. LocalNaturalLanguageSearchService
+AiProviderSelector --> IAiInsightsService
+AiProviderSelector --> IAiSearchService
+LocalAiInsightsService --> RuleBasedPredictionEngine
+LocalAiInsightsService --> NarrativeFormatter
+LocalNaturalLanguageSearchService --> TokenVectorizer
+LocalNaturalLanguageSearchService --> SynonymCatalog
+LocalAiInsightsService --> MaintenancePrediction
+LocalNaturalLanguageSearchService --> AiSearchResult
+
+@enduml

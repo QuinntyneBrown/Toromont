@@ -1,0 +1,34 @@
+@startuml sequence_workflow_run
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+
+title Logic Apps Local Workflow Engine - Sequence
+
+participant "ASP.NET Core Host" as Host
+participant "LocalWorkflowEngineHostedService" as Engine
+participant "ServiceReminderWorkflow" as Workflow
+database "SQL Server" as Db
+participant "WorkflowDispatchLogRepository" as Log
+participant "NotificationDispatchService" as Notif
+
+Host -> Engine : start Development host
+Engine -> Engine : scheduler tick
+Engine -> Workflow : ExecuteAsync(context)
+Workflow -> Db : query due work orders
+Db --> Workflow : reminder candidates
+loop each candidate
+  Workflow -> Log : dispatch key exists?
+  alt first delivery
+    Log --> Workflow : no
+    Workflow -> Notif : create reminder
+    Workflow -> Log : store dispatch key
+  else duplicate
+    Log --> Workflow : yes
+    Workflow -> Workflow : skip duplicate
+  end
+end
+Workflow --> Engine : success + counts
+
+@enduml

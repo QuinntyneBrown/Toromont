@@ -1,0 +1,36 @@
+@startuml sequence_delivery_flow
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+
+title Communication Services Local Delivery - Sequence
+
+participant "Workflow / Handler" as Source
+participant "LocalNotificationDeliveryService" as Delivery
+participant "PreferenceEvaluator" as Prefs
+participant "TemplateRenderer" as Render
+participant "CompositeEmailChannel" as Email
+participant "ConsoleSmsChannel" as Sms
+database "Delivery Log Repo" as Log
+
+Source -> Delivery : DeliverAsync(NotificationEnvelope)
+Delivery -> Prefs : load user preferences
+Prefs --> Delivery : enabled channels
+Delivery -> Render : render email and SMS
+Render --> Delivery : rendered messages
+
+alt email enabled
+  Delivery -> Email : SendAsync(email)
+  Email --> Delivery : DeliveryAttemptResult
+end
+
+alt sms enabled
+  Delivery -> Sms : SendAsync(sms)
+  Sms --> Delivery : DeliveryAttemptResult
+end
+
+Delivery -> Log : store attempt results
+Delivery --> Source : completed
+
+@enduml

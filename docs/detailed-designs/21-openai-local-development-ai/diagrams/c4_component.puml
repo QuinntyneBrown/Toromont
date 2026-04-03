@@ -1,0 +1,41 @@
+@startuml c4_component
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam rectangle {
+  RoundCorner 10
+  StereotypeFontSize 10
+}
+
+title Azure OpenAI Local Development AI - C4 Component
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #438DD5
+  FontColor white
+  BorderColor #2E6DA4
+}
+skinparam rectangle<<service>> {
+  BackgroundColor #2E86C1
+  FontColor white
+  BorderColor #1F618D
+}
+
+rectangle "API / Functions" <<backend>> as app
+rectangle "AiProviderSelector" <<service>> as selector
+rectangle "LocalAiInsightsService" <<service>> as insights
+rectangle "LocalNaturalLanguageSearchService" <<service>> as search
+rectangle "AiScenarioRepository" <<service>> as scenarios
+rectangle "Optional Ollama Adapter" <<service>> as ollama
+database "SQL Server / Dev Data" as db
+
+app --> selector : resolve provider
+selector --> insights : insights provider
+selector --> search : search provider
+insights --> db : telemetry aggregates
+insights --> scenarios : scenario overrides
+search --> db : parts catalog
+selector --> ollama : optional local model
+
+@enduml

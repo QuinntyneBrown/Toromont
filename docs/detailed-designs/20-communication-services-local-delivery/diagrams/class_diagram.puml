@@ -1,0 +1,53 @@
+@startuml class_diagram
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontSize 11
+
+title Communication Services Local Delivery - Class Diagram
+
+interface INotificationDeliveryService {
+  +DeliverAsync(envelope, ct)
+}
+
+interface IEmailChannel {
+  +SendAsync(request, ct)
+}
+
+interface ISmsChannel {
+  +SendAsync(request, ct)
+}
+
+class LocalNotificationDeliveryService
+class NotificationPreferenceEvaluator
+class NotificationTemplateRenderer
+class LocalSmtpEmailChannel
+class FileDropEmailChannel
+class CompositeEmailChannel
+class ConsoleSmsChannel
+
+class NotificationEnvelope {
+  +EventType: string
+  +Title: string
+}
+
+class DeliveryAttemptResult {
+  +Success: bool
+  +Target: string
+}
+
+INotificationDeliveryService <|.. LocalNotificationDeliveryService
+LocalNotificationDeliveryService --> NotificationPreferenceEvaluator
+LocalNotificationDeliveryService --> NotificationTemplateRenderer
+LocalNotificationDeliveryService --> IEmailChannel
+LocalNotificationDeliveryService --> ISmsChannel
+IEmailChannel <|.. LocalSmtpEmailChannel
+IEmailChannel <|.. FileDropEmailChannel
+IEmailChannel <|.. CompositeEmailChannel
+ISmsChannel <|.. ConsoleSmsChannel
+LocalNotificationDeliveryService --> NotificationEnvelope
+LocalNotificationDeliveryService --> DeliveryAttemptResult
+
+@enduml

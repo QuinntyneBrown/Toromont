@@ -1,0 +1,27 @@
+@startuml sequence_prediction_flow
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+
+title Azure OpenAI Local Development AI - Sequence
+
+participant "API / Prediction Job" as App
+participant "AiProviderSelector" as Selector
+participant "LocalAiInsightsService" as Insights
+participant "RuleBasedPredictionEngine" as Engine
+participant "NarrativeFormatter" as Narrative
+database "SQL Server" as Db
+
+App -> Selector : resolve insights provider
+Selector --> App : LocalAiInsightsService
+App -> Insights : PredictMaintenanceAsync(equipmentId)
+Insights -> Db : load telemetry aggregates
+Db --> Insights : aggregates + service history
+Insights -> Engine : compute evidence
+Engine --> Insights : confidence + issue + priority
+Insights -> Narrative : format explanation
+Narrative --> Insights : explanation text
+Insights --> App : MaintenancePrediction
+
+@enduml

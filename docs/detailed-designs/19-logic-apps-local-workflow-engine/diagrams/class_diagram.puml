@@ -1,0 +1,61 @@
+@startuml class_diagram
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontSize 11
+
+title Logic Apps Local Workflow Engine - Class Diagram
+
+interface IWorkflowEngine {
+  +TriggerAsync(name, ct)
+  +GetStatusAsync(ct)
+}
+
+interface IWorkflowDefinition {
+  +Name: string
+  +PollInterval: TimeSpan
+  +ExecuteAsync(context, ct)
+}
+
+class LocalWorkflowEngineHostedService {
+  +ExecuteAsync(ct)
+}
+
+class WorkflowExecutionCoordinator {
+  +RunAsync(definition, ct)
+}
+
+class ServiceReminderWorkflow
+class WorkOrderEscalationWorkflow
+class PartsOrderStatusWorkflow
+
+class WorkflowRunRecord {
+  +WorkflowName: string
+  +Status: string
+  +Attempt: int
+}
+
+class WorkflowDispatchRecord {
+  +DispatchKey: string
+  +EntityId: Guid
+}
+
+class LocalWorkflowOptions {
+  +EnableServiceReminders: bool
+  +EnableWorkOrderEscalation: bool
+  +EnablePartsOrderStatusSync: bool
+}
+
+LocalWorkflowEngineHostedService --> WorkflowExecutionCoordinator
+WorkflowExecutionCoordinator --> IWorkflowDefinition
+IWorkflowEngine <|.. WorkflowExecutionCoordinator
+IWorkflowDefinition <|.. ServiceReminderWorkflow
+IWorkflowDefinition <|.. WorkOrderEscalationWorkflow
+IWorkflowDefinition <|.. PartsOrderStatusWorkflow
+WorkflowExecutionCoordinator --> WorkflowRunRecord
+WorkflowExecutionCoordinator --> WorkflowDispatchRecord
+WorkflowExecutionCoordinator --> LocalWorkflowOptions
+
+@enduml

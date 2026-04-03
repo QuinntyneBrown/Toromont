@@ -1,0 +1,43 @@
+@startuml c4_component
+!theme plain
+!pragma layout smetana
+left to right direction
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam rectangle {
+  RoundCorner 10
+  StereotypeFontSize 10
+}
+
+title Communication Services Local Delivery - C4 Component
+
+skinparam rectangle<<backend>> {
+  BackgroundColor #438DD5
+  FontColor white
+  BorderColor #2E6DA4
+}
+skinparam rectangle<<service>> {
+  BackgroundColor #2E86C1
+  FontColor white
+  BorderColor #1F618D
+}
+
+rectangle "Workflow / Domain Event" <<backend>> as source
+rectangle "LocalNotificationDeliveryService" <<service>> as delivery
+rectangle "PreferenceEvaluator\n+ TemplateRenderer" <<service>> as prep
+rectangle "LocalSmtpEmailChannel" <<service>> as smtp
+rectangle "FileDropEmailChannel" <<service>> as file
+rectangle "ConsoleSmsChannel" <<service>> as sms
+rectangle "MailHog / smtp4dev" <<service>> as mailhog
+database "Delivery Log + Dev SMS Store" as db
+
+source --> delivery : NotificationEnvelope
+delivery --> prep : resolve channels
+delivery --> smtp : email
+delivery --> file : fallback email
+delivery --> sms : sms
+smtp --> mailhog : SMTP
+sms --> db : persist SMS copy
+delivery --> db : delivery attempts
+
+@enduml
