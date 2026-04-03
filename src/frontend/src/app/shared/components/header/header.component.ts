@@ -152,6 +152,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   toggleNotifications(): void {
     this.notificationDropdownOpen = !this.notificationDropdownOpen;
     this.userMenuOpen = false;
+    this.searchOpen = false;
     if (this.notificationDropdownOpen) {
       this.notificationService.loadRecentNotifications();
     }
@@ -160,6 +161,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   toggleUserMenu(): void {
     this.userMenuOpen = !this.userMenuOpen;
     this.notificationDropdownOpen = false;
+    this.searchOpen = false;
   }
 
   markAllAsRead(): void {
