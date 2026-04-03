@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Telemetry.Queries;
 
-public record GetLatestTelemetryQuery(Guid EquipmentId) : IRequest<Result<TelemetryEvent?>>;
+public record GetLatestTelemetryQuery(Guid EquipmentId) : IRequest<Result<TelemetryEvent?>>, ISkipValidation;
 
 public class GetLatestTelemetryQueryHandler : IRequestHandler<GetLatestTelemetryQuery, Result<TelemetryEvent?>>
 {

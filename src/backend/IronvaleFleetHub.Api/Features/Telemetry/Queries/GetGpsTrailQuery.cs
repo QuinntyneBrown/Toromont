@@ -8,7 +8,7 @@ namespace IronvaleFleetHub.Api.Features.Telemetry.Queries;
 
 public record GpsTrailPoint(DateTime Timestamp, double? Latitude, double? Longitude);
 
-public record GetGpsTrailQuery(Guid EquipmentId, string Range) : IRequest<Result<List<GpsTrailPoint>>>;
+public record GetGpsTrailQuery(Guid EquipmentId, string Range) : IRequest<Result<List<GpsTrailPoint>>>, ISkipValidation;
 
 public class GetGpsTrailQueryHandler : IRequestHandler<GetGpsTrailQuery, Result<List<GpsTrailPoint>>>
 {

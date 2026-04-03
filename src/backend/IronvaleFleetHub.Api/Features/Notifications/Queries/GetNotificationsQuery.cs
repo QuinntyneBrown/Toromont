@@ -8,7 +8,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Notifications.Queries;
 
-public record GetNotificationsQuery(int Skip, int Take) : IRequest<PaginatedResponse<Notification>>;
+public record GetNotificationsQuery(int Skip, int Take) : IRequest<PaginatedResponse<Notification>>, ISkipValidation;
 
 public class GetNotificationsQueryHandler : IRequestHandler<GetNotificationsQuery, PaginatedResponse<Notification>>
 {

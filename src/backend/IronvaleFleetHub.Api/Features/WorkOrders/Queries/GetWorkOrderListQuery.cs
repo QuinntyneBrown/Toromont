@@ -14,7 +14,7 @@ public record GetWorkOrderListQuery(
     string? Status,
     string? Sort,
     Guid? EquipmentId
-) : IRequest<PaginatedResponse<WorkOrder>>;
+) : IRequest<PaginatedResponse<WorkOrder>>, ISkipValidation;
 
 public class GetWorkOrderListQueryHandler : IRequestHandler<GetWorkOrderListQuery, PaginatedResponse<WorkOrder>>
 {

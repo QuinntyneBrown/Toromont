@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.AIInsights.Queries;
 
-public record GetAnomaliesQuery : IRequest<List<AnomalyDetection>>;
+public record GetAnomaliesQuery : IRequest<List<AnomalyDetection>>, ISkipValidation;
 
 public class GetAnomaliesQueryHandler : IRequestHandler<GetAnomaliesQuery, List<AnomalyDetection>>
 {

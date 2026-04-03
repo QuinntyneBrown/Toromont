@@ -16,7 +16,7 @@ public record GetEquipmentListQuery(
     string? Search,
     string? Sort,
     string? Filter
-) : IRequest<PaginatedResponse<Models.Equipment>>;
+) : IRequest<PaginatedResponse<Models.Equipment>>, ISkipValidation;
 
 public class GetEquipmentListQueryHandler : IRequestHandler<GetEquipmentListQuery, PaginatedResponse<Models.Equipment>>
 {

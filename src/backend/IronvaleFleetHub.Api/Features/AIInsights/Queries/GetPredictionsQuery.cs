@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.AIInsights.Queries;
 
-public record GetPredictionsQuery(string? Sort) : IRequest<List<AIPrediction>>;
+public record GetPredictionsQuery(string? Sort) : IRequest<List<AIPrediction>>, ISkipValidation;
 
 public class GetPredictionsQueryHandler : IRequestHandler<GetPredictionsQuery, List<AIPrediction>>
 {

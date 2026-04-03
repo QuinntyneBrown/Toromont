@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Notifications.Queries;
 
-public record GetNotificationPreferencesQuery : IRequest<List<NotificationPreference>>;
+public record GetNotificationPreferencesQuery : IRequest<List<NotificationPreference>>, ISkipValidation;
 
 public class GetNotificationPreferencesQueryHandler : IRequestHandler<GetNotificationPreferencesQuery, List<NotificationPreference>>
 {

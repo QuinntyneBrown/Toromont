@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.AIInsights.Queries;
 
-public record GetEquipmentPredictionsQuery(Guid EquipmentId) : IRequest<Result<List<AIPrediction>>>;
+public record GetEquipmentPredictionsQuery(Guid EquipmentId) : IRequest<Result<List<AIPrediction>>>, ISkipValidation;
 
 public class GetEquipmentPredictionsQueryHandler : IRequestHandler<GetEquipmentPredictionsQuery, Result<List<AIPrediction>>>
 {

@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Users.Queries;
 
-public record GetAssignableUsersQuery : IRequest<List<User>>;
+public record GetAssignableUsersQuery : IRequest<List<User>>, ISkipValidation;
 
 public class GetAssignableUsersQueryHandler : IRequestHandler<GetAssignableUsersQuery, List<User>>
 {

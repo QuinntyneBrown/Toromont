@@ -7,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Cart.Queries;
 
-public record GetCartQuery : IRequest<List<CartItem>>;
+public record GetCartQuery : IRequest<List<CartItem>>, ISkipValidation;
 
 public class GetCartQueryHandler : IRequestHandler<GetCartQuery, List<CartItem>>
 {
