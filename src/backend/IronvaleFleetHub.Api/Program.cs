@@ -157,6 +157,35 @@ builder.Services.AddScoped<IReportGenerationService, ReportGenerationService>();
 builder.Services.AddScoped<IExportService, ExportService>();
 builder.Services.AddScoped<IHubAudienceResolver, HubAudienceResolver>();
 
+// --- Dev Notification Delivery Channels ---
+if (builder.Environment.IsDevelopment())
+{
+    var deliveryConfig = builder.Configuration.GetSection("DevNotificationDelivery");
+    var deliveryEnabled = deliveryConfig.GetValue<bool>("Enabled");
+
+    if (deliveryEnabled)
+    {
+        var options = new DevNotificationDeliveryOptions();
+        deliveryConfig.Bind(options);
+        builder.Services.AddSingleton(options);
+
+        var useSmtp = deliveryConfig.GetValue<bool>("UseSmtp");
+        if (useSmtp)
+        {
+            builder.Services.AddScoped<IEmailChannel, CompositeEmailChannel>();
+            builder.Services.AddScoped<DevSmtpEmailChannel>();
+            builder.Services.AddScoped<FileDropEmailChannel>();
+        }
+        else
+        {
+            builder.Services.AddScoped<IEmailChannel, FileDropEmailChannel>();
+        }
+
+        builder.Services.AddScoped<ISmsChannel, ConsoleSmsChannel>();
+        builder.Services.AddScoped<NotificationTemplateRenderer>();
+    }
+}
+
 // --- Controllers ---
 builder.Services.AddControllers();
 
