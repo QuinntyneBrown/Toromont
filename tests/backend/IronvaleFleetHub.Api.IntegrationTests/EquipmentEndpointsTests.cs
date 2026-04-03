@@ -80,7 +80,7 @@ public sealed class EquipmentEndpointsTests
         Assert.Equal(request.Location, created.Location);
 
         var persisted = await factory.ExecuteDbContextAsync(db =>
-            db.Equipment.AsNoTracking().SingleOrDefaultAsync(e => e.Id == created.Id));
+            db.Equipment.IgnoreQueryFilters().AsNoTracking().SingleOrDefaultAsync(e => e.Id == created.Id));
 
         Assert.NotNull(persisted);
         Assert.Equal(request.SerialNumber, persisted.SerialNumber);

@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -7,7 +8,7 @@ namespace IronvaleFleetHub.Api.Features.AIInsights.Queries;
 
 public record AIDashboardStats(int TotalPredictions, int HighPriority, int AnomalyCount, decimal EstimatedSavings);
 
-public record GetAIDashboardStatsQuery : IRequest<AIDashboardStats>;
+public record GetAIDashboardStatsQuery : IRequest<AIDashboardStats>, ISkipValidation;
 
 public class GetAIDashboardStatsQueryHandler : IRequestHandler<GetAIDashboardStatsQuery, AIDashboardStats>
 {

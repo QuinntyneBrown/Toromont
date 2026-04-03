@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -6,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Orders.Queries;
 
-public record GetOrderByIdQuery(Guid Id) : IRequest<PartsOrder?>;
+public record GetOrderByIdQuery(Guid Id) : IRequest<PartsOrder?>, ISkipValidation;
 
 public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, PartsOrder?>
 {

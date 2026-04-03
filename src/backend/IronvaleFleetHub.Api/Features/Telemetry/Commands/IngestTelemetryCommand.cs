@@ -1,10 +1,10 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using IronvaleFleetHub.Api.Common;
 using IronvaleFleetHub.Api.Data;
 using IronvaleFleetHub.Api.Models;
-using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Telemetry.Commands;
 
@@ -22,12 +22,12 @@ public record IngestTelemetryCommand(
 public class IngestTelemetryCommandHandler : IRequestHandler<IngestTelemetryCommand, Result<Guid>>
 {
     private readonly FleetHubDbContext _db;
-    private readonly IAlertEvaluatorService _alertEvaluator;
+    private readonly ILogger<IngestTelemetryCommandHandler> _logger;
 
-    public IngestTelemetryCommandHandler(FleetHubDbContext db, IAlertEvaluatorService alertEvaluator)
+    public IngestTelemetryCommandHandler(FleetHubDbContext db, ILogger<IngestTelemetryCommandHandler> logger)
     {
         _db = db;
-        _alertEvaluator = alertEvaluator;
+        _logger = logger;
     }
 
     public async Task<Result<Guid>> Handle(IngestTelemetryCommand request, CancellationToken ct)
@@ -57,7 +57,9 @@ public class IngestTelemetryCommandHandler : IRequestHandler<IngestTelemetryComm
         _db.TelemetryEvents.Add(telemetryEvent);
         await _db.SaveChangesAsync(ct);
 
-        await _alertEvaluator.EvaluateAsync(telemetryEvent);
+        _logger.LogInformation(
+            "Telemetry event {EventId} ingested via API for equipment {EquipmentId}. Alert evaluation deferred to Functions pipeline.",
+            telemetryEvent.Id, request.EquipmentId);
 
         return Result<Guid>.Success(telemetryEvent.Id);
     }

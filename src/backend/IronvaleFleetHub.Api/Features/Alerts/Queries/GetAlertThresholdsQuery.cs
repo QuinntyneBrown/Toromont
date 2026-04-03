@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -6,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Alerts.Queries;
 
-public record GetAlertThresholdsQuery : IRequest<List<AlertThreshold>>;
+public record GetAlertThresholdsQuery : IRequest<List<AlertThreshold>>, ISkipValidation;
 
 public class GetAlertThresholdsQueryHandler : IRequestHandler<GetAlertThresholdsQuery, List<AlertThreshold>>
 {

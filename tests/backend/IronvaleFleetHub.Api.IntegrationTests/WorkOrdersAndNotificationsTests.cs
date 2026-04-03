@@ -45,6 +45,7 @@ public sealed class WorkOrdersAndNotificationsTests
 
         var notifications = await factory.ExecuteDbContextAsync(db =>
             db.Notifications
+                .IgnoreQueryFilters()
                 .AsNoTracking()
                 .Where(n => n.UserId == TestSeedData.TechnicianUserId && n.Type == "WorkOrderAssigned")
                 .OrderByDescending(n => n.CreatedAt)
@@ -83,7 +84,7 @@ public sealed class WorkOrdersAndNotificationsTests
         Assert.Equal(0, unreadAfter.UnreadCount);
 
         var remainingUnread = await factory.ExecuteDbContextAsync(db =>
-            db.Notifications.CountAsync(n => n.UserId == TestSeedData.AdminUserId && !n.IsRead));
+            db.Notifications.IgnoreQueryFilters().CountAsync(n => n.UserId == TestSeedData.AdminUserId && !n.IsRead));
 
         Assert.Equal(0, remainingUnread);
     }

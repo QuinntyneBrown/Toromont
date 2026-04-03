@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
+using IronvaleFleetHub.Api.DTOs;
 using IronvaleFleetHub.Api.Hubs;
 using IronvaleFleetHub.Api.Models;
 
@@ -11,15 +12,24 @@ public class NotificationDispatchService : INotificationDispatchService
     private readonly FleetHubDbContext _db;
     private readonly IHubContext<NotificationHub> _hubContext;
     private readonly ILogger<NotificationDispatchService> _logger;
+    private readonly IEmailChannel? _emailChannel;
+    private readonly ISmsChannel? _smsChannel;
+    private readonly NotificationTemplateRenderer? _templateRenderer;
 
     public NotificationDispatchService(
         FleetHubDbContext db,
         IHubContext<NotificationHub> hubContext,
-        ILogger<NotificationDispatchService> logger)
+        ILogger<NotificationDispatchService> logger,
+        IEmailChannel? emailChannel = null,
+        ISmsChannel? smsChannel = null,
+        NotificationTemplateRenderer? templateRenderer = null)
     {
         _db = db;
         _hubContext = hubContext;
         _logger = logger;
+        _emailChannel = emailChannel;
+        _smsChannel = smsChannel;
+        _templateRenderer = templateRenderer;
     }
 
     public async Task DispatchAsync(
@@ -31,7 +41,6 @@ public class NotificationDispatchService : INotificationDispatchService
         Guid? entityId = null,
         CancellationToken ct = default)
     {
-        // Look up user to get organizationId
         var user = await _db.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == userId, ct);
@@ -42,7 +51,6 @@ public class NotificationDispatchService : INotificationDispatchService
             return;
         }
 
-        // Create notification record
         var notification = new Notification
         {
             Id = Guid.NewGuid(),
@@ -60,19 +68,22 @@ public class NotificationDispatchService : INotificationDispatchService
         _db.Notifications.Add(notification);
         await _db.SaveChangesAsync(ct);
 
-        // Push via SignalR to user's group
+        // Build unified DTO for both REST and SignalR
+        var dto = new NotificationDto(
+            notification.Id,
+            notification.UserId,
+            notification.Type,
+            notification.Title,
+            notification.Message,
+            notification.IsRead,
+            notification.CreatedAt,
+            notification.EntityType,
+            notification.EntityId);
+
+        // Push via SignalR using canonical event name
         await _hubContext.Clients
             .Group($"user-{userId}")
-            .SendAsync("ReceiveNotification", new
-            {
-                notification.Id,
-                notification.Type,
-                notification.Title,
-                notification.Message,
-                notification.EntityType,
-                notification.EntityId,
-                notification.CreatedAt
-            }, ct);
+            .SendAsync("ReceiveNotification", dto, ct);
 
         // Update badge count
         var unreadCount = await _db.Notifications
@@ -91,14 +102,53 @@ public class NotificationDispatchService : INotificationDispatchService
 
         if (preferences?.EmailEnabled == true)
         {
-            _logger.LogInformation("Email notification queued for user {UserId}: {Title}", userId, title);
-            // Email dispatch would be handled by an external email service
+            if (_emailChannel is not null && _templateRenderer is not null)
+            {
+                var emailRequest = _templateRenderer.RenderEmail(
+                    user.Email ?? $"{userId}@ironvale.local", type, title, message);
+                var result = await _emailChannel.SendAsync(emailRequest, ct);
+                await RecordDeliveryAttemptAsync(notification.Id, emailRequest.To, type, result, ct);
+            }
+            else
+            {
+                _logger.LogInformation("Email notification queued for user {UserId}: {Title}", userId, title);
+            }
         }
 
         if (preferences?.SmsEnabled == true)
         {
-            _logger.LogInformation("SMS notification queued for user {UserId}: {Title}", userId, title);
-            // SMS dispatch would be handled by an external SMS service
+            if (_smsChannel is not null && _templateRenderer is not null)
+            {
+                var smsRequest = _templateRenderer.RenderSms(
+                    "555-0000", type, title, message);
+                var result = await _smsChannel.SendAsync(smsRequest, ct);
+                await RecordDeliveryAttemptAsync(notification.Id, smsRequest.To, type, result, ct);
+            }
+            else
+            {
+                _logger.LogInformation("SMS notification queued for user {UserId}: {Title}", userId, title);
+            }
         }
+    }
+
+    private async Task RecordDeliveryAttemptAsync(
+        Guid notificationId, string recipient, string eventType,
+        DeliveryAttemptResult result, CancellationToken ct)
+    {
+        var record = new DeliveryAttemptRecord
+        {
+            Id = Guid.NewGuid(),
+            NotificationId = notificationId,
+            Recipient = recipient,
+            EventType = eventType,
+            Channel = result.Channel,
+            Target = result.Target,
+            Success = result.Success,
+            Error = result.Error,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _db.DeliveryAttemptRecords.Add(record);
+        await _db.SaveChangesAsync(ct);
     }
 }

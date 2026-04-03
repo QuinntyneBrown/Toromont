@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -6,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Dashboard.Queries;
 
-public record GetDashboardAlertsQuery : IRequest<List<Alert>>;
+public record GetDashboardAlertsQuery : IRequest<List<Alert>>, ISkipValidation;
 
 public class GetDashboardAlertsQueryHandler : IRequestHandler<GetDashboardAlertsQuery, List<Alert>>
 {

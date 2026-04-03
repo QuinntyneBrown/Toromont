@@ -1,55 +1,44 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Hubs;
 
 [Authorize]
 public class NotificationHub : Hub
 {
+    private readonly IHubAudienceResolver _audienceResolver;
     private readonly ILogger<NotificationHub> _logger;
 
-    public NotificationHub(ILogger<NotificationHub> logger)
+    public NotificationHub(IHubAudienceResolver audienceResolver, ILogger<NotificationHub> logger)
     {
+        _audienceResolver = audienceResolver;
         _logger = logger;
     }
 
     public override async Task OnConnectedAsync()
     {
-        var orgId = Context.User?.FindFirst("org_id")?.Value;
-        var userId = Context.User?.FindFirst("sub")?.Value
-            ?? Context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var audience = await _audienceResolver.ResolveAsync(Context.User!, Context.ConnectionAborted);
 
-        if (!string.IsNullOrEmpty(orgId))
+        if (audience is null)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, $"org-{orgId}");
-            _logger.LogInformation("Connection {ConnectionId} joined org group {OrgId}", Context.ConnectionId, orgId);
+            _logger.LogWarning("Connection {ConnectionId} rejected: unable to resolve audience", Context.ConnectionId);
+            throw new HubException("Unable to resolve notification audience.");
         }
 
-        if (!string.IsNullOrEmpty(userId))
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{userId}");
-            _logger.LogInformation("Connection {ConnectionId} joined user group {UserId}", Context.ConnectionId, userId);
-        }
+        // Canonical group names: user-{internalUserId} and org-{organizationId}
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{audience.UserId}");
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"org-{audience.OrganizationId}");
+
+        _logger.LogInformation(
+            "Connection {ConnectionId} joined groups user-{UserId}, org-{OrgId}",
+            Context.ConnectionId, audience.UserId, audience.OrganizationId);
 
         await base.OnConnectedAsync();
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        var orgId = Context.User?.FindFirst("org_id")?.Value;
-        var userId = Context.User?.FindFirst("sub")?.Value
-            ?? Context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-        if (!string.IsNullOrEmpty(orgId))
-        {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"org-{orgId}");
-        }
-
-        if (!string.IsNullOrEmpty(userId))
-        {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user-{userId}");
-        }
-
         _logger.LogInformation("Connection {ConnectionId} disconnected", Context.ConnectionId);
         await base.OnDisconnectedAsync(exception);
     }

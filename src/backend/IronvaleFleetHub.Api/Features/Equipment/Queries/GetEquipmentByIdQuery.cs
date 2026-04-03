@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -5,7 +6,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Equipment.Queries;
 
-public record GetEquipmentByIdQuery(Guid Id) : IRequest<Models.Equipment?>;
+public record GetEquipmentByIdQuery(Guid Id) : IRequest<Models.Equipment?>, ISkipValidation;
 
 public class GetEquipmentByIdQueryHandler : IRequestHandler<GetEquipmentByIdQuery, Models.Equipment?>
 {

@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -6,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Dashboard.Queries;
 
-public record GetDashboardKpisQuery : IRequest<DashboardStats>;
+public record GetDashboardKpisQuery : IRequest<DashboardStats>, ISkipValidation;
 
 public class GetDashboardKpisQueryHandler : IRequestHandler<GetDashboardKpisQuery, DashboardStats>
 {

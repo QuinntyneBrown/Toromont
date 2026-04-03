@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -15,7 +16,7 @@ public record WorkOrderCalendarItem(
     string ServiceType
 );
 
-public record GetWorkOrderCalendarQuery(DateTime Start, DateTime End) : IRequest<List<WorkOrderCalendarItem>>;
+public record GetWorkOrderCalendarQuery(DateTime Start, DateTime End) : IRequest<List<WorkOrderCalendarItem>>, ISkipValidation;
 
 public class GetWorkOrderCalendarQueryHandler : IRequestHandler<GetWorkOrderCalendarQuery, List<WorkOrderCalendarItem>>
 {

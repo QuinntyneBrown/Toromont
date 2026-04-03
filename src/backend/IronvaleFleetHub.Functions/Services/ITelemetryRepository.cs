@@ -13,4 +13,12 @@ public interface ITelemetryRepository
         double longitude,
         string? payload,
         CancellationToken ct = default);
+
+    Task EvaluateAlertAsync(
+        Guid telemetryEventId,
+        Guid equipmentId,
+        Guid organizationId,
+        double temperature,
+        double fuelLevel,
+        CancellationToken ct = default);
 }

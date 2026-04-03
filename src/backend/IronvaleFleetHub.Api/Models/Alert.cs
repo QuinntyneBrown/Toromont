@@ -12,5 +12,6 @@ public class Alert
     public DateTime CreatedAt { get; set; }
     public DateTime? AcknowledgedAt { get; set; }
     public DateTime? ResolvedAt { get; set; }
+    public Guid? SourceTelemetryEventId { get; set; }
     public Equipment? Equipment { get; set; }
 }

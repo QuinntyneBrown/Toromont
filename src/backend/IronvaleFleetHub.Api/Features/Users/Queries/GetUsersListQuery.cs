@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -6,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Users.Queries;
 
-public record GetUsersListQuery : IRequest<List<User>>;
+public record GetUsersListQuery : IRequest<List<User>>, ISkipValidation;
 
 public class GetUsersListQueryHandler : IRequestHandler<GetUsersListQuery, List<User>>
 {

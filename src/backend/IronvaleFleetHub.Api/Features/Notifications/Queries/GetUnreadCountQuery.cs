@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -5,7 +6,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Notifications.Queries;
 
-public record GetUnreadCountQuery : IRequest<int>;
+public record GetUnreadCountQuery : IRequest<int>, ISkipValidation;
 
 public class GetUnreadCountQueryHandler : IRequestHandler<GetUnreadCountQuery, int>
 {

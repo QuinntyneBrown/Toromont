@@ -4,7 +4,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Data;
 
-public class FleetHubDbContext : DbContext
+public partial class FleetHubDbContext : DbContext
 {
     private readonly ITenantContext? _tenantContext;
 
@@ -13,6 +13,19 @@ public class FleetHubDbContext : DbContext
     {
         _tenantContext = tenantContext;
     }
+
+    /// <summary>
+    /// Returns the current organization ID from the tenant context, or Guid.Empty when unresolved.
+    /// EF Core captures this property reference in query filter expressions so that
+    /// each request evaluates the filter against the current scoped tenant.
+    /// </summary>
+    public Guid CurrentOrganizationId => _tenantContext?.OrganizationId ?? Guid.Empty;
+
+    /// <summary>
+    /// True when a tenant has been resolved for the current request.
+    /// When false, all tenant-filtered queries return zero rows (fail-closed).
+    /// </summary>
+    public bool TenantResolved => CurrentOrganizationId != Guid.Empty;
 
     public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<User> Users => Set<User>();
@@ -35,6 +48,8 @@ public class FleetHubDbContext : DbContext
     public DbSet<TelemetryDeadLetterEntry> TelemetryDeadLetterEntries => Set<TelemetryDeadLetterEntry>();
     public DbSet<UserOrganization> UserOrganizations => Set<UserOrganization>();
     public DbSet<OrganizationPricing> OrganizationPricings => Set<OrganizationPricing>();
+    public DbSet<DeliveryAttemptRecord> DeliveryAttemptRecords => Set<DeliveryAttemptRecord>();
+    public DbSet<DevSmsMessageRecord> DevSmsMessageRecords => Set<DevSmsMessageRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -174,6 +189,9 @@ public class FleetHubDbContext : DbContext
             e.Property(x => x.Message).HasMaxLength(1000);
             e.Property(x => x.Status).HasMaxLength(20);
             e.HasIndex(x => new { x.OrganizationId, x.Status, x.Severity });
+            e.HasIndex(x => new { x.SourceTelemetryEventId, x.AlertType })
+                .IsUnique()
+                .HasFilter("SourceTelemetryEventId IS NOT NULL");
             e.HasOne(x => x.Equipment).WithMany().HasForeignKey(x => x.EquipmentId).OnDelete(DeleteBehavior.Restrict);
         });
 
@@ -258,26 +276,45 @@ public class FleetHubDbContext : DbContext
             e.Property(x => x.ErrorMessage).HasMaxLength(2000).IsRequired();
         });
 
-        // --- Global query filters for multi-tenancy ---
-        if (_tenantContext != null && _tenantContext.OrganizationId != Guid.Empty)
+        // --- DeliveryAttemptRecord (dev diagnostic — not tenant-scoped) ---
+        modelBuilder.Entity<DeliveryAttemptRecord>(e =>
         {
-            var orgId = _tenantContext.OrganizationId;
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Recipient).HasMaxLength(200).IsRequired();
+            e.Property(x => x.EventType).HasMaxLength(100).IsRequired();
+            e.Property(x => x.Channel).HasMaxLength(50).IsRequired();
+            e.Property(x => x.Target).HasMaxLength(50).IsRequired();
+            e.Property(x => x.Error).HasMaxLength(2000);
+            e.HasIndex(x => x.NotificationId);
+        });
 
-            modelBuilder.Entity<Equipment>().HasQueryFilter(x => x.OrganizationId == orgId);
-            modelBuilder.Entity<WorkOrder>().HasQueryFilter(x => x.OrganizationId == orgId);
-            modelBuilder.Entity<Alert>().HasQueryFilter(x => x.OrganizationId == orgId);
-            modelBuilder.Entity<AIPrediction>().HasQueryFilter(x => x.OrganizationId == orgId);
-            modelBuilder.Entity<AnomalyDetection>().HasQueryFilter(x => x.OrganizationId == orgId);
-            modelBuilder.Entity<Notification>().HasQueryFilter(x => x.OrganizationId == orgId);
-            modelBuilder.Entity<PartsOrder>().HasQueryFilter(x => x.OrganizationId == orgId);
-            modelBuilder.Entity<User>().HasQueryFilter(x => x.OrganizationId == orgId);
-            modelBuilder.Entity<UserInvitation>().HasQueryFilter(x => x.OrganizationId == orgId);
-            modelBuilder.Entity<NotificationPreference>().HasQueryFilter(x =>
-                Users.Any(u => u.Id == x.UserId && u.OrganizationId == orgId));
-            modelBuilder.Entity<CartItem>().HasQueryFilter(x =>
-                Users.Any(u => u.Id == x.UserId && u.OrganizationId == orgId));
-            modelBuilder.Entity<TelemetryEvent>().HasQueryFilter(x => x.OrganizationId == orgId);
-            modelBuilder.Entity<AlertThreshold>().HasQueryFilter(x => x.OrganizationId == orgId);
-        }
+        // --- DevSmsMessageRecord (dev diagnostic — not tenant-scoped) ---
+        modelBuilder.Entity<DevSmsMessageRecord>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Recipient).HasMaxLength(50).IsRequired();
+            e.Property(x => x.Message).HasMaxLength(500).IsRequired();
+            e.Property(x => x.EventType).HasMaxLength(100).IsRequired();
+        });
+
+        // --- Global query filters for multi-tenancy (fail-closed) ---
+        // Filters always apply. When TenantResolved is false, the predicate
+        // evaluates to false for every row, returning an empty result set.
+        // EF Core captures the property reference so each request uses its own scoped value.
+        modelBuilder.Entity<Equipment>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<WorkOrder>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<Alert>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<AIPrediction>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<AnomalyDetection>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<Notification>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<PartsOrder>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<User>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<UserInvitation>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<TelemetryEvent>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<AlertThreshold>().HasQueryFilter(x => TenantResolved && x.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<NotificationPreference>().HasQueryFilter(x =>
+            TenantResolved && Users.Any(u => u.Id == x.UserId && u.OrganizationId == CurrentOrganizationId));
+        modelBuilder.Entity<CartItem>().HasQueryFilter(x =>
+            TenantResolved && Users.Any(u => u.Id == x.UserId && u.OrganizationId == CurrentOrganizationId));
     }
 }

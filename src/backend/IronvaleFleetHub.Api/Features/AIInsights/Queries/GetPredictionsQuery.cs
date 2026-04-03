@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -6,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.AIInsights.Queries;
 
-public record GetPredictionsQuery(string? Sort) : IRequest<List<AIPrediction>>;
+public record GetPredictionsQuery(string? Sort) : IRequest<List<AIPrediction>>, ISkipValidation;
 
 public class GetPredictionsQueryHandler : IRequestHandler<GetPredictionsQuery, List<AIPrediction>>
 {

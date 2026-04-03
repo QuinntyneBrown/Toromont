@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -7,7 +8,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Orders.Queries;
 
-public record GetOrderListQuery(int Skip, int Take) : IRequest<PaginatedResponse<PartsOrder>>;
+public record GetOrderListQuery(int Skip, int Take) : IRequest<PaginatedResponse<PartsOrder>>, ISkipValidation;
 
 public class GetOrderListQueryHandler : IRequestHandler<GetOrderListQuery, PaginatedResponse<PartsOrder>>
 {

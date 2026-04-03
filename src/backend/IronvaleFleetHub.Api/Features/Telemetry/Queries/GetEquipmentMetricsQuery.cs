@@ -10,7 +10,7 @@ public record TelemetryMetricPoint(DateTime Timestamp, double Value);
 
 public record StructuredMetricsResponse(Guid EquipmentId, string Range, Dictionary<string, List<TelemetryMetricPoint>> Metrics);
 
-public record GetEquipmentMetricsQuery(Guid EquipmentId, string Range, string? MetricNames = null) : IRequest<Result<StructuredMetricsResponse>>;
+public record GetEquipmentMetricsQuery(Guid EquipmentId, string Range, string? MetricNames = null) : IRequest<Result<StructuredMetricsResponse>>, ISkipValidation;
 
 public class GetEquipmentMetricsQueryHandler : IRequestHandler<GetEquipmentMetricsQuery, Result<StructuredMetricsResponse>>
 {

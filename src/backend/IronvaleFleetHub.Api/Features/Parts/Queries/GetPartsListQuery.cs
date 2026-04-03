@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -14,7 +15,7 @@ public record GetPartsListQuery(
     string? Availability,
     string? Search,
     string? Sort
-) : IRequest<PaginatedResponse<Part>>;
+) : IRequest<PaginatedResponse<Part>>, ISkipValidation;
 
 public class GetPartsListQueryHandler : IRequestHandler<GetPartsListQuery, PaginatedResponse<Part>>
 {

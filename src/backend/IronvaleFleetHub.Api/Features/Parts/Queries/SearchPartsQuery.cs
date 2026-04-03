@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -5,7 +6,7 @@ using IronvaleFleetHub.Api.Models;
 
 namespace IronvaleFleetHub.Api.Features.Parts.Queries;
 
-public record SearchPartsQuery(string Q) : IRequest<List<Part>>;
+public record SearchPartsQuery(string Q) : IRequest<List<Part>>, ISkipValidation;
 
 public class SearchPartsQueryHandler : IRequestHandler<SearchPartsQuery, List<Part>>
 {

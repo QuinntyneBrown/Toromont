@@ -152,10 +152,39 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // --- Application Services ---
-builder.Services.AddScoped<IAlertEvaluatorService, AlertEvaluatorService>();
 builder.Services.AddScoped<IWorkOrderNumberGenerator, WorkOrderNumberGenerator>();
 builder.Services.AddScoped<IReportGenerationService, ReportGenerationService>();
 builder.Services.AddScoped<IExportService, ExportService>();
+builder.Services.AddScoped<IHubAudienceResolver, HubAudienceResolver>();
+
+// --- Dev Notification Delivery Channels ---
+if (builder.Environment.IsDevelopment())
+{
+    var deliveryConfig = builder.Configuration.GetSection("DevNotificationDelivery");
+    var deliveryEnabled = deliveryConfig.GetValue<bool>("Enabled");
+
+    if (deliveryEnabled)
+    {
+        var options = new DevNotificationDeliveryOptions();
+        deliveryConfig.Bind(options);
+        builder.Services.AddSingleton(options);
+
+        var useSmtp = deliveryConfig.GetValue<bool>("UseSmtp");
+        if (useSmtp)
+        {
+            builder.Services.AddScoped<IEmailChannel, CompositeEmailChannel>();
+            builder.Services.AddScoped<DevSmtpEmailChannel>();
+            builder.Services.AddScoped<FileDropEmailChannel>();
+        }
+        else
+        {
+            builder.Services.AddScoped<IEmailChannel, FileDropEmailChannel>();
+        }
+
+        builder.Services.AddScoped<ISmsChannel, ConsoleSmsChannel>();
+        builder.Services.AddScoped<NotificationTemplateRenderer>();
+    }
+}
 
 // --- Controllers ---
 builder.Services.AddControllers();
@@ -182,6 +211,8 @@ app.UseExceptionHandler(errorApp =>
 
         context.Response.ContentType = "application/problem+json";
 
+        var problemJsonType = "application/problem+json";
+
         switch (exception)
         {
             case ValidationException validationEx:
@@ -195,7 +226,7 @@ app.UseExceptionHandler(errorApp =>
                     title = "Validation Failed",
                     status = 400,
                     errors
-                });
+                }, new System.Text.Json.JsonSerializerOptions(), problemJsonType, context.RequestAborted);
                 break;
 
             case BusinessRuleException businessEx:
@@ -206,7 +237,7 @@ app.UseExceptionHandler(errorApp =>
                     title = "Business Rule Violation",
                     status = 422,
                     detail = businessEx.Message
-                });
+                }, new System.Text.Json.JsonSerializerOptions(), problemJsonType, context.RequestAborted);
                 break;
 
             default:
@@ -219,7 +250,7 @@ app.UseExceptionHandler(errorApp =>
                     detail = app.Environment.IsDevelopment()
                         ? exception?.Message
                         : "An unexpected error occurred."
-                });
+                }, new System.Text.Json.JsonSerializerOptions(), problemJsonType, context.RequestAborted);
                 break;
         }
     });
