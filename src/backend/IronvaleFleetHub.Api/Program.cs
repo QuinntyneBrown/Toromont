@@ -155,6 +155,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IWorkOrderNumberGenerator, WorkOrderNumberGenerator>();
 builder.Services.AddScoped<IReportGenerationService, ReportGenerationService>();
 builder.Services.AddScoped<IExportService, ExportService>();
+builder.Services.AddScoped<IHubAudienceResolver, HubAudienceResolver>();
 
 // --- Controllers ---
 builder.Services.AddControllers();
