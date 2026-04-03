@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -21,7 +22,7 @@ public record PaginatedAlertsResponse(
 
 public record PaginationMeta(int Page, int PageSize, int TotalCount);
 
-public record GetAlertsListQuery(int Page = 1, int PageSize = 20) : IRequest<PaginatedAlertsResponse>;
+public record GetAlertsListQuery(int Page = 1, int PageSize = 20) : IRequest<PaginatedAlertsResponse>, ISkipValidation;
 
 public class GetAlertsListQueryHandler : IRequestHandler<GetAlertsListQuery, PaginatedAlertsResponse>
 {

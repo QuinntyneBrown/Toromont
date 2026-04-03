@@ -1,3 +1,4 @@
+using IronvaleFleetHub.Api.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IronvaleFleetHub.Api.Data;
@@ -6,7 +7,7 @@ using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.WorkOrders.Queries;
 
-public record GetWorkOrderByIdQuery(Guid Id) : IRequest<WorkOrder?>;
+public record GetWorkOrderByIdQuery(Guid Id) : IRequest<WorkOrder?>, ISkipValidation;
 
 public class GetWorkOrderByIdQueryHandler : IRequestHandler<GetWorkOrderByIdQuery, WorkOrder?>
 {
