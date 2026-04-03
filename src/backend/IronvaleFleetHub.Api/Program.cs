@@ -152,7 +152,6 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // --- Application Services ---
-builder.Services.AddScoped<IAlertEvaluatorService, AlertEvaluatorService>();
 builder.Services.AddScoped<IWorkOrderNumberGenerator, WorkOrderNumberGenerator>();
 builder.Services.AddScoped<IReportGenerationService, ReportGenerationService>();
 builder.Services.AddScoped<IExportService, ExportService>();
