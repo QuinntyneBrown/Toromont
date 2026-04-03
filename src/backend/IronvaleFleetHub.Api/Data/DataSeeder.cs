@@ -199,6 +199,40 @@ public static class DataSeeder
         };
         db.Notifications.AddRange(notifications);
 
+        // --- AI Scenario Records (Design 21) ---
+        var aiScenarios = new List<AiScenarioRecord>
+        {
+            new() { Id = Guid.NewGuid(), EquipmentId = equipmentIds[0], ScenarioType = "Prediction", PredictedIssue = "Engine overheating risk", ConfidenceScore = 0.87m, RecommendedAction = "Inspect cooling system, check coolant levels and radiator condition within 7 days", Priority = "High", Explanation = "Temperature trending above threshold. Average readings indicate cooling system degradation. Immediate inspection recommended.", CreatedAt = now },
+            new() { Id = Guid.NewGuid(), EquipmentId = equipmentIds[1], ScenarioType = "Prediction", PredictedIssue = "Hydraulic system maintenance required", ConfidenceScore = 0.72m, RecommendedAction = "Inspect and service hydraulic system within 14 days", Priority = "Medium", Explanation = "Equipment status indicates service needed. Fuel variance and operating patterns suggest hydraulic system wear.", CreatedAt = now },
+            new() { Id = Guid.NewGuid(), EquipmentId = equipmentIds[2], ScenarioType = "Prediction", PredictedIssue = "General wear monitoring", ConfidenceScore = 0.45m, RecommendedAction = "Continue monitoring, schedule routine inspection", Priority = "Low", Explanation = "Limited telemetry data available. Confidence is low due to insufficient historical readings.", CreatedAt = now },
+            new() { Id = Guid.NewGuid(), EquipmentId = equipmentIds[4], ScenarioType = "Prediction", PredictedIssue = "Equipment requires immediate maintenance", ConfidenceScore = 0.35m, RecommendedAction = "Schedule emergency maintenance and remove from service rotation", Priority = "Low", Explanation = "cold-start: fewer than 30 days of telemetry. Equipment is OutOfService with limited diagnostic data.", CreatedAt = now },
+        };
+        db.AiScenarioRecords.AddRange(aiScenarios);
+
+        // --- Dev Parts Order Events (Design 19 - Workflow Engine) ---
+        var partsOrder = db.PartsOrders.Local.FirstOrDefault();
+        if (partsOrder == null)
+        {
+            partsOrder = new PartsOrder
+            {
+                Id = Guid.NewGuid(),
+                OrganizationId = Org1Id,
+                OrderNumber = "PO-2026-001",
+                UserId = User2Id,
+                Status = "Submitted",
+                Subtotal = 4785.00m,
+                CreatedAt = now.AddDays(-2)
+            };
+            db.PartsOrders.Add(partsOrder);
+        }
+
+        var partsOrderEvents = new List<DevPartsOrderEvent>
+        {
+            new() { Id = Guid.NewGuid(), PartsOrderId = partsOrder.Id, ExternalEventId = "EVT-001", NewStatus = "Processing", TrackingNumber = null, EventTimestamp = now.AddDays(-1), Processed = false },
+            new() { Id = Guid.NewGuid(), PartsOrderId = partsOrder.Id, ExternalEventId = "EVT-002", NewStatus = "Shipped", TrackingNumber = "TRK-12345-CA", EventTimestamp = now.AddHours(-6), Processed = false },
+        };
+        db.DevPartsOrderEvents.AddRange(partsOrderEvents);
+
         await db.SaveChangesAsync();
     }
 }

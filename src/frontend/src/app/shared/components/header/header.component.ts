@@ -4,11 +4,12 @@ import { Router, RouterModule } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Notification } from '../../../core/models';
+import { OrgSwitcherComponent } from '../org-switcher/org-switcher.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, OrgSwitcherComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })

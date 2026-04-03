@@ -18,6 +18,7 @@ import {
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { tenantInterceptor } from './core/interceptors/tenant.interceptor';
+import { activeOrganizationInterceptor } from './core/interceptors/active-organization.interceptor';
 
 export function msalInstanceFactory() {
   // In dev mode with placeholder credentials, create a minimal config
@@ -65,7 +66,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideRouter(routes),
     provideHttpClient(
-      ...(isDevMode() ? [] : [withInterceptors([authInterceptor, tenantInterceptor])])
+      ...(isDevMode()
+        ? [withInterceptors([activeOrganizationInterceptor])]
+        : [withInterceptors([authInterceptor, tenantInterceptor, activeOrganizationInterceptor])])
     ),
     {
       provide: MSAL_INSTANCE,
