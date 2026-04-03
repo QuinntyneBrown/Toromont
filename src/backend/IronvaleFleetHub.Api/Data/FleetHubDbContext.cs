@@ -276,6 +276,27 @@ public partial class FleetHubDbContext : DbContext
             e.Property(x => x.ErrorMessage).HasMaxLength(2000).IsRequired();
         });
 
+        // --- DeliveryAttemptRecord (dev diagnostic — not tenant-scoped) ---
+        modelBuilder.Entity<DeliveryAttemptRecord>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Recipient).HasMaxLength(200).IsRequired();
+            e.Property(x => x.EventType).HasMaxLength(100).IsRequired();
+            e.Property(x => x.Channel).HasMaxLength(50).IsRequired();
+            e.Property(x => x.Target).HasMaxLength(50).IsRequired();
+            e.Property(x => x.Error).HasMaxLength(2000);
+            e.HasIndex(x => x.NotificationId);
+        });
+
+        // --- DevSmsMessageRecord (dev diagnostic — not tenant-scoped) ---
+        modelBuilder.Entity<DevSmsMessageRecord>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Recipient).HasMaxLength(50).IsRequired();
+            e.Property(x => x.Message).HasMaxLength(500).IsRequired();
+            e.Property(x => x.EventType).HasMaxLength(100).IsRequired();
+        });
+
         // --- Global query filters for multi-tenancy (fail-closed) ---
         // Filters always apply. When TenantResolved is false, the predicate
         // evaluates to false for every row, returning an empty result set.
