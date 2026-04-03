@@ -1,10 +1,10 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using IronvaleFleetHub.Api.Common;
 using IronvaleFleetHub.Api.Data;
 using IronvaleFleetHub.Api.Models;
-using IronvaleFleetHub.Api.Services;
 
 namespace IronvaleFleetHub.Api.Features.Telemetry.Commands;
 
