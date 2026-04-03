@@ -1,124 +1,114 @@
-# Agent Coordination — Designs 14–22 Implementation
+# Agent Coordination -- Designs 14-22 Implementation
 
-> **Protocol:** Every agent MUST read this file before starting work, update their status row as they progress, and list files they are actively modifying. Before touching any file listed in another agent's "Files Owned" column, STOP and check if that agent's status is "Done". If not, coordinate via the Blockers column.
+> **Two-Process Model:** Process A and Process B run on separate machines, each on its own git branch.
+> They coordinate ONLY via this file. Each process pulls this file before starting a design and pushes updates after completing one.
+
+## Protocol
+1. **Before starting a design:** `git pull origin main`, read this file, update your row to "In Progress", commit + push
+2. **After completing a design:** update your row to "Done", commit + push
+3. **On process completion:** set process status to "Complete -- ready for merge"
+4. **File ownership is absolute:** never modify a file owned by the other process (see Shared File Protocol below)
 
 ## Status Legend
 | Status | Meaning |
 |--------|---------|
-| Queued | Not started, waiting for dependencies |
+| Queued | Not started, waiting for previous step or dependencies |
 | In Progress | Agent is actively writing code |
-| Building | Agent is running `dotnet build` to verify compilation |
-| Testing | Agent is running `dotnet test` to verify no regressions |
-| Done | Agent completed, committed, and pushed to feature branch |
-| Blocked | Agent cannot proceed — see Blockers column |
+| Building | Running `dotnet build` to verify compilation |
+| Testing | Running `dotnet test` to verify no regressions |
+| Done | Completed, committed to process branch |
+| Blocked | Cannot proceed -- see Notes column |
 
 ---
 
-## Phase 1 — Independent Foundations
+## Process A -- Architecture Hardening + Notification Stack
+**Branch:** `process-a` | **Machine:** TBD | **Process Status:** Queued
 
-| Agent | Design | Branch | Status | Files Owned | Blockers | Notes |
-|-------|--------|--------|--------|-------------|----------|-------|
-| A1-CQRS | 17 — CQRS & Validation Hardening | `feature/design-17-cqrs-hardening` | Queued | `Behaviors/LoggingBehavior.cs`, `Common/BusinessRuleException.cs`, `Common/Result.cs`, `Features/*/Validators/*`, `Middleware/ProblemDetailsExceptionHandler.cs` | None | Adds global exception handler to Program.cs, FluentValidation assembly scan. Must write validators for ALL existing write commands. Reflection test enforces coverage. |
-| A2-AI | 21 — Local Development AI | `feature/design-21-local-ai` | Queued | `Services/AI/*`, `Models/AiScenarioRecord.cs` | None | Adds DevAiInsightsService, RuleBasedPredictionEngine, DevNaturalLanguageSearchService, SynonymCatalog, TokenVectorizer, NarrativeFormatter. Adds AiScenarioRecord entity to DbContext. Adds AI scenario seed data to DataSeeder. Adds DevAi config section to appsettings.Development.json. Conditional DI in Program.cs: `if (builder.Environment.IsDevelopment())`. |
-| A3-Org | 16 — Active Organization Alignment | `feature/design-16-active-org` | Queued | `Features/Users/Queries/GetUserContextQuery.cs`, `Features/Users/Commands/SetActiveOrganizationCommand.cs`, `Controllers/UsersController.cs` (new endpoints only), Frontend: `core/services/active-organization.service.ts`, `core/interceptors/active-organization.interceptor.ts`, `shared/components/header/` | None | Backend: GET /api/v1/me/context + PUT /api/v1/me/active-organization. Frontend: ActiveOrganizationService, activeOrganizationInterceptor (replaces tenantInterceptor), org switcher in header. No DB schema changes. |
+Designs execute **strictly sequentially** (each modifies files the next depends on).
 
-### Phase 1 Shared File Merge Plan
-After all three agents are Done, merge branches to main in order: A1-CQRS → A2-AI → A3-Org.
-
-| Shared File | A1-CQRS Changes | A2-AI Changes | A3-Org Changes | Conflict Risk |
-|-------------|-----------------|---------------|----------------|---------------|
-| `Program.cs` | Add `app.UseExceptionHandler()` + `services.AddValidatorsFromAssembly()` | Add `if (IsDevelopment()) { services.AddSingleton<IAiProvider, DevAiInsightsService>(); ... }` | None (endpoints auto-discovered via controller) | Low — different sections |
-| `FleetHubDbContext.cs` | None | Add `DbSet<AiScenarioRecord>` | None | None |
-| `DataSeeder.cs` | None | Add AI scenario records | None | None |
-| `appsettings.Development.json` | None | Add `DevAi` config section | None | None |
-| Integration tests | Add validator coverage reflection test | None | Add org-switching test | None — different test files |
+| Step | Design | Status | Files Created/Modified | Notes |
+|------|--------|--------|----------------------|-------|
+| A.1 | 17 -- CQRS Hardening | Queued | **MODIFY:** Program.cs (exception handler + validator scan), Behaviors/LoggingBehavior.cs. **NEW:** Middleware/ProblemDetailsExceptionHandler.cs, Common/BusinessRuleException.cs, Features/*/Validators/*.cs (10-15 validators), integration test for validator coverage | Must write validators for ALL existing write commands. Reflection test enforces coverage. |
+| A.2 | 18 -- Tenant Filters | Queued | **MODIFY:** Data/FleetHubDbContext.cs (rewrite OnModelCreating filter section lines 262-281, add CurrentOrganizationId + TenantResolved properties). **NEW:** Cross-request isolation integration test | CRITICAL: this rewrites filter logic that all subsequent DbContext changes depend on |
+| A.3 | 14 -- Alert Pipeline | Queued | **MODIFY:** Models/Alert.cs (add SourceTelemetryEventId), FleetHubDbContext.cs (Alert index config), Program.cs (remove IAlertEvaluatorService DI), Ironvale.sln (add project ref). **NEW:** src/backend/IronvaleFleetHub.Telemetry/ (shared lib), Functions/Functions/TelemetryAlertEvaluationFunction.cs, queue message models | Removes AlertEvaluatorService from API DI. Adds queue-triggered function. |
+| A.4 | 15 -- Notification Contract | Queued | **MODIFY:** Hubs/NotificationHub.cs (OnConnectedAsync rewrite), Services/NotificationDispatchService.cs (event names lines 64-83), Program.cs (IHubAudienceResolver DI). **NEW:** Services/IHubAudienceResolver.cs, Services/HubAudienceResolver.cs, DTOs/NotificationDto.cs | Canonical groups: user-{id}, org-{id}. Unify NotificationDto for REST + SignalR. |
+| A.5 | 20 -- Local Delivery | Queued | **MODIFY:** Services/NotificationDispatchService.cs (add IEmailChannel?/ISmsChannel? constructor params, replace log-only hooks lines 88-102), FleetHubDbContext.cs (DevSmsMessageRecord + DeliveryAttemptRecord entity configs), Program.cs (channel DI in dev block), appsettings.Development.json (DevNotificationDelivery section). **NEW:** Services/IEmailChannel.cs, Services/ISmsChannel.cs, Services/DevSmtpEmailChannel.cs, Services/FileDropEmailChannel.cs, Services/CompositeEmailChannel.cs, Services/ConsoleSmsChannel.cs, Services/NotificationTemplateRenderer.cs, Services/NotificationPreferenceEvaluator.cs, Controllers/DevNotificationController.cs, Models/DevSmsMessageRecord.cs, Models/DeliveryAttemptRecord.cs | Extends NotificationDispatchService refactored in A.4. CompositeEmailChannel: SMTP first, file-drop fallback. |
 
 ---
 
-## Phase 2 — Core Hardening
+## Process B -- Features, Frontend & Dev Tooling
+**Branch:** `process-b` | **Machine:** TBD | **Process Status:** Queued
 
-| Agent | Design | Branch | Status | Files Owned | Blockers | Notes |
-|-------|--------|--------|--------|-------------|----------|-------|
-| A4-Filters | 18 — Tenant Query Filter Hardening | `feature/design-18-tenant-filters` | Queued | `Data/FleetHubDbContext.cs` (OnModelCreating filter section), `Data/FleetHubDbContext.CurrentOrganizationId.cs` (partial) | Waiting: Phase 1 merge | Refactor all query filters to fail-closed: `TenantResolved && x.OrganizationId == CurrentOrganizationId`. Add CurrentOrganizationId + TenantResolved properties to DbContext. Cross-request isolation integration test. |
-| A5-Pipeline | 14 — Telemetry Alert Pipeline | `feature/design-14-alert-pipeline` | Queued | `Functions/Functions/TelemetryAlertEvaluationFunction.cs`, `Functions/Models/TelemetryAlertEvaluationMessage.cs`, `Models/Alert.cs` (add SourceTelemetryEventId), new `src/backend/IronvaleFleetHub.Telemetry/` shared project | Waiting: Phase 1 merge | Queue-triggered function evaluates alerts. Azure Storage Queue transport. Idempotency via SourceTelemetryEventId unique index. Remove API-side IAlertEvaluatorService DI. Dead-letter via queue-native poison queue. |
+Steps B.1a and B.1b run **in parallel** (zero file overlap). B.2 and B.3 are sequential after B.1.
 
-### Phase 2 Shared File Merge Plan
-Merge order: A4-Filters → A5-Pipeline.
-
-| Shared File | A4-Filters Changes | A5-Pipeline Changes | Conflict Risk |
-|-------------|-------------------|---------------------|---------------|
-| `Program.cs` | None | Remove `services.AddScoped<IAlertEvaluatorService>()` | None |
-| `FleetHubDbContext.cs` | Rewrite filter section + add properties | Add SourceTelemetryEventId to Alert config | Medium — A4 rewrites filters, A5 adds entity config. Merge A4 first. |
-| `Ironvale.sln` | None | Add IronvaleFleetHub.Telemetry project reference | None |
+| Step | Design | Status | Files Created/Modified | Notes |
+|------|--------|--------|----------------------|-------|
+| B.1a | 16 -- Active Organization | Queued | **NEW:** Features/Me/Queries/GetCurrentUserContextQuery.cs + handler, Features/Me/Commands/SetActiveOrganizationCommand.cs + handler, Controllers/MeController.cs, Models/CurrentUserContextResponse.cs, Frontend: services/active-organization.service.ts, interceptors/active-organization.interceptor.ts, components/org-switcher/* | Parallel with B.1b. Backend: 2 new endpoints. Frontend: service + interceptor + org switcher UI. |
+| B.1b | 21 -- Local Dev AI | Queued | **NEW:** Services/AI/DevAiInsightsService.cs, Services/AI/RuleBasedPredictionEngine.cs, Services/AI/NarrativeFormatter.cs, Services/AI/DevNaturalLanguageSearchService.cs, Services/AI/TokenVectorizer.cs, Services/AI/SynonymCatalog.cs, Services/AI/AiProviderSelector.cs, Services/AI/OllamaAiInsightsService.cs, Models/AiScenarioRecord.cs, Data/Configurations/AiScenarioRecordConfiguration.cs. **MODIFY:** Data/DataSeeder.cs (append AI scenarios), appsettings.Development.json (DevAi section) | Parallel with B.1a. Static dictionary synonym catalog. Rule-based predictions. Uses partial class + IEntityTypeConfiguration for DbContext integration. |
+| B.2 | 19 -- Workflow Engine | Queued | **NEW:** Features/Workflows/DevWorkflowEngineHostedService.cs, Features/Workflows/IWorkflowDefinition.cs, Features/Workflows/ServiceReminderWorkflow.cs, Features/Workflows/WorkOrderEscalationWorkflow.cs, Features/Workflows/PartsOrderStatusWorkflow.cs, Features/Workflows/IWorkflowClock.cs, Controllers/DevWorkflowController.cs, Models/WorkflowRunRecord.cs, Models/WorkflowDispatchRecord.cs, Data/Configurations/WorkflowRunRecordConfiguration.cs, Data/Configurations/WorkflowDispatchRecordConfiguration.cs. **MODIFY:** Data/DataSeeder.cs (append parts-order events), appsettings.Development.json (DevWorkflows section) | 3 workflows: reminder, escalation, parts-order. Serial execution. Manual trigger endpoints. |
+| B.3 | 22 -- Functions Local Dev | Queued | **NEW:** Functions/local.settings.example.json, Controllers/DevTelemetryController.cs. **MODIFY:** Frontend environments/environment.development.ts (telemetry endpoint + API key) | Bypass endpoint: POST /api/dev/telemetry/ingest. Primarily config + documentation. |
 
 ---
 
-## Phase 3 — Notification & Functions Config
+## Shared File Protocol -- Zero-Conflict Rules
 
-| Agent | Design | Branch | Status | Files Owned | Blockers | Notes |
-|-------|--------|--------|--------|-------------|----------|-------|
-| A6-Notif | 15 — Notification Contract Unification | `feature/design-15-notification-contract` | Queued | `Hubs/NotificationHub.cs`, `Services/NotificationDispatchService.cs`, `Services/IHubAudienceResolver.cs`, `DTOs/NotificationDto.cs`, Frontend: `core/services/auth.service.ts` (token retrieval), `shared/components/notification-*` | Waiting: Phase 2 merge | Refactor hub to use canonical groups (user-{id}, org-{id}). IHubAudienceResolver resolves from JWT. Unify NotificationDto for REST + SignalR. Frontend: authenticated SignalR connection with bearer token. |
-| A7-FuncDev | 22 — Azure Functions Local Dev | `feature/design-22-functions-local-dev` | Queued | `Functions/local.settings.example.json`, `Controllers/DevTelemetryController.cs`, Frontend: `environments/environment.development.ts` | Waiting: Phase 2 merge | Create local.settings.example.json (committed). Add POST /api/dev/telemetry/ingest bypass endpoint. Update frontend dev environment config. Primarily documentation and config. |
+**CRITICAL: These rules prevent merge conflicts between Process A and Process B.**
 
-### Phase 3 Shared File Merge Plan
-Merge order: A6-Notif → A7-FuncDev.
+| Shared File | Process A Responsibility | Process B Responsibility | Conflict Risk |
+|-------------|------------------------|------------------------|---------------|
+| `Program.cs` | MODIFY directly: exception handler, validator scan, remove AlertEvaluatorService, IHubAudienceResolver DI, channel DI | DO NOT MODIFY. Create `Extensions/DevServicesRegistration.cs` with extension methods instead. Merge phase wires it in. | **ZERO** |
+| `FleetHubDbContext.cs` | MODIFY directly: rewrite OnModelCreating filters, Alert index, entity configs for DeliveryAttempt/DevSms | DO NOT MODIFY. Create `Data/FleetHubDbContext.DevEntities.cs` (partial class) + `IEntityTypeConfiguration<T>` classes | **ZERO** |
+| `NotificationDispatchService.cs` | MODIFY directly: refactor event names (D15) + inject channels (D20) | DO NOT TOUCH | **ZERO** |
+| `appsettings.Development.json` | Add `DevNotificationDelivery` section | Add `DevAi` + `DevWorkflows` sections | **LOW** (different JSON keys) |
+| `DataSeeder.cs` | DO NOT TOUCH | MODIFY: append AI scenarios + parts-order events at end | **ZERO** |
+| `Ironvale.sln` | MODIFY: add IronvaleFleetHub.Telemetry project | DO NOT TOUCH | **ZERO** |
 
-| Shared File | A6-Notif Changes | A7-FuncDev Changes | Conflict Risk |
-|-------------|-----------------|-------------------|---------------|
-| `Program.cs` | None (dispatch service already registered) | Add dev telemetry bypass endpoint DI | None |
-| `appsettings.Development.json` | None | Add Functions config section | None |
-| Frontend `AuthService` | Add `getAccessToken()` method | None | None |
-| Frontend `environment.development.ts` | None | Add telemetry endpoint URL + API key | None |
+### Process B File Patterns (for zero-conflict integration)
 
----
-
-## Phase 4 — Local Development Tooling
-
-| Agent | Design | Branch | Status | Files Owned | Blockers | Notes |
-|-------|--------|--------|--------|-------------|----------|-------|
-| A8-Workflows | 19 — Logic Apps Local Workflow Engine | `feature/design-19-workflow-engine` | Queued | `Features/Workflows/*`, `Controllers/DevWorkflowController.cs`, `Models/WorkflowRunRecord.cs`, `Models/WorkflowDispatchRecord.cs`, `Services/IWorkflowClock.cs` | Waiting: Phase 3 merge | DevWorkflowEngineHostedService with 3 workflows: ServiceReminderWorkflow, WorkOrderEscalationWorkflow, PartsOrderStatusWorkflow. Manual trigger endpoints. WorkflowRunRecord + WorkflowDispatchRecord entities. Serial execution. IWorkflowClock for deterministic tests. |
-| A9-Delivery | 20 — Communication Services Local Delivery | `feature/design-20-local-delivery` | Queued | `Services/Notifications/IEmailChannel.cs`, `Services/Notifications/DevSmtpEmailChannel.cs`, `Services/Notifications/FileDropEmailChannel.cs`, `Services/Notifications/CompositeEmailChannel.cs`, `Services/Notifications/ISmsChannel.cs`, `Services/Notifications/ConsoleSmsChannel.cs`, `Services/Notifications/NotificationTemplateRenderer.cs`, `Controllers/DevNotificationController.cs`, `Models/DevSmsMessageRecord.cs`, `Models/DeliveryAttemptRecord.cs` | Waiting: Phase 3 merge | Extend NotificationDispatchService with optional IEmailChannel? + ISmsChannel? constructor params. CompositeEmailChannel: SMTP first, file-drop fallback. ConsoleSmsChannel: logs + DB entity. DevNotificationController for inspection. |
-
-### Phase 4 Shared File Merge Plan
-Merge order: A8-Workflows → A9-Delivery.
-
-| Shared File | A8-Workflows Changes | A9-Delivery Changes | Conflict Risk |
-|-------------|---------------------|---------------------|---------------|
-| `Program.cs` | Add hosted service + workflow DI | Add channel DI registrations | Low — different DI sections |
-| `FleetHubDbContext.cs` | Add WorkflowRunRecord + WorkflowDispatchRecord DbSets | Add DevSmsMessageRecord + DeliveryAttemptRecord DbSets | Low — additive DbSet declarations |
-| `appsettings.Development.json` | Add DevWorkflow config section | Add DevNotificationDelivery config section | Low — different JSON keys |
-| `DataSeeder.cs` | Add DevPartsOrderEvents seed data | None | None |
-| `NotificationDispatchService.cs` | None | Add optional IEmailChannel?/ISmsChannel? params | None |
-
----
-
-## Phase 5 — Integration Validation
-
-| Agent | Scope | Branch | Status | Notes |
-|-------|-------|--------|--------|-------|
-| A10-Validate | Full build + test, cross-design smoke, 00-index.md update | `main` | Queued | Run `dotnet build` and `dotnet test`. Verify all 9 designs compile together. Run E2E smoke if available. Update 00-index.md status from "Draft" to "Implemented" for designs 14–22. Fix any merge conflicts or integration issues. |
-
----
-
-## Build & Test Commands
-```bash
-# Build entire solution
-dotnet build Ironvale.sln
-
-# Run all integration tests
-dotnet test tests/backend/IronvaleFleetHub.Api.IntegrationTests/ --configuration Release
-
-# Run frontend build (development mode — avoids Google Fonts fetch failure)
-cd src/frontend && npx ng build --configuration=development
+**Partial DbContext** -- `Data/FleetHubDbContext.DevEntities.cs`:
+```csharp
+public partial class FleetHubDbContext
+{
+    public DbSet<AiScenarioRecord> AiScenarioRecords => Set<AiScenarioRecord>();
+    public DbSet<WorkflowRunRecord> WorkflowRunRecords => Set<WorkflowRunRecord>();
+    public DbSet<WorkflowDispatchRecord> WorkflowDispatchRecords => Set<WorkflowDispatchRecord>();
+}
 ```
 
-## Git Conventions
-- Branch: `feature/design-{N}-{short-name}`
-- Commit: `feat(design-{N}): {description}`
-- Trailer: `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`
-- Merge strategy: squash merge per feature branch
+**Extension Methods** -- `Extensions/DevServicesRegistration.cs`:
+```csharp
+public static class DevServicesRegistration
+{
+    public static IServiceCollection AddDevAiServices(this IServiceCollection services, IConfiguration config) { ... }
+    public static IServiceCollection AddDevWorkflowServices(this IServiceCollection services, IConfiguration config) { ... }
+}
+```
+
+**Entity Configurations** -- `Data/Configurations/{Entity}Configuration.cs`:
+```csharp
+public class AiScenarioRecordConfiguration : IEntityTypeConfiguration<AiScenarioRecord>
+{
+    public void Configure(EntityTypeBuilder<AiScenarioRecord> builder) { ... }
+}
+```
 
 ---
 
-*Last updated: 2026-04-03T05:47Z*
-*Phase: Pre-implementation (all agents Queued)*
+## Merge Phase Checklist
+Triggered when BOTH processes report "Complete":
+
+- [ ] Merge `process-a` to `main` (first -- owns existing file modifications)
+- [ ] Merge `process-b` to `main` (new files + appsettings -- minimal conflicts)
+- [ ] Resolve any `appsettings.Development.json` merge conflicts (trivial -- different keys)
+- [ ] Add to Program.cs dev block: `builder.Services.AddDevAiServices(config).AddDevWorkflowServices(config);`
+- [ ] Verify `ApplyConfigurationsFromAssembly` discovers Process B's entity configurations
+- [ ] Run `dotnet build Ironvale.sln`
+- [ ] Run `dotnet test tests/backend/IronvaleFleetHub.Api.IntegrationTests/ --configuration Release`
+- [ ] Run `cd src/frontend && npx ng build --configuration=development`
+- [ ] Update `docs/detailed-designs/00-index.md` designs 14-22 status to "Implemented"
+
+---
+
+*Last updated: 2026-04-03T05:53Z*
+*Process A Status: Queued*
+*Process B Status: Queued*
