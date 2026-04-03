@@ -75,3 +75,16 @@ public class ExportReportCommandHandler : IRequestHandler<ExportReportCommand, R
         return Result<ExportReportResult>.Success(new ExportReportResult(fileBytes, contentType, fileName));
     }
 }
+
+public class ExportReportCommandValidator : AbstractValidator<ExportReportCommand>
+{
+    public ExportReportCommandValidator()
+    {
+        RuleFor(x => x.ReportType).NotEmpty();
+        RuleFor(x => x.Request).NotNull();
+        RuleFor(x => x.Format)
+            .NotEmpty()
+            .Must(f => f is "pdf" or "csv" or "xlsx")
+            .WithMessage("Format must be one of: pdf, csv, xlsx.");
+    }
+}
