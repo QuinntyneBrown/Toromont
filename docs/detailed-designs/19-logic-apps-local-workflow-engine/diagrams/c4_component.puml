@@ -23,7 +23,7 @@ skinparam rectangle<<service>> {
 }
 
 rectangle "ASP.NET Core API\n(Development Host)" <<backend>> as api
-rectangle "LocalWorkflowEngineHostedService\nScheduler + execution loop" <<service>> as host
+rectangle "DevWorkflowEngineHostedService\nScheduler + execution loop" <<service>> as host
 rectangle "ServiceReminderWorkflow\n7d / 3d / 1d" <<service>> as reminder
 rectangle "WorkOrderEscalationWorkflow\n48h escalation" <<service>> as escalation
 rectangle "PartsOrderStatusWorkflow\nLocal fulfillment events" <<service>> as parts

@@ -18,10 +18,10 @@ interface IAiSearchService {
 }
 
 class AiProviderSelector
-class LocalAiInsightsService
+class DevAiInsightsService
 class RuleBasedPredictionEngine
 class NarrativeFormatter
-class LocalNaturalLanguageSearchService
+class DevNaturalLanguageSearchService
 class TokenVectorizer
 class SynonymCatalog
 class OllamaAiInsightsService
@@ -36,16 +36,16 @@ class AiSearchResult {
   +Score: decimal
 }
 
-IAiInsightsService <|.. LocalAiInsightsService
+IAiInsightsService <|.. DevAiInsightsService
 IAiInsightsService <|.. OllamaAiInsightsService
-IAiSearchService <|.. LocalNaturalLanguageSearchService
+IAiSearchService <|.. DevNaturalLanguageSearchService
 AiProviderSelector --> IAiInsightsService
 AiProviderSelector --> IAiSearchService
-LocalAiInsightsService --> RuleBasedPredictionEngine
-LocalAiInsightsService --> NarrativeFormatter
-LocalNaturalLanguageSearchService --> TokenVectorizer
-LocalNaturalLanguageSearchService --> SynonymCatalog
-LocalAiInsightsService --> MaintenancePrediction
-LocalNaturalLanguageSearchService --> AiSearchResult
+DevAiInsightsService --> RuleBasedPredictionEngine
+DevAiInsightsService --> NarrativeFormatter
+DevNaturalLanguageSearchService --> TokenVectorizer
+DevNaturalLanguageSearchService --> SynonymCatalog
+DevAiInsightsService --> MaintenancePrediction
+DevNaturalLanguageSearchService --> AiSearchResult
 
 @enduml

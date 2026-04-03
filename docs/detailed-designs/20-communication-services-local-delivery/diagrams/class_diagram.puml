@@ -20,10 +20,12 @@ interface ISmsChannel {
   +SendAsync(request, ct)
 }
 
-class LocalNotificationDeliveryService
+class NotificationDispatchService {
+  +DispatchAsync(userId, type, title, message)
+}
 class NotificationPreferenceEvaluator
 class NotificationTemplateRenderer
-class LocalSmtpEmailChannel
+class DevSmtpEmailChannel
 class FileDropEmailChannel
 class CompositeEmailChannel
 class ConsoleSmsChannel
@@ -38,16 +40,16 @@ class DeliveryAttemptResult {
   +Target: string
 }
 
-INotificationDeliveryService <|.. LocalNotificationDeliveryService
-LocalNotificationDeliveryService --> NotificationPreferenceEvaluator
-LocalNotificationDeliveryService --> NotificationTemplateRenderer
-LocalNotificationDeliveryService --> IEmailChannel
-LocalNotificationDeliveryService --> ISmsChannel
-IEmailChannel <|.. LocalSmtpEmailChannel
+INotificationDeliveryService <|.. NotificationDispatchService
+NotificationDispatchService --> NotificationPreferenceEvaluator
+NotificationDispatchService --> NotificationTemplateRenderer
+NotificationDispatchService --> IEmailChannel
+NotificationDispatchService --> ISmsChannel
+IEmailChannel <|.. DevSmtpEmailChannel
 IEmailChannel <|.. FileDropEmailChannel
 IEmailChannel <|.. CompositeEmailChannel
 ISmsChannel <|.. ConsoleSmsChannel
-LocalNotificationDeliveryService --> NotificationEnvelope
-LocalNotificationDeliveryService --> DeliveryAttemptResult
+NotificationDispatchService --> NotificationEnvelope
+NotificationDispatchService --> DeliveryAttemptResult
 
 @enduml

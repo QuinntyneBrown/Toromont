@@ -7,10 +7,10 @@ skinparam sequenceMessageAlign center
 title Logic Apps Local Workflow Engine - Sequence
 
 participant "ASP.NET Core Host" as Host
-participant "LocalWorkflowEngineHostedService" as Engine
+participant "DevWorkflowEngineHostedService" as Engine
 participant "ServiceReminderWorkflow" as Workflow
 database "SQL Server" as Db
-participant "WorkflowDispatchLogRepository" as Log
+participant "WorkflowDispatchRecord" as Log
 participant "NotificationDispatchService" as Notif
 
 Host -> Engine : start Development host

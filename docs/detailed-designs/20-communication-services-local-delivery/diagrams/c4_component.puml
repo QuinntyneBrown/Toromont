@@ -23,9 +23,9 @@ skinparam rectangle<<service>> {
 }
 
 rectangle "Workflow / Domain Event" <<backend>> as source
-rectangle "LocalNotificationDeliveryService" <<service>> as delivery
+rectangle "NotificationDispatchService\n(extended with channels)" <<service>> as delivery
 rectangle "PreferenceEvaluator\n+ TemplateRenderer" <<service>> as prep
-rectangle "LocalSmtpEmailChannel" <<service>> as smtp
+rectangle "DevSmtpEmailChannel" <<service>> as smtp
 rectangle "FileDropEmailChannel" <<service>> as file
 rectangle "ConsoleSmsChannel" <<service>> as sms
 rectangle "MailHog / smtp4dev" <<service>> as mailhog

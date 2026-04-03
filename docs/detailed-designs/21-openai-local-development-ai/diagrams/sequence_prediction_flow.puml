@@ -8,13 +8,13 @@ title Azure OpenAI Local Development AI - Sequence
 
 participant "API / Prediction Job" as App
 participant "AiProviderSelector" as Selector
-participant "LocalAiInsightsService" as Insights
+participant "DevAiInsightsService" as Insights
 participant "RuleBasedPredictionEngine" as Engine
 participant "NarrativeFormatter" as Narrative
 database "SQL Server" as Db
 
 App -> Selector : resolve insights provider
-Selector --> App : LocalAiInsightsService
+Selector --> App : DevAiInsightsService
 App -> Insights : PredictMaintenanceAsync(equipmentId)
 Insights -> Db : load telemetry aggregates
 Db --> Insights : aggregates + service history

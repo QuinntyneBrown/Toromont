@@ -26,6 +26,9 @@ Local development needs those features to behave meaningfully without making out
 - [ADR-0001 Azure OpenAI AI-Powered Features](../../adr/integration/0001-azure-openai-ai-powered-features.md)
 - [Feature 04 Parts & Ordering](../04-parts-ordering/README.md)
 - [Feature 06 AI Insights](../06-ai-insights/README.md)
+- [Design 14 Telemetry Alert Pipeline Unification](../14-telemetry-alert-pipeline-unification/README.md)
+
+> **Naming convention:** all development-only types use the `Dev*` prefix (e.g., `DevAiInsightsService`, `DevNaturalLanguageSearchService`) to match the existing codebase convention established by `DevAuthHandler`.
 
 ## 2. Architecture
 
@@ -34,8 +37,8 @@ Local development needs those features to behave meaningfully without making out
 The local replacement is split into four major pieces:
 
 - `AiProviderSelector` chooses mock, rule-based, or optional Ollama-backed providers
-- `LocalAiInsightsService` produces deterministic maintenance predictions and anomaly narratives
-- `LocalNaturalLanguageSearchService` approximates semantic search using tokenization, synonym expansion, and weighted ranking
+- `DevAiInsightsService` produces deterministic maintenance predictions and anomaly narratives
+- `DevNaturalLanguageSearchService` approximates semantic search using tokenization, synonym expansion, and weighted ranking
 - `AiScenarioRepository` supplies repeatable seeded scenarios for tests and UI development
 
 ![Component Diagram](diagrams/c4_component.png)
@@ -44,7 +47,7 @@ The local replacement is split into four major pieces:
 
 1. The API or prediction batch job requests AI insights for an equipment item.
 2. `AiProviderSelector` resolves the configured local mode.
-3. `LocalAiInsightsService` loads telemetry aggregates and service history.
+3. `DevAiInsightsService` loads telemetry aggregates and service history.
 4. `RuleBasedPredictionEngine` computes confidence and issue candidates.
 5. `NarrativeFormatter` creates the explanation text returned to the API.
 6. Results are cached briefly for local responsiveness and deterministic test behavior.
@@ -93,7 +96,7 @@ public interface IAiInsightsService
 }
 ```
 
-#### `LocalAiInsightsService`
+#### `DevAiInsightsService`
 
 - **Type:** default development implementation
 - **Responsibility:** coordinates telemetry loading, rule evaluation, narrative formatting, and optional scenario overrides
@@ -145,7 +148,7 @@ public interface IAiSearchService
 }
 ```
 
-#### `LocalNaturalLanguageSearchService`
+#### `DevNaturalLanguageSearchService`
 
 - **Type:** default development implementation
 - **Responsibility:** approximates semantic parts search without embeddings
@@ -174,23 +177,43 @@ This preserves some of the value of natural language search locally.
 
 ### 3.4 Seeded Scenario Support
 
-#### `AiScenarioRepository`
+#### `AiScenarioRecord` (DbContext Entity)
 
-- **Type:** infrastructure abstraction
+- **Type:** EF Core entity registered in `FleetHubDbContext`
 - **Responsibility:** returns deterministic scenario overrides for development demos and tests
-- **Possible stores:**
-  - JSON file under `dev-data`
-  - SQL table such as `DevAiScenarios`
+- **Persistence:** add `DbSet<AiScenarioRecord>` to `FleetHubDbContext`, consistent with the existing entity access pattern
+
+> **Architectural note:** following the established codebase pattern, scenarios are accessed via `_db.AiScenarioRecords` directly rather than through a separate repository abstraction.
 
 #### `AiScenarioRecord`
 
-- **Type:** DTO / persistence model
+- **Type:** persistence model
 - **Fields:**
   - `Guid EquipmentId`
   - `string ScenarioType`
   - `string PredictedIssue`
   - `decimal ConfidenceScore`
   - `string RecommendedAction`
+
+### 3.5 DataSeeder Integration
+
+AI scenarios should reference the same seeded equipment used by the rest of the application. The existing `DataSeeder` (`src/backend/IronvaleFleetHub.Api/Data/DataSeeder.cs`) already seeds:
+
+- **3 AI predictions** for equipment items with confidence scores 0.87, 0.72, 0.45 and priorities High, Medium, Low
+- **2 anomaly detections** (TemperatureAnomaly, FuelAnomaly)
+- **7 days of telemetry** for the first 3 equipment items (temperature 80–110°C, fuel 40–90%)
+- **5 equipment model thresholds** (MaxTemperature, MaxFuelConsumptionRate, MaxOperatingHoursPerDay)
+
+`DevAiInsightsService` should use this data directly. Example seeded scenario mappings:
+
+| Equipment ID | Equipment Name | Expected Scenario |
+|-------------|----------------|-------------------|
+| `c1b2c3d4-0001-*` | CAT 320 Excavator #1 | High confidence (0.87) — temperature trending above threshold |
+| `c1b2c3d4-0002-*` | Komatsu PC210 Excavator | Medium confidence (0.72) — NeedsService status, fuel variance |
+| `c1b2c3d4-0003-*` | Volvo L120H Loader | Low confidence (0.45) — limited telemetry data |
+| `c1b2c3d4-0005-*` | Deere 410L Backhoe | Cold start — OutOfService, fewer than 30 days telemetry |
+
+Additional scenario records should be added to `DataSeeder.SeedAsync()` to provide repeatable test fixtures alongside the existing predictions, rather than a separate JSON file or table.
 
 ### 3.5 Result Contracts and Option Types
 
@@ -226,12 +249,12 @@ This preserves some of the value of natural language search locally.
   - `decimal Score`
   - `string MatchReason`
 
-#### `LocalAiOptions`
+#### `DevAiOptions`
 
-- **Type:** options class
+- **Type:** configuration class bound via `IConfiguration`
 
 ```csharp
-public sealed class LocalAiOptions
+public sealed class DevAiOptions
 {
     public bool Enabled { get; set; } = true;
     public AiProviderMode InsightsMode { get; set; } = AiProviderMode.RuleBased;
@@ -239,6 +262,23 @@ public sealed class LocalAiOptions
     public bool EnableOllama { get; set; }
     public string OllamaBaseUrl { get; set; } = "http://localhost:11434";
     public int CacheSeconds { get; set; } = 30;
+}
+```
+
+> **Configuration pattern:** following the existing codebase convention, configuration values are read from `builder.Configuration` in `Program.cs` rather than injected via `IOptions<T>`.
+
+**`appsettings.Development.json` additions:**
+
+```json
+{
+  "DevAi": {
+    "Enabled": true,
+    "InsightsMode": "RuleBased",
+    "SearchMode": "Mock",
+    "EnableOllama": false,
+    "OllamaBaseUrl": "http://localhost:11434",
+    "CacheSeconds": 30
+  }
 }
 ```
 
@@ -257,6 +297,8 @@ public sealed class LocalAiOptions
 - Fuel anomalies trigger when current usage exceeds the 7-day baseline by more than 30%.
 - Explanation text comes from `NarrativeFormatter`, not from a remote model.
 
+> **Integration with AlertEvaluatorService:** the existing `AlertEvaluatorService` already evaluates temperature and fuel thresholds to create `Alert` entities. Anomaly detection in this design **supplements** rather than replaces alert evaluation. `AlertEvaluatorService` creates binary alerts (threshold exceeded or not), while `DevAiInsightsService` provides richer anomaly context (deviation percentage, severity, explanation text). The two services share the same `EquipmentModelThreshold` data seeded by `DataSeeder`.
+
 ### 4.3 Parts Search
 
 - Query text is normalized and tokenized.
@@ -268,35 +310,85 @@ public sealed class LocalAiOptions
 ### 4.4 Optional Ollama Mode
 
 - If enabled, `OllamaAiInsightsService` or an Ollama-backed search expander may enhance explanation text.
-- If the Ollama endpoint is unavailable, the selector falls back to the default local provider and logs a warning.
+- If the Ollama endpoint is unavailable, the selector falls back to the default local provider (`DevAiInsightsService` or `DevNaturalLanguageSearchService`) and logs a warning.
 - No feature should fail hard because Ollama is missing.
 
 ## 5. Acceptance Tests
 
+> **Testing approach:** tests use `ApiWebApplicationFactory` with `DevAiInsightsService` and `DevNaturalLanguageSearchService` registered. The seeded telemetry and equipment data from `DataSeeder` provides deterministic inputs for all test scenarios.
+
 ### 5.1 Deterministic Prediction
 
-- Given seeded telemetry with a high temperature deviation, when `PredictMaintenanceAsync` is called, then the returned confidence score, issue text, and priority match the expected deterministic output.
+- Given seeded telemetry with a high temperature deviation, when `PredictMaintenanceAsync` is called for equipment `c1b2c3d4-0001-0000-0000-000000000001` (CAT 320 Excavator #1), then the returned confidence score, issue text, and priority match the expected deterministic output.
+
+**How to verify:** call `IAiInsightsService.PredictMaintenanceAsync(equipmentId)` in an integration test and assert `result.ConfidenceScore >= 0.8m`, `result.Priority == "High"`, and `result.PredictedIssue` is non-empty.
 
 ### 5.2 Cold Start Behavior
 
 - Given fewer than 30 days of telemetry, when `PredictMaintenanceAsync` is called, then the result is low confidence and explicitly indicates cold-start mode.
 
+**How to verify:** create a new equipment item with no telemetry history, call `PredictMaintenanceAsync`, and assert `result.ConfidenceScore < 0.5m` and `result.Explanation` contains "cold-start" or equivalent indicator.
+
 ### 5.3 Natural Language Parts Search
 
 - Given the query `hydraulic ram for 320 excavator`, when `SearchPartsAsync` is called, then results include hydraulic cylinder parts with a non-zero score and a `MatchReason` derived from synonym expansion.
+
+**How to verify:** call `IAiSearchService.SearchPartsAsync("hydraulic ram for 320 excavator")` and assert the results contain a part matching `HYD-PUMP-001` (Hydraulic Main Pump from `DataSeeder`) with `Score > 0` and `MatchReason` mentioning "synonym" or "hydraulic".
 
 ### 5.4 Ollama Fallback
 
 - Given `EnableOllama = true` but the local endpoint is unreachable, when insights are requested, then the service returns the rule-based result and records a warning instead of failing the request.
 
+**How to verify:** configure `DevAiOptions.EnableOllama = true` with `OllamaBaseUrl = "http://localhost:99999"` (unreachable port), call `PredictMaintenanceAsync`, and assert a successful result is returned. Verify the test log output contains a warning-level message about Ollama being unreachable.
+
 ## 6. Security Considerations
 
-- Local mode must disable outbound Azure OpenAI calls by default.
+- Local mode must disable outbound Azure OpenAI calls by default. The `AiProviderSelector` enforces this when `IHostEnvironment.IsDevelopment()` and `DevAiOptions.Enabled` is true.
 - Optional Ollama mode should stay on `localhost` unless explicitly configured otherwise.
-- AI explanations must not leak cross-tenant data when aggregating telemetry.
+- AI explanations must not leak cross-tenant data when aggregating telemetry (see Section 7).
 - Scenario fixtures and cached results should stay in development-only stores.
 
-## 7. Open Questions
+## 7. Multi-Tenancy Considerations
+
+- **`AiScenarioRecord`** is a development-only entity. It is **not tenant-scoped** — scenarios are shared across all organizations for development convenience. Developers can seed scenarios for equipment from both Org1 and Org2.
+- **Prediction and anomaly queries** operate on telemetry data that is already tenant-filtered by `FleetHubDbContext` global query filters. When `DevAiInsightsService` queries `_db.TelemetryEvents.Where(t => t.EquipmentId == equipmentId)`, the `OrganizationId` filter from `ITenantContext` applies automatically.
+- **Parts search** queries `_db.Parts` which is a shared catalog (parts are not tenant-scoped in the current data model). This is correct — parts are available across organizations.
+- **DevAuthHandler context:** the dev user is authenticated as Org1 (`a1b2c3d4-0001-*`). AI predictions for Org2 equipment will not be visible through the API unless the developer switches active organization via the `X-Active-Organization` header.
+
+## 8. DI Registration
+
+```csharp
+if (builder.Environment.IsDevelopment())
+{
+    var aiConfig = builder.Configuration.GetSection("DevAi");
+    var aiEnabled = aiConfig.GetValue<bool>("Enabled");
+
+    if (aiEnabled)
+    {
+        builder.Services.AddScoped<AiProviderSelector>();
+        builder.Services.AddScoped<IAiInsightsService, DevAiInsightsService>();
+        builder.Services.AddScoped<IAiSearchService, DevNaturalLanguageSearchService>();
+        builder.Services.AddScoped<RuleBasedPredictionEngine>();
+        builder.Services.AddScoped<NarrativeFormatter>();
+        builder.Services.AddScoped<TokenVectorizer>();
+        builder.Services.AddSingleton<SynonymCatalog>();
+
+        var enableOllama = aiConfig.GetValue<bool>("EnableOllama");
+        if (enableOllama)
+        {
+            builder.Services.AddScoped<OllamaAiInsightsService>();
+            builder.Services.AddHttpClient("Ollama", client =>
+            {
+                client.BaseAddress = new Uri(aiConfig["OllamaBaseUrl"] ?? "http://localhost:11434");
+            });
+        }
+    }
+}
+```
+
+In production, `IAiInsightsService` and `IAiSearchService` are registered with Azure OpenAI-backed implementations. The interface contracts remain identical.
+
+## 9. Open Questions
 
 1. Should the synonym catalog live in code, JSON, or a database table for easier updates?
 2. Is the rule-based local search good enough, or do we want to support local embeddings in a later iteration?

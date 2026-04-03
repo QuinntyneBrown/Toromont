@@ -19,7 +19,7 @@ interface IWorkflowDefinition {
   +ExecuteAsync(context, ct)
 }
 
-class LocalWorkflowEngineHostedService {
+class DevWorkflowEngineHostedService {
   +ExecuteAsync(ct)
 }
 
@@ -42,13 +42,13 @@ class WorkflowDispatchRecord {
   +EntityId: Guid
 }
 
-class LocalWorkflowOptions {
+class DevWorkflowOptions {
   +EnableServiceReminders: bool
   +EnableWorkOrderEscalation: bool
   +EnablePartsOrderStatusSync: bool
 }
 
-LocalWorkflowEngineHostedService --> WorkflowExecutionCoordinator
+DevWorkflowEngineHostedService --> WorkflowExecutionCoordinator
 WorkflowExecutionCoordinator --> IWorkflowDefinition
 IWorkflowEngine <|.. WorkflowExecutionCoordinator
 IWorkflowDefinition <|.. ServiceReminderWorkflow
@@ -56,6 +56,6 @@ IWorkflowDefinition <|.. WorkOrderEscalationWorkflow
 IWorkflowDefinition <|.. PartsOrderStatusWorkflow
 WorkflowExecutionCoordinator --> WorkflowRunRecord
 WorkflowExecutionCoordinator --> WorkflowDispatchRecord
-WorkflowExecutionCoordinator --> LocalWorkflowOptions
+WorkflowExecutionCoordinator --> DevWorkflowOptions
 
 @enduml

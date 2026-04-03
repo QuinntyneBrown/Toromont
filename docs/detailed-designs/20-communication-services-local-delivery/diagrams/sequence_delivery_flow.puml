@@ -7,14 +7,14 @@ skinparam sequenceMessageAlign center
 title Communication Services Local Delivery - Sequence
 
 participant "Workflow / Handler" as Source
-participant "LocalNotificationDeliveryService" as Delivery
+participant "NotificationDispatchService" as Delivery
 participant "PreferenceEvaluator" as Prefs
 participant "TemplateRenderer" as Render
 participant "CompositeEmailChannel" as Email
 participant "ConsoleSmsChannel" as Sms
-database "Delivery Log Repo" as Log
+database "DeliveryAttemptRecord" as Log
 
-Source -> Delivery : DeliverAsync(NotificationEnvelope)
+Source -> Delivery : DispatchAsync(userId, type, title, message)
 Delivery -> Prefs : load user preferences
 Prefs --> Delivery : enabled channels
 Delivery -> Render : render email and SMS

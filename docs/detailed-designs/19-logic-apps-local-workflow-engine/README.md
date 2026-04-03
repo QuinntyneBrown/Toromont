@@ -21,6 +21,9 @@ The production architecture uses Azure Logic Apps for recurring service reminder
 - [ADR-0003 Azure Logic Apps Workflow Automation](../../adr/infrastructure/0003-azure-logic-apps-workflow-automation.md)
 - [Feature 03 Service Management](../03-service-management/README.md)
 - [Feature 07 Notifications & Reporting](../07-notifications-reporting/README.md)
+- [Design 14 Telemetry Alert Pipeline Unification](../14-telemetry-alert-pipeline-unification/README.md)
+- [Design 20 Communication Services Local Delivery](../20-communication-services-local-delivery/README.md)
+- [Design 22 Azure Functions Local Development](../22-azure-functions-local-development/README.md)
 
 ## 2. Architecture
 
@@ -28,18 +31,20 @@ The production architecture uses Azure Logic Apps for recurring service reminder
 
 The local replacement has five main runtime elements:
 
-- `LocalWorkflowEngineHostedService` schedules and executes development workflows
+- `DevWorkflowEngineHostedService` schedules and executes development workflows
 - `IWorkflowDefinition` implementations contain each workflow's business logic
-- `WorkflowRunRepository` stores run history, attempts, and last error state
-- `WorkflowDispatchLogRepository` stores idempotency keys so retries do not duplicate side effects
+- `WorkflowRunRecord` and `WorkflowDispatchRecord` entities persisted via `FleetHubDbContext`
 - downstream application services perform notifications and work-order updates using the same contracts as the production app
+- `AlertEvaluatorService` integration for workflows that react to existing alerts rather than re-evaluating thresholds
+
+> **Naming convention:** all development-only types use the `Dev*` prefix (e.g., `DevWorkflowEngineHostedService`, `DevWorkflowController`) to match the existing codebase convention established by `DevAuthHandler`.
 
 ![Component Diagram](diagrams/c4_component.png)
 
 ### 2.2 Canonical Execution Flow
 
 1. The ASP.NET Core API starts in `Development`.
-2. `LocalWorkflowEngineHostedService` loads enabled workflow definitions and checks which are due.
+2. `DevWorkflowEngineHostedService` loads enabled workflow definitions and checks which are due.
 3. The due workflow queries the application database for candidates.
 4. The workflow computes a deterministic dispatch key per action.
 5. New actions are executed through existing application services.
@@ -74,24 +79,28 @@ public interface IWorkflowDefinition
 {
     string Name { get; }
     TimeSpan PollInterval { get; }
-    bool Enabled(LocalWorkflowOptions options);
+    bool Enabled(DevWorkflowOptions options);
     Task ExecuteAsync(WorkflowExecutionContext context, CancellationToken ct);
 }
 ```
 
 Each definition owns one domain concern and should not branch across unrelated workflow families.
 
-#### `IWorkflowRunRepository`
+#### `WorkflowRunRecord` (DbContext Entity)
 
-- **Type:** persistence abstraction
+- **Type:** EF Core entity registered in `FleetHubDbContext`
 - **Responsibility:** stores execution start/end times, attempt count, status, and error details
+- **Persistence:** add `DbSet<WorkflowRunRecord>` to `FleetHubDbContext`, consistent with how existing entities like `Alert` and `Notification` are accessed directly by MediatR handlers and services
 - **Used by:** hosted service, controller, tests
 
-#### `IWorkflowDispatchLogRepository`
+#### `WorkflowDispatchRecord` (DbContext Entity)
 
-- **Type:** idempotency abstraction
+- **Type:** EF Core entity registered in `FleetHubDbContext`
 - **Responsibility:** records dispatch keys such as `service-reminder:{workOrderId}:3d` or `escalation:{workOrderId}:high`
+- **Persistence:** add `DbSet<WorkflowDispatchRecord>` to `FleetHubDbContext`
 - **Used by:** each workflow before creating side effects
+
+> **Architectural note:** the existing API codebase accesses entities directly via `FleetHubDbContext` `DbSet<T>` properties (e.g., `_db.Equipment.Where(...)` in MediatR handlers). These workflow entities follow the same pattern rather than introducing a separate repository abstraction. This keeps the local dev code consistent with the established data access approach.
 
 #### `IWorkflowClock`
 
@@ -101,7 +110,7 @@ Each definition owns one domain concern and should not branch across unrelated w
 
 ### 3.2 Hosted Runtime
 
-#### `LocalWorkflowEngineHostedService`
+#### `DevWorkflowEngineHostedService`
 
 - **Type:** `BackgroundService`
 - **Responsibility:** drives the scheduler loop in development only
@@ -109,9 +118,15 @@ Each definition owns one domain concern and should not branch across unrelated w
   - loads all registered `IWorkflowDefinition` instances
   - checks due state using `PollInterval` and last successful run
   - executes workflows serially by default to keep local behavior predictable
-  - records success/failure in `WorkflowRunRepository`
+  - records success/failure in `WorkflowRunRecord` via `FleetHubDbContext`
 
 This service replaces the schedule trigger aspect of Logic Apps locally.
+
+> **Implementation guidance:** this is the first `BackgroundService` in the API project. Key patterns to follow:
+> - Resolve scoped services (e.g., `FleetHubDbContext`) via `IServiceProvider.CreateScope()` within each iteration — never capture a scoped service in the constructor.
+> - Respect the `CancellationToken` passed to `ExecuteAsync` for graceful shutdown.
+> - Wrap the main loop body in `try/catch` so a single workflow failure does not crash the hosted service.
+> - Log unhandled exceptions with `ILogger` and continue the loop rather than rethrowing.
 
 #### `WorkflowExecutionCoordinator`
 
@@ -169,17 +184,20 @@ This controller is guarded behind `IHostEnvironment.IsDevelopment()` and should 
 - **Type:** domain service
 - **Responsibility:** computes the next priority level and prevents escalation past `Critical`
 
-#### `LocalPartsOrderEventSource`
+#### `DevPartsOrderEventSource`
 
 - **Type:** infrastructure adapter
 - **Responsibility:** reads simulated fulfillment updates from local fixtures or a dev table
 - **Why needed:** local development still needs an event source even though no external vendor is present
 
-#### `INotificationDispatchService`
+#### `INotificationDispatchService` (Existing)
 
-- **Type:** existing application boundary
+- **Type:** existing application boundary — **not a new abstraction**
+- **File:** `src/backend/IronvaleFleetHub.Api/Services/NotificationDispatchService.cs`
 - **Responsibility:** remains the single way workflows create inbox notifications and downstream email or SMS work
-- **Integration:** this design depends on [Communication Services Local Delivery](../20-communication-services-local-delivery/README.md) for development email/SMS behavior
+- **Existing behavior (lines 88–102):** already checks `NotificationPreference.EmailEnabled` and `SmsEnabled` per user per event type, but currently logs rather than dispatching. Design 20 extends these hooks with concrete email and SMS channel implementations.
+- **Integration:** workflows call `INotificationDispatchService.DispatchAsync(userId, type, title, message, entityType, entityId)` — the same signature used everywhere in the application. This design does **not** introduce a parallel notification path.
+- **Dependency:** this design depends on [Communication Services Local Delivery](../20-communication-services-local-delivery/README.md) for development email/SMS behavior. Design 20 wires channel implementations into the existing service's email/SMS hooks.
 
 ### 3.5 Data Contracts and Option Types
 
@@ -190,8 +208,9 @@ This controller is guarded behind `IHostEnvironment.IsDevelopment()` and should 
   - `Guid RunId`
   - `DateTime StartedAtUtc`
   - `string CorrelationId`
+  - `Guid OrganizationId` — the tenant context for this workflow run; workflows that process all organizations should iterate org IDs explicitly
   - `IServiceProvider Services`
-  - `LocalWorkflowOptions Options`
+  - `DevWorkflowOptions Options`
 
 #### `WorkflowRunRecord`
 
@@ -205,6 +224,8 @@ This controller is guarded behind `IHostEnvironment.IsDevelopment()` and should 
   - `int Attempt`
   - `string? Error`
 
+> **Multi-tenancy note:** `WorkflowRunRecord` is intentionally **not tenant-scoped** — it does not carry an `OrganizationId` or a global query filter. Run history is a development diagnostic tool, not a business entity. A single workflow run may process candidates across multiple organizations. This matches the concept that DevAuthHandler's admin user can inspect all development data.
+
 #### `WorkflowDispatchRecord`
 
 - **Type:** idempotency model
@@ -215,13 +236,13 @@ This controller is guarded behind `IHostEnvironment.IsDevelopment()` and should 
   - `string EntityType`
   - `Guid EntityId`
 
-#### `LocalWorkflowOptions`
+#### `DevWorkflowOptions`
 
-- **Type:** options class
+- **Type:** configuration class bound via `IConfiguration`
 - **Purpose:** toggles workflows and controls polling
 
 ```csharp
-public sealed class LocalWorkflowOptions
+public sealed class DevWorkflowOptions
 {
     public bool Enabled { get; set; }
     public bool EnableServiceReminders { get; set; }
@@ -229,6 +250,23 @@ public sealed class LocalWorkflowOptions
     public bool EnablePartsOrderStatusSync { get; set; }
     public int SchedulerPeriodSeconds { get; set; } = 60;
     public int MaxRetryCount { get; set; } = 3;
+}
+```
+
+> **Configuration pattern:** the existing codebase reads configuration via `builder.Configuration` in `Program.cs` (e.g., `builder.Configuration.GetValue<bool>("Authentication:UseDevMode")`). This design follows the same approach — `DevWorkflowOptions` values are read from configuration during DI registration rather than injected via `IOptions<T>`.
+
+**`appsettings.Development.json` additions:**
+
+```json
+{
+  "DevWorkflow": {
+    "Enabled": true,
+    "EnableServiceReminders": true,
+    "EnableWorkOrderEscalation": true,
+    "EnablePartsOrderStatusSync": true,
+    "SchedulerPeriodSeconds": 60,
+    "MaxRetryCount": 3
+  }
 }
 ```
 
@@ -246,7 +284,7 @@ This intentionally favors a predictable local loop over perfect cloud parity.
 ### 4.2 Idempotency Model
 
 - Every externally visible action uses a deterministic dispatch key.
-- Before sending notifications or mutating a work order, the workflow checks `IWorkflowDispatchLogRepository`.
+- Before sending notifications or mutating a work order, the workflow checks `_db.WorkflowDispatchRecords` for an existing dispatch key.
 - If the key already exists, the action is skipped and the run is still marked successful.
 
 This protects local development from duplicate reminders when a developer restarts the API or manually re-triggers a workflow.
@@ -272,32 +310,100 @@ Each run logs:
 
 The log format should align with Serilog structured logging already used by the API.
 
+### 4.5 Integration with AlertEvaluatorService
+
+The existing `AlertEvaluatorService` (`src/backend/IronvaleFleetHub.Api/Services/AlertEvaluatorService.cs`) evaluates telemetry events against `EquipmentModelThreshold` records to create `Alert` entities. The escalation workflow should **react to existing alerts** rather than re-evaluating thresholds:
+
+- `WorkOrderEscalationWorkflow` queries `_db.Alerts.Where(a => a.Status == "Active")` to find unresolved alerts.
+- Escalation rules reference alert severity (Critical, High) rather than raw telemetry values.
+- This avoids duplicating threshold logic that already exists in `AlertEvaluatorService`.
+
+The `DataSeeder` already seeds 5 alerts (ServiceDue, EngineFailure, FuelLevel, Geofence) and 5 `EquipmentModelThreshold` records, providing adequate test data for escalation workflows.
+
+### 4.6 DI Registration
+
+All workflow services are registered conditionally in `Program.cs`, following the established pattern:
+
+```csharp
+if (builder.Environment.IsDevelopment())
+{
+    var workflowConfig = builder.Configuration.GetSection("DevWorkflow");
+    var workflowEnabled = workflowConfig.GetValue<bool>("Enabled");
+
+    if (workflowEnabled)
+    {
+        builder.Services.AddHostedService<DevWorkflowEngineHostedService>();
+        builder.Services.AddScoped<WorkflowExecutionCoordinator>();
+        builder.Services.AddScoped<IWorkflowDefinition, ServiceReminderWorkflow>();
+        builder.Services.AddScoped<IWorkflowDefinition, WorkOrderEscalationWorkflow>();
+        builder.Services.AddScoped<IWorkflowDefinition, PartsOrderStatusWorkflow>();
+        builder.Services.AddScoped<ReminderCandidateQueryService>();
+        builder.Services.AddScoped<EscalationPolicyService>();
+        builder.Services.AddScoped<DevPartsOrderEventSource>();
+    }
+}
+```
+
+The `DevWorkflowController` uses `[ApiExplorerSettings(IgnoreApi = true)]` and checks `IHostEnvironment.IsDevelopment()` at runtime as a defense-in-depth measure.
+
 ## 5. Acceptance Tests
+
+> **Testing approach:** these tests run against `ApiWebApplicationFactory` (existing test infrastructure) with the workflow engine registered. Since `DevWorkflowEngineHostedService` is a `BackgroundService`, tests should invoke `WorkflowExecutionCoordinator` directly rather than starting the full scheduler. This avoids timer-based flakiness and makes assertions deterministic.
 
 ### 5.1 Reminder Workflow
 
 - Given a work order due in 3 days, when `ServiceReminderWorkflow` runs, then exactly one reminder is recorded and the same run does not produce duplicates on retry.
 
+**How to verify:** call `WorkflowExecutionCoordinator.ExecuteWorkflowAsync("ServiceReminderWorkflow")` in a test, then assert `_db.Notifications.Count(n => n.Type == "ServiceDue")` equals 1. Call it again and assert the count is still 1 (idempotency via dispatch key).
+
 ### 5.2 Escalation Workflow
 
 - Given an open work order older than 48 hours with `Medium` priority, when `WorkOrderEscalationWorkflow` runs, then the priority becomes `High` and one escalation notification is created.
+
+**How to verify:** seed a work order with `CreatedAt = DateTime.UtcNow.AddHours(-49)` and `Priority = "Medium"`, execute the workflow, then assert `workOrder.Priority == "High"` and one notification of type `"Escalation"` exists.
 
 ### 5.3 Parts Status Workflow
 
 - Given a local fulfillment event `Shipped`, when `PartsOrderStatusWorkflow` runs, then the parts order status is updated once and the event is not re-applied on the next run.
 
+**How to verify:** create a `DevPartsOrderEvent` fixture, execute the workflow, assert the order status changed, execute again, assert no additional status change.
+
 ### 5.4 Manual Trigger Endpoint
 
 - Given a development environment, when `POST /api/dev/workflows/ServiceReminderWorkflow/trigger` is called, then the workflow executes immediately and a new `WorkflowRunRecord` is visible in the run history endpoint.
 
+**How to verify:** send the POST via `HttpClient` in an integration test, then GET `/api/dev/workflows/runs?name=ServiceReminderWorkflow` and assert the latest run exists with `Status == "Completed"`.
+
 ## 6. Security Considerations
 
-- The entire local workflow engine is registered only in `Development`.
-- Manual workflow endpoints must not be reachable in production builds.
+- The entire local workflow engine is registered only in `Development` via the `if (builder.Environment.IsDevelopment())` guard in `Program.cs`.
+- Manual workflow endpoints must not be reachable in production builds. The `DevWorkflowController` should use both compile-time (`#if DEBUG` or `[ApiExplorerSettings(IgnoreApi = true)]`) and runtime (`IHostEnvironment.IsDevelopment()`) guards.
 - Local run history should avoid storing full SMS or email bodies if those payloads contain sensitive content already stored elsewhere.
 - Fixture-driven parts status events should be treated as trusted development data only.
 
-## 7. Open Questions
+## 7. Multi-Tenancy Considerations
+
+Workflows in production (Azure Logic Apps) run as system-level processes with no user context. Locally, the same principle applies:
+
+- **`WorkflowRunRecord` and `WorkflowDispatchRecord`** are development diagnostic entities. They are **not tenant-scoped** and do not have `OrganizationId` fields or global query filters. This is intentional — run history is developer tooling, not business data.
+- **Candidate queries** within each workflow (e.g., finding overdue work orders) must respect tenant boundaries. Workflows should query across all organizations by using `_db.WorkOrders.IgnoreQueryFilters()` or by iterating known org IDs from `_db.Organizations`. This matches the production Logic Apps behavior where workflows are not scoped to a single tenant.
+- **Notification dispatch** uses the existing `INotificationDispatchService` which resolves `OrganizationId` from the target user's record, so tenant isolation in notification delivery is preserved.
+- **`DataSeeder` integration:** the seeded data includes two organizations (Northern Construction Ltd., Pacific Mining Corp.) with work orders, equipment, and alerts for both. Workflows should process both organizations to verify cross-tenant correctness.
+
+## 8. Recommended Decomposition
+
+This design covers the core engine plus three distinct workflow implementations. For incremental delivery, it may be decomposed into:
+
+| Sub-design | Scope | Depends On |
+|-----------|-------|------------|
+| **19A: Core Workflow Engine** | `IWorkflowEngine`, `IWorkflowDefinition`, `DevWorkflowEngineHostedService`, `WorkflowExecutionCoordinator`, `WorkflowRunRecord`, `WorkflowDispatchRecord`, `DevWorkflowController` | — |
+| **19B: Service Reminder Workflow** | `ServiceReminderWorkflow`, `ReminderCandidateQueryService` | 19A |
+| **19C: Escalation Workflow** | `WorkOrderEscalationWorkflow`, `EscalationPolicyService`, `AlertEvaluatorService` integration | 19A |
+| **19D: Parts Order Status Workflow** | `PartsOrderStatusWorkflow`, `DevPartsOrderEventSource` | 19A |
+
+Each workflow (19B–19D) has distinct domain concerns and can be implemented and tested independently once the core engine (19A) is in place.
+
+## 9. Open Questions
 
 1. Should workflow run history live in SQL tables, or is structured logging alone sufficient for v1 local development?
 2. Should the parts-order local event source be file-based, table-based, or both?

@@ -24,9 +24,9 @@ skinparam rectangle<<service>> {
 
 rectangle "API / Functions" <<backend>> as app
 rectangle "AiProviderSelector" <<service>> as selector
-rectangle "LocalAiInsightsService" <<service>> as insights
-rectangle "LocalNaturalLanguageSearchService" <<service>> as search
-rectangle "AiScenarioRepository" <<service>> as scenarios
+rectangle "DevAiInsightsService" <<service>> as insights
+rectangle "DevNaturalLanguageSearchService" <<service>> as search
+rectangle "AiScenarioRecord (DbContext)" <<service>> as scenarios
 rectangle "Optional Ollama Adapter" <<service>> as ollama
 database "SQL Server / Dev Data" as db
 
