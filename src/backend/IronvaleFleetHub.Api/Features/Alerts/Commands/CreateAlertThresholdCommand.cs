@@ -48,3 +48,16 @@ public class CreateAlertThresholdCommandHandler : IRequestHandler<CreateAlertThr
         return Result<AlertThreshold>.Success(threshold);
     }
 }
+
+public class CreateAlertThresholdCommandValidator : AbstractValidator<CreateAlertThresholdCommand>
+{
+    public CreateAlertThresholdCommandValidator()
+    {
+        RuleFor(x => x.MetricName).NotEmpty();
+        RuleFor(x => x.WarningValue).GreaterThan(0);
+        RuleFor(x => x.CriticalValue).GreaterThan(0);
+        RuleFor(x => x.CriticalValue)
+            .GreaterThanOrEqualTo(x => x.WarningValue)
+            .WithMessage("CriticalValue must be greater than or equal to WarningValue.");
+    }
+}
