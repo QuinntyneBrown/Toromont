@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using IronvaleFleetHub.Functions.Models;
 using IronvaleFleetHub.Functions.Services;
+using IronvaleFleetHub.Telemetry;
 
 namespace IronvaleFleetHub.Functions.Functions;
 
